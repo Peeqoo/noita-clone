@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://qopaqcnyxcel"]
+
+[ext_resource type="Resource" uid="uid://b1b53vx48yrp2" path="res://project/resources/wands_tres/starter_wand.tres" id="1_5b4bg"]
+[ext_resource type="Script" uid="uid://b8cgkkvdpgkv3" path="res://project/scripts/wands_gd/wand.gd" id="1_38vmg"]
+[ext_resource type="Texture2D" uid="uid://dfol3c36go1jd" path="res://assets/resources/wand/wand_3.png" id="2_5b4bg"]
+
+[node name="Wand" type="Node2D" unique_id=248208459]
+script = ExtResource("1_38vmg")
+wand_data = ExtResource("1_5b4bg")
+
+[node name="Visuals" type="Node2D" parent="." unique_id=709651717]
+rotation = 0.7853982
+
+[node name="Sprite2D" type="Sprite2D" parent="Visuals" unique_id=619579335]
+scale = Vector2(0.6753662, 0.6753662)
+texture = ExtResource("2_5b4bg")
+
+[node name="Muzzle" type="Marker2D" parent="." unique_id=979683485]
+position = Vector2(6, 0)
+gizmo_extents = 1.0

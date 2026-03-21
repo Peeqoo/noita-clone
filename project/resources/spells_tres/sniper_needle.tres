@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="SpellData" format=3 uid="uid://b5s87iepb2hud"]
+
+[ext_resource type="PackedScene" uid="uid://cf5tt6emgp118" path="res://project/scenes/spell_tscn/spell_sniper_needle.tscn" id="1_8o3lx"]
+[ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="2_qor3t"]
+
+[resource]
+script = ExtResource("2_qor3t")
+display_name = "Sniper Needle"
+mana_cost = 6.0
+projectile_scene = ExtResource("1_8o3lx")
+speed = 900.0
+damage = 8
+crit_chance = 0.4
+crit_multiplier = 2.5
+metadata/_custom_type_script = "uid://dwcqferqt0o7"

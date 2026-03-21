@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://gy5k74aifrm2"]
+
+[ext_resource type="Script" uid="uid://ck77e2gvosx2" path="res://project/scripts/popups_gd/damage_number.gd" id="1_snar5"]
+[ext_resource type="FontFile" uid="uid://bc1bl216oce4v" path="res://assets/fonts/prstartk.ttf" id="2_dsfj1"]
+
+[node name="DamageNumber" type="Node2D" unique_id=187641242]
+script = ExtResource("1_snar5")
+duration = 1.5
+random_x_offset = 10.0
+
+[node name="Label" type="Label" parent="." unique_id=1919367391]
+texture_filter = 1
+offset_right = 8.0
+offset_bottom = 5.0
+pivot_offset = Vector2(4, 2.5)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_dsfj1")
+theme_override_font_sizes/font_size = 4
+text = "99"
+horizontal_alignment = 1
+vertical_alignment = 1

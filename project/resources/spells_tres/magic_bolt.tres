@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SpellData" format=3 uid="uid://crssv2or2uj0l"]
+
+[ext_resource type="PackedScene" uid="uid://e2sftnqe63q8" path="res://project/scenes/spell_tscn/spell_magic_bolt.tscn" id="1_34kne"]
+[ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="1_j6tot"]
+
+[resource]
+script = ExtResource("1_j6tot")
+display_name = "Magic Bolt"
+projectile_scene = ExtResource("1_34kne")
+damage = 4
+metadata/_custom_type_script = "uid://dwcqferqt0o7"

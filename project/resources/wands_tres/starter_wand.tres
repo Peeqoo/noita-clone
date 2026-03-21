@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="WandData" format=3 uid="uid://b1b53vx48yrp2"]
+
+[ext_resource type="Script" uid="uid://dmc23tawwe7nc" path="res://project/scripts/wands_gd/wand_data.gd" id="1_iomjy"]
+[ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="2_l1q77"]
+[ext_resource type="PackedScene" uid="uid://e2sftnqe63q8" path="res://project/scenes/spell_tscn/spell_magic_bolt.tscn" id="3_7qp55"]
+
+[sub_resource type="Resource" id="Resource_7qp55"]
+script = ExtResource("2_l1q77")
+display_name = "Magic Bolt"
+projectile_scene = ExtResource("3_7qp55")
+damage = 4
+metadata/_custom_type_script = "uid://dwcqferqt0o7"
+
+[sub_resource type="Resource" id="Resource_twv1u"]
+script = ExtResource("2_l1q77")
+display_name = "Sniper Needle"
+mana_cost = 6.0
+speed = 900.0
+damage = 8
+crit_chance = 0.4
+crit_multiplier = 2.5
+metadata/_custom_type_script = "uid://dwcqferqt0o7"
+
+[sub_resource type="Resource" id="Resource_iomjy"]
+script = ExtResource("2_l1q77")
+display_name = "Triple Shot"
+mana_cost = 8.0
+projectile_count = 3
+spread_degrees = 20.0
+damage = 6
+metadata/_custom_type_script = "uid://dwcqferqt0o7"
+
+[resource]
+script = ExtResource("1_iomjy")
+display_name = "Starter Wand"
+spell_slots = Array[ExtResource("2_l1q77")]([SubResource("Resource_7qp55"), SubResource("Resource_twv1u"), SubResource("Resource_iomjy")])
+metadata/_custom_type_script = "uid://dmc23tawwe7nc"
