@@ -169,7 +169,7 @@ func _on_animated_sprite_2d_frame_changed() -> void:
 		disable_attack_hitbox()
 		return
 
-	if animated_sprite.frame >= 2 and animated_sprite.frame <= 3:
+	if animated_sprite.frame >= 4 and animated_sprite.frame <= 5:
 		enable_attack_hitbox()
 	else:
 		disable_attack_hitbox()

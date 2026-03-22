@@ -3,9 +3,9 @@ extends CanvasLayer
 @onready var health_bar = $Control/MarginContainer/VBoxContainer/HealthBar
 @onready var mana_bar = $Control/MarginContainer/VBoxContainer/ManaBar
 
-@onready var spell_slot_1 = $Control/SpellBar/MarginContainer/HBoxContainer/SpellSlot1
-@onready var spell_slot_2 = $Control/SpellBar/MarginContainer/HBoxContainer/SpellSlot2
-@onready var spell_slot_3 = $Control/SpellBar/MarginContainer/HBoxContainer/SpellSlot3
+@onready var spell_slot_1 = $Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot1
+@onready var spell_slot_2 = $Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot2
+@onready var spell_slot_3 = $Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot3
 
 func _ready() -> void:
 	update_spell_selection(0)
