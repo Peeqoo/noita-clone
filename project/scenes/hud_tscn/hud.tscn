@@ -1,0 +1,153 @@
+[gd_scene format=3 uid="uid://q185s1fbuyce"]
+
+[ext_resource type="Texture2D" uid="uid://cpt5l0yjpdsco" path="res://assets/hud/Heart&ManaUi.png" id="1_ab1kr"]
+[ext_resource type="Script" uid="uid://b6p7641m7a5yi" path="res://project/scripts/hud_gd/hud.gd" id="1_deivv"]
+[ext_resource type="Texture2D" uid="uid://c1kv8kdxtu6bm" path="res://assets/hud/Pxiel Art UI borders.png" id="1_t4pug"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ab1kr"]
+bg_color = Color(1, 0, 0, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tc01e"]
+atlas = ExtResource("1_ab1kr")
+region = Rect2(2, 2, 16, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_deivv"]
+bg_color = Color(0.14509805, 0.22352941, 0.7490196, 1)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xys8i"]
+atlas = ExtResource("1_ab1kr")
+region = Rect2(2, 26, 16, 10)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ab1kr"]
+atlas = ExtResource("1_t4pug")
+region = Rect2(17, 17, 94, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t4pug"]
+atlas = ExtResource("1_t4pug")
+region = Rect2(17, 17, 94, 94)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_deivv"]
+atlas = ExtResource("1_t4pug")
+region = Rect2(17, 17, 94, 94)
+
+[node name="HUD" type="CanvasLayer" unique_id=1355603922 groups=["hud"]]
+script = ExtResource("1_deivv")
+
+[node name="Control" type="Control" parent="." unique_id=1074293567]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control" unique_id=2028936308]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -129.0
+offset_bottom = 66.0
+grow_horizontal = 0
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer" unique_id=1914957964]
+layout_mode = 2
+
+[node name="HealthBar" type="ProgressBar" parent="Control/MarginContainer/VBoxContainer" unique_id=1942948602]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_ab1kr")
+value = 100.0
+fill_mode = 1
+show_percentage = false
+
+[node name="TextureRect" type="TextureRect" parent="Control/MarginContainer/VBoxContainer/HealthBar" unique_id=836124432]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -12.0
+offset_top = -3.0
+offset_bottom = 3.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = SubResource("AtlasTexture_tc01e")
+expand_mode = 1
+
+[node name="ManaBar" type="ProgressBar" parent="Control/MarginContainer/VBoxContainer" unique_id=1067114490]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_deivv")
+value = 100.0
+fill_mode = 1
+show_percentage = false
+
+[node name="TextureRect2" type="TextureRect" parent="Control/MarginContainer/VBoxContainer/ManaBar" unique_id=2067658252]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -12.0
+offset_top = -3.0
+offset_bottom = 3.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = SubResource("AtlasTexture_xys8i")
+expand_mode = 1
+
+[node name="SpellBar" type="Control" parent="Control" unique_id=1033102656]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/SpellBar" unique_id=2035722476]
+layout_mode = 1
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 71.0
+offset_bottom = 27.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Control/SpellBar/MarginContainer" unique_id=677627545]
+layout_mode = 2
+
+[node name="SpellSlot1" type="Panel" parent="Control/SpellBar/MarginContainer/HBoxContainer" unique_id=276876875]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxContainer/SpellSlot1" unique_id=226617829]
+layout_mode = 1
+offset_right = 18.0
+offset_bottom = 18.0
+texture = SubResource("AtlasTexture_ab1kr")
+expand_mode = 1
+
+[node name="SpellSlot2" type="Panel" parent="Control/SpellBar/MarginContainer/HBoxContainer" unique_id=526296222]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxContainer/SpellSlot2" unique_id=1444506741]
+layout_mode = 1
+offset_right = 18.0
+offset_bottom = 18.0
+texture = SubResource("AtlasTexture_t4pug")
+expand_mode = 1
+
+[node name="SpellSlot3" type="Panel" parent="Control/SpellBar/MarginContainer/HBoxContainer" unique_id=1210495912]
+custom_minimum_size = Vector2(18, 0)
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxContainer/SpellSlot3" unique_id=351397246]
+layout_mode = 0
+offset_right = 18.0
+offset_bottom = 18.0
+texture = SubResource("AtlasTexture_deivv")
+expand_mode = 1

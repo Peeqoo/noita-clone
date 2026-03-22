@@ -6,9 +6,11 @@
 [resource]
 script = ExtResource("2_86554")
 display_name = "Triple Shot"
-mana_cost = 8.0
+mana_cost = 40.0
+cast_delay_add = 0.18
 projectile_scene = ExtResource("1_pjvl8")
-projectile_count = 3
-spread_degrees = 20.0
+projectile_count = 2
+spread_degrees = 5.0
+speed = 200.0
 damage = 6
 metadata/_custom_type_script = "uid://dwcqferqt0o7"

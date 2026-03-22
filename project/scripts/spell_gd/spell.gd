@@ -13,12 +13,16 @@ var hit_data: Dictionary = {
 	"source": null
 }
 
-@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var moving_sprite: AnimatedSprite2D = $MovingSprite
+@onready var explode_sprite: AnimatedSprite2D = $ExplodeSprite
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 func _ready() -> void:
-	if animated_sprite.sprite_frames.has_animation("moving"):
-		animated_sprite.play("moving")
+	moving_sprite.visible = true
+	explode_sprite.visible = false
+
+	if moving_sprite.sprite_frames.has_animation("moving"):
+		moving_sprite.play("moving")
 
 func setup(dir: Vector2, new_speed: float, new_shooter: Node, new_hit_data: Dictionary, new_lifetime: float = 2.0) -> void:
 	direction = dir.normalized()
@@ -66,9 +70,6 @@ func _on_area_entered(area: Area2D) -> void:
 	if area == shooter:
 		return
 
-	# Schaden läuft über Hurtbox.
-	# Explosion passiert danach über on_hit_enemy().
-
 func _explode() -> void:
 	if is_exploding:
 		return
@@ -80,13 +81,16 @@ func _explode() -> void:
 	if collision_shape != null:
 		collision_shape.set_deferred("disabled", true)
 
-	if animated_sprite.sprite_frames.has_animation("explode"):
-		animated_sprite.play("explode")
+	moving_sprite.visible = false
+	explode_sprite.visible = true
+
+	if explode_sprite.sprite_frames.has_animation("explode"):
+		explode_sprite.play("explode")
 	else:
 		queue_free()
 
-func _on_animated_sprite_2d_animation_finished() -> void:
-	if animated_sprite.animation == "explode":
+func _on_explode_sprite_animation_finished() -> void:
+	if explode_sprite.animation == "explode":
 		queue_free()
 
 func _on_visible_on_screen_notifier_2d_screen_exited() -> void:

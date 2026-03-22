@@ -94,6 +94,63 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_v3t5u"]
+atlas = ExtResource("2_3cuao")
+region = Rect2(0, 0, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3cuao"]
+atlas = ExtResource("2_3cuao")
+region = Rect2(50, 0, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y5m36"]
+atlas = ExtResource("2_3cuao")
+region = Rect2(100, 0, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sn3tc"]
+atlas = ExtResource("2_3cuao")
+region = Rect2(150, 0, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gpn7e"]
+atlas = ExtResource("2_3cuao")
+region = Rect2(200, 0, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vj0kp"]
+atlas = ExtResource("2_3cuao")
+region = Rect2(250, 0, 50, 50)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3yr40"]
+atlas = ExtResource("2_3cuao")
+region = Rect2(300, 0, 50, 50)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_08e2j"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v3t5u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3cuao")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y5m36")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sn3tc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gpn7e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vj0kp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3yr40")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 20.0
+}]
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_msqtn"]
 radius = 6.0
 
@@ -103,9 +160,17 @@ collision_layer = 8
 collision_mask = 65
 script = ExtResource("1_v3t5u")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2000807693]
+[node name="MovingSprite" type="AnimatedSprite2D" parent="." unique_id=2000807693]
+position = Vector2(4.7683716e-07, 0)
 sprite_frames = SubResource("SpriteFrames_d50c0")
 animation = &"moving"
+
+[node name="ExplodeSprite" type="AnimatedSprite2D" parent="." unique_id=2132272661]
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("SpriteFrames_08e2j")
+animation = &"explode"
+frame = 3
+offset = Vector2(5, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1736432601]
 position = Vector2(6, 0)
@@ -116,5 +181,5 @@ rect = Rect2(0.015, -5.995, 12.075, 12.115)
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
-[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="animation_finished" from="ExplodeSprite" to="." method="_on_explode_sprite_animation_finished"]
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

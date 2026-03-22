@@ -6,6 +6,8 @@
 [resource]
 script = ExtResource("1_j6tot")
 display_name = "Magic Bolt"
+mana_cost = 12.0
 projectile_scene = ExtResource("1_34kne")
+speed = 400.0
 damage = 4
 metadata/_custom_type_script = "uid://dwcqferqt0o7"

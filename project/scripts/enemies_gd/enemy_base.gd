@@ -98,7 +98,16 @@ func show_damage_number(amount: int, is_crit: bool = false) -> void:
 
 	var number = scene_to_use.instantiate()
 	get_tree().current_scene.add_child(number)
-	number.global_position = global_position + damage_number_offset
+	
+	var random_offset := Vector2(
+		randf_range(-8.0, 8.0),
+		randf_range(-6.0, 6.0)
+	)
+
+	if is_crit:
+		random_offset.y -= 8.0
+
+	number.global_position = global_position + damage_number_offset + random_offset
 
 	if number.has_method("setup"):
 		number.setup(amount, is_crit)

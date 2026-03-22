@@ -17,6 +17,7 @@ extends CharacterBody2D
 @onready var wand_pivot: Node2D = $WandPivot
 @onready var wand: Node2D = $WandPivot/Wand
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var hud = get_tree().get_first_node_in_group("hud")
 @export var damage_number_scene: PackedScene
 @export var crit_damage_number_scene: PackedScene
 @export var damage_number_offset: Vector2 = Vector2(0, -40)
@@ -38,6 +39,7 @@ func _ready() -> void:
 	animated_sprite.play("idle")
 	was_on_floor_last_frame = is_on_floor()
 	_update_wand_pivot_position()
+	_update_hud()
 
 	if wand.has_method("set_actor_owner"):
 		wand.set_actor_owner(self)
@@ -50,8 +52,10 @@ func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: 
 		return
 
 	health -= amount
+	health = clamp(health, 0, max_health)
 	show_damage_number(amount, is_crit)
 	print("Player HP:", health)
+	_update_hud()
 
 	apply_knockback(source_position)
 
@@ -72,7 +76,16 @@ func show_damage_number(amount: int, is_crit: bool = false) -> void:
 
 	var number = scene_to_use.instantiate()
 	get_tree().current_scene.add_child(number)
-	number.global_position = global_position + damage_number_offset
+	
+	var random_offset := Vector2(
+		randf_range(-8.0, 8.0),
+		randf_range(-4.0, 4.0)
+	)
+
+	if is_crit:
+		random_offset.y -= 8.0
+
+	number.global_position = global_position + damage_number_offset + random_offset
 
 	if number.has_method("setup"):
 		number.setup(amount, is_crit)
@@ -277,3 +290,13 @@ func play_death() -> void:
 	knockback_velocity = Vector2.ZERO
 	_update_wand_input(false)
 	animated_sprite.play("death")
+
+func _update_hud() -> void:
+	if hud == null:
+		return
+
+	if hud.has_method("update_health"):
+		hud.update_health(health, max_health)
+
+	if hud.has_method("update_spell_selection"):
+		hud.update_spell_selection(0)

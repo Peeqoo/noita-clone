@@ -3,6 +3,7 @@ extends Node2D
 @export var wand_data: WandData
 
 @onready var muzzle: Marker2D = $Muzzle
+@onready var hud = get_tree().get_first_node_in_group("hud")
 
 var current_mana: float = 0.0
 var cast_cooldown: float = 0.0
@@ -20,12 +21,20 @@ func _ready() -> void:
 		return
 
 	current_mana = wand_data.mana_max
+	_update_hud_mana()
+	_update_hud_spell()
 
 func _process(delta: float) -> void:
+	_handle_spell_input()
+
 	if wand_data == null:
 		return
 
+	var old_mana: float = current_mana
 	current_mana = min(current_mana + wand_data.mana_regen * delta, wand_data.mana_max)
+
+	if current_mana != old_mana:
+		_update_hud_mana()
 
 	if cast_cooldown > 0.0:
 		cast_cooldown = max(cast_cooldown - delta, 0.0)
@@ -57,17 +66,17 @@ func try_cast() -> void:
 
 	var spell: SpellData = wand_data.spell_slots[slot_index]
 	if spell == null:
-		_advance_slot()
 		return
 
 	if current_mana < spell.mana_cost:
 		return
 
 	current_mana -= spell.mana_cost
+	_update_hud_mana()
+
 	cast_cooldown = wand_data.cast_delay + spell.cast_delay_add
 
 	_cast_spell(spell)
-	_advance_slot()
 
 func _cast_spell(spell: SpellData) -> void:
 	if spell.projectile_scene == null:
@@ -114,9 +123,40 @@ func _build_hit_data(spell: SpellData) -> Dictionary:
 		"source": actor_owner
 	}
 
-func _advance_slot() -> void:
-	slot_index += 1
+func _handle_spell_input() -> void:
+	if wand_data == null:
+		return
 
-	if slot_index >= wand_data.spell_slots.size():
+	if Input.is_action_just_pressed("spell_1"):
 		slot_index = 0
-		recharge_cooldown = wand_data.recharge_time
+		_update_hud_spell()
+
+	elif Input.is_action_just_pressed("spell_2"):
+		if wand_data.spell_slots.size() > 1:
+			slot_index = 1
+			_update_hud_spell()
+
+	elif Input.is_action_just_pressed("spell_3"):
+		if wand_data.spell_slots.size() > 2:
+			slot_index = 2
+			_update_hud_spell()
+
+func _update_hud_mana() -> void:
+	if hud == null:
+		hud = get_tree().get_first_node_in_group("hud")
+
+	if hud == null:
+		return
+
+	if hud.has_method("update_mana"):
+		hud.update_mana(current_mana, wand_data.mana_max)
+
+func _update_hud_spell() -> void:
+	if hud == null:
+		hud = get_tree().get_first_node_in_group("hud")
+
+	if hud == null:
+		return
+
+	if hud.has_method("update_spell_selection"):
+		hud.update_spell_selection(slot_index)

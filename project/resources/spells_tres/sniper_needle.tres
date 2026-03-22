@@ -6,9 +6,9 @@
 [resource]
 script = ExtResource("2_qor3t")
 display_name = "Sniper Needle"
-mana_cost = 6.0
+mana_cost = 28.0
+cast_delay_add = 0.3
 projectile_scene = ExtResource("1_8o3lx")
-speed = 900.0
 damage = 8
 crit_chance = 0.4
 crit_multiplier = 2.5
