@@ -147,7 +147,7 @@ func _on_detection_area_body_entered(body: Node) -> void:
 
 func _on_detection_area_body_exited(body: Node) -> void:
 	if body == player:
-		pass
+		player = null
 
 func _on_attack_hitbox_body_entered(body: Node) -> void:
 	if current_state != State.ATTACK:

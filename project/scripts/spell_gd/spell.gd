@@ -63,12 +63,6 @@ func _on_body_entered(body: Node) -> void:
 
 	_explode()
 
-func _on_area_entered(area: Area2D) -> void:
-	if is_exploding:
-		return
-
-	if area == shooter:
-		return
 
 func _explode() -> void:
 	if is_exploding:

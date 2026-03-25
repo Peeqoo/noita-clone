@@ -15,8 +15,8 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 
 [display]
 
-window/size/viewport_width=426
-window/size/viewport_height=240
+window/size/viewport_width=576
+window/size/viewport_height=324
 window/size/window_width_override=1080
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"
@@ -30,6 +30,7 @@ folder_colors={
 "res://project/scenes/enemies_tscn/": "red",
 "res://project/scenes/hud_tscn/": "orange",
 "res://project/scenes/levels_tscn/": "yellow",
+"res://project/scenes/pickups_tscn/": "pink",
 "res://project/scenes/player_tscn/": "green",
 "res://project/scenes/popups_tscn/": "purple",
 "res://project/scenes/spell_tscn/": "teal",
@@ -37,6 +38,7 @@ folder_colors={
 "res://project/scripts/enemies_gd/": "red",
 "res://project/scripts/hud_gd/": "orange",
 "res://project/scripts/levels_gd/": "yellow",
+"res://project/scripts/pickups_gd/": "pink",
 "res://project/scripts/player_gd/": "green",
 "res://project/scripts/popups_gd/": "purple",
 "res://project/scripts/spell_gd/": "teal",
@@ -71,11 +73,6 @@ hover={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194325,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
-interact={
-"deadzone": 0.2,
-"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":69,"key_label":0,"unicode":101,"location":0,"echo":false,"script":null)
-]
-}
 spell_1={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":49,"key_label":0,"unicode":49,"location":0,"echo":false,"script":null)
@@ -89,6 +86,16 @@ spell_2={
 spell_3={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":51,"key_label":0,"unicode":51,"location":0,"echo":false,"script":null)
+]
+}
+interact={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":69,"key_label":0,"unicode":101,"location":0,"echo":false,"script":null)
+]
+}
+toggle_inventory={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194306,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 

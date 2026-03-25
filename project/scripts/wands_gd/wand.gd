@@ -123,6 +123,34 @@ func _build_hit_data(spell: SpellData) -> Dictionary:
 		"source": actor_owner
 	}
 
+func get_spell_in_slot(slot: int) -> SpellData:
+	if wand_data == null:
+		return null
+	if slot < 0 or slot >= wand_data.spell_slots.size():
+		return null
+	return wand_data.spell_slots[slot]
+
+func set_spell_in_slot(slot: int, spell: SpellData) -> bool:
+	if wand_data == null:
+		return false
+	if slot < 0 or slot >= wand_data.spell_slots.size():
+		return false
+
+	wand_data.spell_slots[slot] = spell
+	_update_hud_spell()
+	return true
+
+func remove_spell_from_slot(slot: int) -> SpellData:
+	if wand_data == null:
+		return null
+	if slot < 0 or slot >= wand_data.spell_slots.size():
+		return null
+
+	var spell: SpellData = wand_data.spell_slots[slot]
+	wand_data.spell_slots[slot] = null
+	_update_hud_spell()
+	return spell
+
 func _handle_spell_input() -> void:
 	if wand_data == null:
 		return

@@ -5,6 +5,10 @@
 [ext_resource type="PackedScene" uid="uid://qopaqcnyxcel" path="res://project/scenes/wand_tscn/starter_wand.tscn" id="2_mcjsd"]
 [ext_resource type="PackedScene" uid="uid://dlsv21irpatrw" path="res://project/scenes/popups_tscn/damage_number_player.tscn" id="2_x42q5"]
 [ext_resource type="PackedScene" uid="uid://c8gp50ftj2b18" path="res://project/scenes/popups_tscn/damage_number_player_crit.tscn" id="3_f8wmi"]
+[ext_resource type="Script" uid="uid://ual08sf6fwkl" path="res://project/scripts/player_gd/player_health_component.gd" id="5_hrj1m"]
+[ext_resource type="Script" uid="uid://djabv3jo81ysy" path="res://project/scripts/player_gd/inventory_component.gd" id="6_gdmcs"]
+[ext_resource type="Script" uid="uid://d1h1drolwfrf2" path="res://project/scripts/player_gd/player_animation_controller.gd" id="8_cjtr1"]
+[ext_resource type="Script" uid="uid://dokl2pfrf5f38" path="res://project/scripts/player_gd/player_inventory_component.gd" id="9_1ok13"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pdsk0"]
 radius = 3.0
@@ -639,13 +643,10 @@ animations = [{
 
 [node name="Player02" type="CharacterBody2D" unique_id=1587487172 groups=["player"]]
 collision_layer = 2
-collision_mask = 21
+collision_mask = 53
 script = ExtResource("1_higxc")
 move_speed = 155.0
 jump_velocity = -240.0
-damage_number_scene = ExtResource("2_x42q5")
-crit_damage_number_scene = ExtResource("3_f8wmi")
-damage_number_offset = Vector2(-15, -10)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1219825577]
 position = Vector2(2, -4)
@@ -677,4 +678,19 @@ position = Vector2(6, -3)
 [node name="HandLeft" type="Marker2D" parent="." unique_id=641450391]
 position = Vector2(-2, -3)
 
+[node name="Inventory" type="Node2D" parent="." unique_id=1523198260]
+script = ExtResource("6_gdmcs")
+
+[node name="HealthComponent" type="Node2D" parent="." unique_id=1585939947]
+script = ExtResource("5_hrj1m")
+damage_number_scene = ExtResource("2_x42q5")
+crit_damage_number_scene = ExtResource("3_f8wmi")
+
+[node name="AnimationController" type="Node2D" parent="." unique_id=69102457]
+script = ExtResource("8_cjtr1")
+
+[node name="PlayerInventoryComponent" type="Node2D" parent="." unique_id=351875900]
+script = ExtResource("9_1ok13")
+
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animation_finished"]
+[connection signal="health_changed" from="HealthComponent" to="." method="_on_player_health_component_health_changed"]

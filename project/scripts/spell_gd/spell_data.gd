@@ -2,6 +2,7 @@ extends Resource
 class_name SpellData
 
 @export var display_name: String = "Spell Name"
+@export var icon: Texture2D
 
 @export_group("Cast")
 @export var mana_cost: float = 5.0

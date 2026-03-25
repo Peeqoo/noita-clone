@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="WandData" format=3 uid="uid://b1b53vx48yrp2"]
 
 [ext_resource type="Script" uid="uid://dmc23tawwe7nc" path="res://project/scripts/wands_gd/wand_data.gd" id="1_iomjy"]
+[ext_resource type="Texture2D" uid="uid://dfol3c36go1jd" path="res://assets/resources/wand/wand_3.png" id="1_l1q77"]
 [ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="2_l1q77"]
 [ext_resource type="Resource" uid="uid://crssv2or2uj0l" path="res://project/resources/spells_tres/magic_bolt.tres" id="3_iomjy"]
 [ext_resource type="Resource" uid="uid://b5s87iepb2hud" path="res://project/resources/spells_tres/sniper_needle.tres" id="4_l1q77"]
@@ -9,6 +10,7 @@
 [resource]
 script = ExtResource("1_iomjy")
 display_name = "Starter Wand"
+icon = ExtResource("1_l1q77")
 mana_regen = 18.0
 cast_delay = 0.22
 recharge_time = 0.45

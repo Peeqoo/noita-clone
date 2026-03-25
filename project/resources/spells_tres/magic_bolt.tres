@@ -1,11 +1,17 @@
 [gd_resource type="Resource" script_class="SpellData" format=3 uid="uid://crssv2or2uj0l"]
 
+[ext_resource type="Texture2D" uid="uid://bw1nioh4npw08" path="res://assets/resources/spell/magic_bolt/Moving.png" id="1_7jl7k"]
 [ext_resource type="PackedScene" uid="uid://e2sftnqe63q8" path="res://project/scenes/spell_tscn/spell_magic_bolt.tscn" id="1_34kne"]
 [ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="1_j6tot"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n1an7"]
+atlas = ExtResource("1_7jl7k")
+region = Rect2(61, 20, 26, 11)
 
 [resource]
 script = ExtResource("1_j6tot")
 display_name = "Magic Bolt"
+icon = SubResource("AtlasTexture_n1an7")
 mana_cost = 12.0
 projectile_scene = ExtResource("1_34kne")
 speed = 400.0

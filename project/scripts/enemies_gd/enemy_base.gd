@@ -9,13 +9,18 @@ enum State {
 	DEATH
 }
 
-@export var max_health: int = 1000
+@export var max_health: int = 50
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 @export var damage_number_scene: PackedScene
 @export var crit_damage_number_scene: PackedScene
 @export var damage_number_offset: Vector2 = Vector2(0, -40)
+
+@export var spell_pickup_scene: PackedScene
+@export var magic_bolt_data: SpellData
+@export var triple_shot_data: SpellData
+@export var sniper_needle_data: SpellData
 
 var health: int
 var current_state: State = State.IDLE
@@ -114,6 +119,7 @@ func show_damage_number(amount: int, is_crit: bool = false) -> void:
 
 func die() -> void:
 	change_state(State.DEATH)
+	drop_loot()
 
 func _on_animation_finished() -> void:
 	match current_state:
@@ -127,3 +133,26 @@ func _on_animation_finished() -> void:
 
 		State.DEATH:
 			queue_free()
+
+func drop_loot() -> void:
+	if spell_pickup_scene == null:
+		return
+
+	var spells = [
+		magic_bolt_data,
+		triple_shot_data,
+		sniper_needle_data
+	]
+
+	var spell_to_drop: SpellData = spells.pick_random()
+
+	if spell_to_drop == null:
+		return
+
+	call_deferred("_spawn_loot_pickup", spell_to_drop, global_position)
+	
+func _spawn_loot_pickup(spell_to_drop: SpellData, spawn_position: Vector2) -> void:
+	var pickup = spell_pickup_scene.instantiate()
+	pickup.global_position = spawn_position
+	pickup.spell_data = spell_to_drop
+	get_tree().current_scene.add_child(pickup)

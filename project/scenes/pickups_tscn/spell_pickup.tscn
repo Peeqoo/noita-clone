@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dav1w1gt6kx6m"]
+
+[ext_resource type="Script" uid="uid://bq0ykn4sa2yai" path="res://project/scripts/pickups_gd/spell_pickup.gd" id="1_3w5qh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3w5qh"]
+
+[node name="SpellPickup" type="Area2D" unique_id=2078375043]
+collision_layer = 32
+collision_mask = 2
+script = ExtResource("1_3w5qh")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=131308835]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=934920733]
+shape = SubResource("CircleShape2D_3w5qh")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

@@ -1,11 +1,17 @@
 [gd_resource type="Resource" script_class="SpellData" format=3 uid="uid://b5s87iepb2hud"]
 
 [ext_resource type="PackedScene" uid="uid://cf5tt6emgp118" path="res://project/scenes/spell_tscn/spell_sniper_needle.tscn" id="1_8o3lx"]
+[ext_resource type="Texture2D" uid="uid://d28klyutarmcq" path="res://assets/resources/spell/sniper_needle/IcePick_64x64.png" id="1_qor3t"]
 [ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="2_qor3t"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_myax0"]
+atlas = ExtResource("1_qor3t")
+region = Rect2(838, 27, 58, 11)
 
 [resource]
 script = ExtResource("2_qor3t")
 display_name = "Sniper Needle"
+icon = SubResource("AtlasTexture_myax0")
 mana_cost = 28.0
 cast_delay_add = 0.3
 projectile_scene = ExtResource("1_8o3lx")

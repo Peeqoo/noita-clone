@@ -5,6 +5,10 @@
 [ext_resource type="PackedScene" uid="uid://gy5k74aifrm2" path="res://project/scenes/popups_tscn/damage_number_enemy.tscn" id="2_xxet1"]
 [ext_resource type="PackedScene" uid="uid://lwyh06thq1jt" path="res://project/scenes/popups_tscn/damage_number_enemy_crit.tscn" id="3_76jat"]
 [ext_resource type="Script" uid="uid://dseewjhrvrovv" path="res://project/scripts/enemies_gd/hurtbox.gd" id="3_ymypg"]
+[ext_resource type="PackedScene" uid="uid://dav1w1gt6kx6m" path="res://project/scenes/pickups_tscn/spell_pickup.tscn" id="4_yx0ri"]
+[ext_resource type="Resource" uid="uid://crssv2or2uj0l" path="res://project/resources/spells_tres/magic_bolt.tres" id="5_8ndju"]
+[ext_resource type="Resource" uid="uid://bm2tbsb4vrk10" path="res://project/resources/spells_tres/triple_shot.tres" id="6_vqbwx"]
+[ext_resource type="Resource" uid="uid://b5s87iepb2hud" path="res://project/resources/spells_tres/sniper_needle.tres" id="7_8awfw"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w4uax"]
 atlas = ExtResource("2_mkdiy")
@@ -326,6 +330,10 @@ script = ExtResource("1_m3375")
 damage_number_scene = ExtResource("2_xxet1")
 crit_damage_number_scene = ExtResource("3_76jat")
 damage_number_offset = Vector2(-5, -45)
+spell_pickup_scene = ExtResource("4_yx0ri")
+magic_bolt_data = ExtResource("5_8ndju")
+triple_shot_data = ExtResource("6_vqbwx")
+sniper_needle_data = ExtResource("7_8awfw")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=269747789]
 sprite_frames = SubResource("SpriteFrames_vv3y6")

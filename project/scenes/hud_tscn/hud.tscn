@@ -71,6 +71,14 @@ region = Rect2(17, 17, 94, 94)
 [sub_resource type="AtlasTexture" id="AtlasTexture_vudmy"]
 atlas = ExtResource("4_xys8i")
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_mrwi8"]
+atlas = ExtResource("1_t4pug")
+region = Rect2(19, 275, 90, 90)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_082jl"]
+atlas = ExtResource("1_t4pug")
+region = Rect2(19, 275, 90, 90)
+
 [node name="HUD" type="CanvasLayer" unique_id=1355603922 groups=["hud"]]
 script = ExtResource("1_deivv")
 
@@ -82,7 +90,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Control" unique_id=2028936308]
+[node name="HealthManaMarginContainer" type="MarginContainer" parent="Control" unique_id=2028936308]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -93,18 +101,18 @@ grow_horizontal = 0
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer" unique_id=1914957964]
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/HealthManaMarginContainer" unique_id=1914957964]
 layout_mode = 2
 theme_override_constants/separation = 3
 
-[node name="HealthBar" type="ProgressBar" parent="Control/MarginContainer/VBoxContainer" unique_id=1942948602]
+[node name="HealthBar" type="ProgressBar" parent="Control/HealthManaMarginContainer/VBoxContainer" unique_id=1942948602]
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_ab1kr")
 value = 100.0
 fill_mode = 1
 show_percentage = false
 
-[node name="Icon" type="TextureRect" parent="Control/MarginContainer/VBoxContainer/HealthBar" unique_id=836124432]
+[node name="Icon" type="TextureRect" parent="Control/HealthManaMarginContainer/VBoxContainer/HealthBar" unique_id=836124432]
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -119,14 +127,14 @@ grow_vertical = 2
 texture = SubResource("AtlasTexture_tc01e")
 expand_mode = 1
 
-[node name="ManaBar" type="ProgressBar" parent="Control/MarginContainer/VBoxContainer" unique_id=1067114490]
+[node name="ManaBar" type="ProgressBar" parent="Control/HealthManaMarginContainer/VBoxContainer" unique_id=1067114490]
 layout_mode = 2
 theme_override_styles/fill = SubResource("StyleBoxFlat_deivv")
 value = 100.0
 fill_mode = 1
 show_percentage = false
 
-[node name="Icon" type="TextureRect" parent="Control/MarginContainer/VBoxContainer/ManaBar" unique_id=2067658252]
+[node name="Icon" type="TextureRect" parent="Control/HealthManaMarginContainer/VBoxContainer/ManaBar" unique_id=2067658252]
 layout_mode = 1
 anchors_preset = 6
 anchor_left = 1.0
@@ -141,7 +149,7 @@ grow_vertical = 2
 texture = SubResource("AtlasTexture_xys8i")
 expand_mode = 1
 
-[node name="SpellBar" type="Control" parent="Control" unique_id=1033102656]
+[node name="WandSpellBar" type="Control" parent="Control" unique_id=1033102656]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -149,7 +157,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Control/SpellBar" unique_id=2035722476]
+[node name="MarginContainer" type="MarginContainer" parent="Control/WandSpellBar" unique_id=2035722476]
 layout_mode = 1
 offset_left = 1.0
 offset_top = 1.0
@@ -158,18 +166,18 @@ offset_bottom = 31.0
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 
-[node name="HBoxSpell" type="HBoxContainer" parent="Control/SpellBar/MarginContainer" unique_id=677627545]
+[node name="HBoxSpell" type="HBoxContainer" parent="Control/WandSpellBar/MarginContainer" unique_id=677627545]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
 theme_override_constants/separation = 4
 
-[node name="SpellSlot1" type="Panel" parent="Control/SpellBar/MarginContainer/HBoxSpell" unique_id=276876875]
+[node name="SpellSlot1" type="Panel" parent="Control/WandSpellBar/MarginContainer/HBoxSpell" unique_id=276876875]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_vudmy")
 
-[node name="Frame" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot1" unique_id=226617829]
+[node name="Frame" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot1" unique_id=226617829]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 1
 offset_right = 16.0
@@ -177,25 +185,27 @@ offset_bottom = 16.0
 texture = SubResource("AtlasTexture_ab1kr")
 expand_mode = 1
 
-[node name="Icon" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot1" unique_id=1856669936]
+[node name="Icon" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot1" unique_id=1856669936]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -6.0
-offset_top = 6.0
-offset_right = 6.0
-offset_bottom = 10.0
-grow_horizontal = 2
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = -1.384001
+offset_top = 2.5679998
+offset_right = 1.5498161
+offset_bottom = -3.6000004
 texture = SubResource("AtlasTexture_1a2hc")
-expand_mode = 1
+expand_mode = 3
+stretch_mode = 5
 
-[node name="SpellSlot2" type="Panel" parent="Control/SpellBar/MarginContainer/HBoxSpell" unique_id=526296222]
+[node name="SpellSlot2" type="Panel" parent="Control/WandSpellBar/MarginContainer/HBoxSpell" unique_id=526296222]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_1a2hc")
 
-[node name="Frame" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot2" unique_id=1444506741]
+[node name="Frame" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot2" unique_id=1444506741]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 1
 offset_right = 16.0
@@ -203,21 +213,30 @@ offset_bottom = 16.0
 texture = SubResource("AtlasTexture_t4pug")
 expand_mode = 1
 
-[node name="Icon" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot2" unique_id=614001299]
-layout_mode = 0
-offset_left = 1.0
-offset_top = 6.0
-offset_right = 14.999999
-offset_bottom = 10.0
+[node name="Icon" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot2" unique_id=614001299]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.13800001
+anchor_top = 0.14600001
+anchor_right = 0.85300004
+anchor_bottom = 0.84900004
+offset_left = -1.2080002
+offset_top = 3.6639998
+offset_right = 8.205818
+offset_bottom = -3.3360004
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.7, 0.7)
 texture = SubResource("AtlasTexture_pb5qo")
-expand_mode = 1
+expand_mode = 3
+stretch_mode = 5
 
-[node name="SpellSlot3" type="Panel" parent="Control/SpellBar/MarginContainer/HBoxSpell" unique_id=1210495912]
+[node name="SpellSlot3" type="Panel" parent="Control/WandSpellBar/MarginContainer/HBoxSpell" unique_id=1210495912]
 custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_pb5qo")
 
-[node name="Frame" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot3" unique_id=351397246]
+[node name="Frame" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot3" unique_id=351397246]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 0
 offset_right = 16.0
@@ -225,30 +244,34 @@ offset_bottom = 16.0
 texture = SubResource("AtlasTexture_deivv")
 expand_mode = 1
 
-[node name="Icon" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxSpell/SpellSlot3" unique_id=2028224694]
+[node name="Icon" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot3" unique_id=2028224694]
 layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -7.0
-offset_top = 5.0
-offset_right = 6.999999
-offset_bottom = 11.0
+anchors_preset = -1
+anchor_left = 0.148
+anchor_top = 0.147
+anchor_right = 0.85300004
+anchor_bottom = 0.851
+offset_left = -1.3679981
+offset_top = 2.648
+offset_right = 2.3520012
+offset_bottom = -4.0
 grow_horizontal = 2
+grow_vertical = 2
 texture = SubResource("AtlasTexture_eow6q")
-expand_mode = 1
+expand_mode = 3
+stretch_mode = 5
 
-[node name="HBoxWand" type="HBoxContainer" parent="Control/SpellBar/MarginContainer" unique_id=816093910]
+[node name="HBoxWand" type="HBoxContainer" parent="Control/WandSpellBar/MarginContainer" unique_id=816093910]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="WandSlot" type="Panel" parent="Control/SpellBar/MarginContainer/HBoxWand" unique_id=1839429529]
+[node name="WandSlot" type="Panel" parent="Control/WandSpellBar/MarginContainer/HBoxWand" unique_id=1839429529]
 custom_minimum_size = Vector2(26, 26)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_eow6q")
 
-[node name="Frame" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxWand/WandSlot" unique_id=1909204640]
+[node name="Frame" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxWand/WandSlot" unique_id=1909204640]
 modulate = Color(0, 0, 0, 1)
 layout_mode = 0
 offset_right = 26.0
@@ -256,7 +279,7 @@ offset_bottom = 26.0
 texture = SubResource("AtlasTexture_27w54")
 expand_mode = 1
 
-[node name="Icon" type="TextureRect" parent="Control/SpellBar/MarginContainer/HBoxWand/WandSlot" unique_id=1836535824]
+[node name="Icon" type="TextureRect" parent="Control/WandSpellBar/MarginContainer/HBoxWand/WandSlot" unique_id=1836535824]
 layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
@@ -268,3 +291,235 @@ offset_bottom = 21.0
 grow_horizontal = 0
 texture = SubResource("AtlasTexture_vudmy")
 expand_mode = 1
+
+[node name="InventoryPanel" type="PanelContainer" parent="Control" unique_id=498880543]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -43.0
+offset_top = -47.0
+offset_right = 43.0
+offset_bottom = -5.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/InventoryPanel" unique_id=1087545724]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="InventoryGrid" type="GridContainer" parent="Control/InventoryPanel/MarginContainer" unique_id=2102075127]
+layout_mode = 2
+theme_override_constants/h_separation = 22
+theme_override_constants/v_separation = 22
+columns = 4
+
+[node name="Slot_1" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=1236220560]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_1" unique_id=1436794259]
+layout_mode = 1
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_mrwi8")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_1" unique_id=268861892]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Slot_2" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=1504362769]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_2" unique_id=19150104]
+layout_mode = 1
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_082jl")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_2" unique_id=431123566]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Slot_3" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=1981195868]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_3" unique_id=658968785]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_mrwi8")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_3" unique_id=896870766]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Slot_4" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=304460076]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_4" unique_id=1341072340]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_mrwi8")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_4" unique_id=427198666]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Slot_5" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=107374671]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_5" unique_id=764526485]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_mrwi8")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_5" unique_id=2055183289]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Slot_6" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=1141187230]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_6" unique_id=739756395]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_mrwi8")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_6" unique_id=1171176]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Slot_7" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=983518498]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_7" unique_id=1256450689]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_mrwi8")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_7" unique_id=1981852903]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Slot_8" type="Panel" parent="Control/InventoryPanel/MarginContainer/InventoryGrid" unique_id=109215298]
+layout_mode = 2
+
+[node name="Frame" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_8" unique_id=1751625047]
+layout_mode = 0
+offset_right = 20.0
+offset_bottom = 20.0
+texture = SubResource("AtlasTexture_mrwi8")
+expand_mode = 1
+
+[node name="Icon" type="TextureRect" parent="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_8" unique_id=1962551053]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.149
+anchor_top = 0.15200001
+anchor_right = 0.85200006
+anchor_bottom = 0.85
+offset_left = 2.0
+offset_top = 6.0
+offset_right = 18.545454
+offset_bottom = 13.0
+expand_mode = 3
+stretch_mode = 5
+
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_spell_slot_3_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_spell_slot_2_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_spell_slot_1_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_inventory_slot_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_1" to="." method="_on_slot_1_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_2" to="." method="_on_slot_2_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_3" to="." method="_on_slot_3_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_4" to="." method="_on_slot_4_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_5" to="." method="_on_slot_5_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_6" to="." method="_on_slot_6_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_7" to="." method="_on_slot_7_gui_input"]
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_8" to="." method="_on_slot_8_gui_input"]

@@ -1,11 +1,17 @@
 [gd_resource type="Resource" script_class="SpellData" format=3 uid="uid://bm2tbsb4vrk10"]
 
+[ext_resource type="Texture2D" uid="uid://barjkak3rciah" path="res://assets/resources/spell/triple_shot/FireBall_64x64.png" id="1_86554"]
 [ext_resource type="PackedScene" uid="uid://b3pjnm6ivw8jl" path="res://project/scenes/spell_tscn/spell_triple_shot.tscn" id="1_pjvl8"]
 [ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="2_86554"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_411wo"]
+atlas = ExtResource("1_86554")
+region = Rect2(1355, 23, 40, 16)
 
 [resource]
 script = ExtResource("2_86554")
 display_name = "Triple Shot"
+icon = SubResource("AtlasTexture_411wo")
 mana_cost = 40.0
 cast_delay_add = 0.18
 projectile_scene = ExtResource("1_pjvl8")

@@ -2,6 +2,7 @@ extends Resource
 class_name WandData
 
 @export var display_name: String = "Wand Name"
+@export var icon: Texture2D
 
 @export_group("Mana")
 @export var mana_max: float = 100.0
