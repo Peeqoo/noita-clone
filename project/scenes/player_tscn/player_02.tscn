@@ -643,10 +643,8 @@ animations = [{
 
 [node name="Player02" type="CharacterBody2D" unique_id=1587487172 groups=["player"]]
 collision_layer = 2
-collision_mask = 53
+collision_mask = 1589
 script = ExtResource("1_higxc")
-move_speed = 155.0
-jump_velocity = -240.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1219825577]
 position = Vector2(2, -4)
@@ -670,7 +668,7 @@ scale = Vector2(0.9905952, 0.98842883)
 [node name="GroundCheck" type="RayCast2D" parent="." unique_id=778677790]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=771181156]
-offset = Vector2(0, -35)
+offset = Vector2(0, -130)
 
 [node name="HandRight" type="Marker2D" parent="." unique_id=599572895]
 position = Vector2(6, -3)

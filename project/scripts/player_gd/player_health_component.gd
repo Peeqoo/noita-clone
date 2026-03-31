@@ -47,6 +47,19 @@ func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: 
 		play_hit()
 		start_invincibility()
 
+func heal(amount: int) -> void:
+	if is_dead:
+		return
+
+	if amount <= 0:
+		return
+
+	if health >= max_health:
+		return
+
+	health = clamp(health + amount, 0, max_health)
+	health_changed.emit(health, max_health)
+
 func show_damage_number(amount: int, is_crit: bool = false) -> void:
 	var scene_to_use: PackedScene = damage_number_scene
 

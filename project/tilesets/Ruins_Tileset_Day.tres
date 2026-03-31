@@ -1,7 +1,7 @@
 [gd_resource type="TileSet" format=3 uid="uid://c12w5gsimsq6f"]
 
-[ext_resource type="Texture2D" uid="uid://eq25honcnyvo" path="res://assets/Dungeon Ruins Tileset/Dungeon Ruins Tileset Night.png" id="1_avaqv"]
-[ext_resource type="Texture2D" uid="uid://vb14c1vwqmbx" path="res://assets/Dungeon Ruins Tileset/Dungeon Ruins Tileset Day.png" id="2_rr41w"]
+[ext_resource type="Texture2D" uid="uid://eq25honcnyvo" path="res://assets/tilemap/Dungeon Ruins Tileset Night.png" id="1_avaqv"]
+[ext_resource type="Texture2D" uid="uid://vb14c1vwqmbx" path="res://assets/tilemap/Dungeon Ruins Tileset Day.png" id="2_rr41w"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nlh8i"]
 texture = ExtResource("1_avaqv")

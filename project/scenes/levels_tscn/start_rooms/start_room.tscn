@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://cxoum6gllgjyd"]
+
+[ext_resource type="Script" uid="uid://c4thn0rjr6vlc" path="res://project/scripts/levels_gd/base_level.gd" id="1_1j01w"]
+[ext_resource type="PackedScene" uid="uid://n6oxv0v6awb1" path="res://project/scenes/levels_tscn/start_rooms/parallax_background.tscn" id="2_0w6fc"]
+[ext_resource type="PackedScene" uid="uid://5heamha4m34d" path="res://project/scenes/levels_tscn/start_rooms/tile_map_layer.tscn" id="3_1j01w"]
+[ext_resource type="Script" uid="uid://o3a8tdt882yo" path="res://project/scripts/levels_gd/exit_to_dungeon.gd" id="4_n1pir"]
+[ext_resource type="PackedScene" uid="uid://q185s1fbuyce" path="res://project/scenes/hud_tscn/hud.tscn" id="5_265wi"]
+[ext_resource type="PackedScene" uid="uid://0lyddvkn0dgi" path="res://project/scenes/enemies_tscn/enemy_humanoid.tscn" id="6_o5uvg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vb5sh"]
+size = Vector2(120, 34)
+
+[node name="StartRoom" type="Node2D" unique_id=1899636765]
+script = ExtResource("1_1j01w")
+
+[node name="World" type="Node2D" parent="." unique_id=143875095]
+
+[node name="Parallax" type="Node2D" parent="World" unique_id=1305633444]
+
+[node name="ParallaxBackground" parent="World/Parallax" unique_id=390074765 instance=ExtResource("2_0w6fc")]
+
+[node name="Tiles" type="Node2D" parent="World" unique_id=1195031816]
+
+[node name="TileMapLayer" parent="World/Tiles" unique_id=1264631743 instance=ExtResource("3_1j01w")]
+
+[node name="Enemies" type="Node2D" parent="World" unique_id=1780541862]
+
+[node name="EnemyHumanoid" parent="World/Enemies" unique_id=1182090847 instance=ExtResource("6_o5uvg")]
+position = Vector2(728, 8)
+floor_snap_length = 10.0
+safe_margin = 0.04
+
+[node name="PlayerSpawn" type="Marker2D" parent="World" unique_id=547745996]
+position = Vector2(64, 0)
+
+[node name="ExitToDungeon" type="Area2D" parent="World" unique_id=1639912397]
+position = Vector2(1760, 48)
+collision_layer = 1024
+collision_mask = 2
+script = ExtResource("4_n1pir")
+next_scene_path = "uid://r5qc47fbc57b"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="World/ExitToDungeon" unique_id=412414333]
+position = Vector2(-36, -7)
+shape = SubResource("RectangleShape2D_vb5sh")
+
+[node name="HUD" parent="." unique_id=1355603922 instance=ExtResource("5_265wi")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=291853132]
+
+[node name="FadeRect" type="ColorRect" parent="CanvasLayer" unique_id=1702120691]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.056291588, 0.056291603, 0.056291595, 1)
+
+[connection signal="body_entered" from="World/ExitToDungeon" to="World/ExitToDungeon" method="_on_body_entered"]

@@ -80,6 +80,10 @@ func update_mana(current: float, max_value: float) -> void:
 	mana_bar.value = current
 
 func update_spell_selection(active_index: int) -> void:
+	if not is_node_ready():
+		call_deferred("update_spell_selection", active_index)
+		return
+
 	selected_wand_slot = active_index
 	_reset_spell_slots()
 
@@ -179,6 +183,9 @@ func _on_spell_slot_pressed(slot_index: int) -> void:
 	refresh_all_ui()
 
 func _reset_spell_slots() -> void:
+	if spell_slot_1 == null or spell_slot_2 == null or spell_slot_3 == null:
+		return
+
 	spell_slot_1.modulate = Color(1, 1, 1)
 	spell_slot_2.modulate = Color(1, 1, 1)
 	spell_slot_3.modulate = Color(1, 1, 1)

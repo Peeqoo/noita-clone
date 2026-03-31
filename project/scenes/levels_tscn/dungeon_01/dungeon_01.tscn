@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://r5qc47fbc57b"]
+
+[ext_resource type="Script" uid="uid://c4thn0rjr6vlc" path="res://project/scripts/levels_gd/base_level.gd" id="1_mbsox"]
+[ext_resource type="PackedScene" uid="uid://xx36pjsctnqk" path="res://project/scenes/levels_tscn/dungeon_01/parallax_background.tscn" id="2_xi8cx"]
+[ext_resource type="PackedScene" uid="uid://cu64bc33ue5f8" path="res://project/scenes/levels_tscn/dungeon_01/tile_map_layer.tscn" id="3_xi8cx"]
+[ext_resource type="PackedScene" uid="uid://0lyddvkn0dgi" path="res://project/scenes/enemies_tscn/enemy_humanoid.tscn" id="20_vusl8"]
+[ext_resource type="PackedScene" uid="uid://cfm3nv73cr6y7" path="res://project/scenes/enemies_tscn/enemy_monster.tscn" id="21_sicap"]
+[ext_resource type="PackedScene" uid="uid://q185s1fbuyce" path="res://project/scenes/hud_tscn/hud.tscn" id="22_1v3o4"]
+
+[node name="Dungeon01" type="Node2D" unique_id=433873258]
+script = ExtResource("1_mbsox")
+
+[node name="World" type="Node2D" parent="." unique_id=2027986579]
+
+[node name="Parallax" type="Node2D" parent="World" unique_id=1612692470]
+
+[node name="ParallaxBackground" parent="World/Parallax" unique_id=386249800 instance=ExtResource("2_xi8cx")]
+
+[node name="Tiles" type="Node2D" parent="World" unique_id=1278932170]
+
+[node name="TileMapLayer" parent="World/Tiles" unique_id=1360277920 instance=ExtResource("3_xi8cx")]
+
+[node name="Enemies" type="Node2D" parent="World" unique_id=1301692750]
+
+[node name="EnemyHumanoid" parent="World/Enemies" unique_id=1182090847 instance=ExtResource("20_vusl8")]
+position = Vector2(488, 0)
+
+[node name="EnemyHumanoid2" parent="World/Enemies" unique_id=1340729099 instance=ExtResource("20_vusl8")]
+position = Vector2(464, 160)
+
+[node name="TrashMonster" parent="World/Enemies" unique_id=319552509 instance=ExtResource("21_sicap")]
+position = Vector2(112, 136)
+
+[node name="TrashMonster2" parent="World/Enemies" unique_id=343346969 instance=ExtResource("21_sicap")]
+position = Vector2(688, 168)
+
+[node name="PlayerSpawn" type="Marker2D" parent="World" unique_id=1944089300]
+position = Vector2(-80, -88)
+
+[node name="HUD" parent="." unique_id=1355603922 instance=ExtResource("22_1v3o4")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=506614663]
+
+[node name="FadeRect" type="ColorRect" parent="CanvasLayer" unique_id=44057510]
+modulate = Color(0.050980393, 0.050980393, 0.050980393, 0)
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0.05490196, 0.05490196, 0.05490196, 1)

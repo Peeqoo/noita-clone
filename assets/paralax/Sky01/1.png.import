@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://vb14c1vwqmbx"
-path="res://.godot/imported/Dungeon Ruins Tileset Day.png-1cf1e2c3c3a20ba560424a441946e80f.ctex"
+uid="uid://bshpl2yopxirx"
+path="res://.godot/imported/1.png-4e8943116675267f2fd6698817a335c4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Dungeon Ruins Tileset/Dungeon Ruins Tileset Day.png"
-dest_files=["res://.godot/imported/Dungeon Ruins Tileset Day.png-1cf1e2c3c3a20ba560424a441946e80f.ctex"]
+source_file="res://assets/paralax/Sky01/1.png"
+dest_files=["res://.godot/imported/1.png-4e8943116675267f2fd6698817a335c4.ctex"]
 
 [params]
 

@@ -511,10 +511,10 @@ offset_bottom = 13.0
 expand_mode = 3
 stretch_mode = 5
 
+[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_inventory_slot_gui_input"]
 [connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_spell_slot_3_gui_input"]
 [connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_spell_slot_2_gui_input"]
 [connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_spell_slot_1_gui_input"]
-[connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid" to="." method="_on_inventory_slot_gui_input"]
 [connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_1" to="." method="_on_slot_1_gui_input"]
 [connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_2" to="." method="_on_slot_2_gui_input"]
 [connection signal="gui_input" from="Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_3" to="." method="_on_slot_3_gui_input"]

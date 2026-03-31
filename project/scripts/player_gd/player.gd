@@ -1,15 +1,24 @@
 extends CharacterBody2D
 
-
-@export var move_speed: float = 220.0
+@export var move_speed: float = 100.0
 @export var acceleration: float = 1200.0
 @export var friction: float = 1400.0
-@export var jump_velocity: float = -360.0
+@export var jump_velocity: float = -280.0
 @export var gravity: float = 1000.0
 @export var max_fall_speed: float = 900.0
 @export var wand_angle_offset_degrees: float = 0.0
 @export var wand_pivot_right_position: Vector2 = Vector2(4, -4)
 @export var wand_pivot_left_position: Vector2 = Vector2(-4, -4)
+
+@export var combat_exit_delay: float = 3.0
+@export var health_regen_amount: int = 1
+@export var health_regen_interval: float = 0.5
+
+@export var coyote_time: float = 0.1
+@export var jump_buffer_time: float = 0.1
+
+@export var fall_gravity_multiplier: float = 1.3
+@export var air_control_multiplier: float = 0.6
 
 @onready var wand_pivot: Node2D = $WandPivot
 @onready var wand: Node2D = $WandPivot/Wand
@@ -27,6 +36,13 @@ var was_on_floor_last_frame: bool = false
 var was_running_last_frame: bool = false
 var idle_flip_lock_time: float = 0.0
 
+var in_combat: bool = false
+var _combat_token: int = 0
+var _regen_running: bool = false
+
+var coyote_timer: float = 0.0
+var jump_buffer_timer: float = 0.0
+
 func _ready() -> void:
 	animated_sprite.play("idle")
 	was_on_floor_last_frame = is_on_floor()
@@ -36,12 +52,58 @@ func _ready() -> void:
 	if wand.has_method("set_actor_owner"):
 		wand.set_actor_owner(self)
 
-
 func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: bool = false) -> void:
 	if health_component == null:
 		return
 
+	set_in_combat()
 	health_component.take_damage(amount, source_position, is_crit)
+
+func set_in_combat() -> void:
+	in_combat = true
+	_combat_token += 1
+
+func try_leave_combat() -> void:
+	_combat_token += 1
+	var my_token: int = _combat_token
+	_leave_combat_after_delay(my_token)
+
+func _leave_combat_after_delay(token: int) -> void:
+	await get_tree().create_timer(combat_exit_delay).timeout
+
+	if token != _combat_token:
+		return
+
+	in_combat = false
+	_start_health_regen()
+
+func _start_health_regen() -> void:
+	if _regen_running:
+		return
+
+	_regen_running = true
+	_health_regen_loop()
+
+func _health_regen_loop() -> void:
+	while not in_combat:
+		if health_component == null:
+			break
+
+		if health_component.health >= health_component.max_health:
+			break
+
+		await get_tree().create_timer(health_regen_interval).timeout
+
+		if in_combat:
+			break
+
+		if health_component == null:
+			break
+
+		if health_component.health < health_component.max_health:
+			health_component.heal(health_regen_amount)
+
+	_regen_running = false
 
 func _physics_process(delta: float) -> void:
 	var raw_input_dir: float = Input.get_axis("move_left", "move_right")
@@ -64,26 +126,66 @@ func _physics_process(delta: float) -> void:
 	if idle_flip_lock_time > 0.0:
 		idle_flip_lock_time -= delta
 
+	if Input.is_action_just_pressed("jump"):
+		jump_buffer_timer = jump_buffer_time
+	elif jump_buffer_timer > 0.0:
+		jump_buffer_timer -= delta
+
+	if is_on_floor():
+		coyote_timer = coyote_time
+	elif coyote_timer > 0.0:
+		coyote_timer -= delta
+
 	if is_stopping_run:
 		input_dir = 0.0
 
-	if input_dir != 0.0:
-		velocity.x = move_toward(velocity.x, input_dir * move_speed, acceleration * delta)
-	else:
-		velocity.x = move_toward(velocity.x, 0.0, friction * delta)
+	var target_speed: float = input_dir * move_speed
+	var control_multiplier: float = 1.0
 
 	if not is_on_floor():
-		velocity.y = minf(velocity.y + gravity * delta, max_fall_speed)
+		control_multiplier = air_control_multiplier
+
+	if input_dir != 0.0:
+		var accel: float = acceleration * control_multiplier
+
+		if signf(target_speed) != signf(velocity.x) and absf(velocity.x) > 0.0:
+			accel = acceleration * 1.35 * control_multiplier
+		elif absf(target_speed) > absf(velocity.x):
+			accel = acceleration * 1.15 * control_multiplier
+		else:
+			accel = acceleration * 0.9 * control_multiplier
+
+		velocity.x = move_toward(velocity.x, target_speed, accel * delta)
+	else:
+		var stop_friction: float = friction * 1.15
+
+		# schneller stoppen wenn fast still
+		if absf(velocity.x) < 40.0:
+			stop_friction *= 1.6
+
+		velocity.x = move_toward(velocity.x, 0.0, stop_friction * delta)
+
+	if not is_on_floor():
+		var applied_gravity: float = gravity
+
+		if velocity.y > 0.0:
+			applied_gravity *= fall_gravity_multiplier
+
+		velocity.y = minf(velocity.y + applied_gravity * delta, max_fall_speed)
 
 	if health_component != null:
-		if Input.is_action_just_pressed("jump") and is_on_floor() and not health_component.is_hurt and not is_stopping_run:
+		if jump_buffer_timer > 0.0 and coyote_timer > 0.0 and not health_component.is_hurt and not is_stopping_run:
 			velocity.y = jump_velocity
+			jump_buffer_timer = 0.0
+			coyote_timer = 0.0
 
 		velocity += health_component.knockback_velocity
 		health_component.knockback_velocity = health_component.knockback_velocity.move_toward(Vector2.ZERO, 900.0 * delta)
 	else:
-		if Input.is_action_just_pressed("jump") and is_on_floor() and not is_stopping_run:
+		if jump_buffer_timer > 0.0 and coyote_timer > 0.0 and not is_stopping_run:
 			velocity.y = jump_velocity
+			jump_buffer_timer = 0.0
+			coyote_timer = 0.0
 
 	move_and_slide()
 
