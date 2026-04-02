@@ -1,12 +1,17 @@
-[gd_resource type="Resource" script_class="SpellData" format=3 uid="uid://crssv2or2uj0l"]
+[gd_resource type="Resource" script_class="SpellData" format=4 uid="uid://crssv2or2uj0l"]
 
 [ext_resource type="Texture2D" uid="uid://bw1nioh4npw08" path="res://assets/resources/spell/magic_bolt/Moving.png" id="1_7jl7k"]
 [ext_resource type="PackedScene" uid="uid://e2sftnqe63q8" path="res://project/scenes/spell_tscn/spell_magic_bolt.tscn" id="1_34kne"]
 [ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="1_j6tot"]
+[ext_resource type="AudioStream" uid="uid://bw5e6keelmwob" path="res://assets/sounds/spells/MagicBoltImpact.wav" id="2_n1an7"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_n1an7"]
 atlas = ExtResource("1_7jl7k")
 region = Rect2(61, 20, 26, 11)
+
+[sub_resource type="AudioStreamWAV" id="AudioStreamWAV_n1an7"]
+data = PackedByteArray("cW9hZgAADXIBAKxEDXIFgAAAAAAAAAAAAAAAAOAAQAAwCQT8CnLnQVHwae6JBHxBUTxgg/AMJylgD8qmnuADYGJDU6IDVhJGblEAfMEgylFxYSGDuAADYWDM+ZRHzBZOdkAAfMMMbopi54WTvCAh4XJJO6AAHgZJkxlEAVBgkxl4UV4WGHmUUIH1BYMqBRXjcMlp6oBFdBiGHmUUV4wwxJaIADBIYJMYdFAdBks6xoKAV0GGHmAAjZTBJJOqIRFRkkkk6ooo1EmSSTqiijUwSXZOBCCHnRZZg5gBFFcBhhiDmAEB0SWGToJRQCPRJYYeggAIdMFkkxySAAB0SSSTCJAAAHRJJJMIkAAAdEkkkoyWAAB0SSSSTpYAAAHRJJJOlgAIo9EklhiTmAAER0SSSaMIAAAFTBJJsgwggAAUEEmSSTiCgABVQZDDBMKIAAAHkgFhgk4ghFGh0QySSHmiAKAAHAJJJJGYkBAAAcEMkkmjiCEUQBwCSaJJOIKAAAHBkFkkko5ooBGh0wSyGCTiCpAAAHJBZJJJo4EAAAAcEFimCSRiQEUQB6BDDBJJGIKAoAAcgklgkkGhmAEQAByCSZYYJOAACAABocEFhgkg5oqyAACBwCSSSKJJGIAAAAHIokkkkkE4EBGwACBwCSSSCdIMIIABABFBoFhgkkg4ogCwAARwCSSSQbIJGJARAABHsEFhgkgkE4igAEQADyCSWKJJIJGBARRAoA8gklgkkgiiDgQEUQADyKJJJJJBJBGBsAAAEAcgkkmyQSQQTgQAALAIAPBBJYJIskEg4EAAAAGwDwCSSSQSQaBOKIAAABAPZdN1tllkkkijgAUUQACBw0z//7rpZoYZs4EhEAAgEcFd/666WWSSWMOJAABABANIV33utmhlhgmzgCAAAAQCD1SH/trbZYYYkg4QkIAAEAGRxQCWCSSCQbIIIOIIAABAoEAscAklhgiyQSCCCRgSEbRABAIHBBJJokEkEgggkEawCAAAQAQQD1eF/7ppZZJYkgggw4MAAFGwQQCRwAWCSbBIJBBBIIIOsEhEAAEEAg9Th/+6aWWSScIIIIIOJAAAkEAAgEdcEElO6aWWGGmGmMIBOBIRAABBwEAg8AMkgkhe2CSGCGCCCLOAIARABBAIwgE8AMkkEkEtfe+uuqvKrMOBAAABABBBwEA8Akkkgkg+eOqqGGGmmMIOBAAAAIIBsEAg8kFhhgheGWCGCGmCCKIIIOCIAAABsEAggggckElfaaGWSGCGCMIBIIIIBIOBZ7SBJFFEAEDSBwCSSQSQQTxoqoaqaYaawggEg4EAAADCAQQQQCCDwWn9rZZZIYIYIzrz7yppqyyyCBgQEAUQQMIBBBBBBHIDV/uuhlhhpgg/KmmmCCCCCLIBIGBAQBRBsAggEEEEEcli7a2WWCSCSCq8+8++8aaasgEgEgE4AFBJNMYYUU0UQdBIBHAJJJIIblpggkggggguLGmmmmmmmrIBIGBAQBRBXFFFNEEFNNGxwwSSSCSCCE5YIIIIaIaILxyyxppoppqSASBDgwAEQUxjjjTRTTRB0EgcAMgkkEg6OfKmqmmqii8sssssaaaaogEgEgEgEIZvTIIAEQUQQaBBBBBBBBHFbJ3mihhggkgjOvLLLLLLLB+++uu++u+ssgEgEgEgEgZz2oIUEQQUSCl13z331l1TkcdIMskkghpO2iCCGmmiGi++qacasaaKHq5yy6yyxyzCASASATiSAEZyhjRRTTTRLfXeXfWWNOXRwCSSSCQQSEQoaYIIIIIIJyyyxppoppofrvrvrGnGnBsaKacaaKaawgE4EgAgEAhOUU0U000QQdBIBBIBBBPRd/mmhhphppgnvvvPvvvrLCsAAAAAAAAA")
+format = 3
 
 [resource]
 script = ExtResource("1_j6tot")
@@ -16,4 +21,6 @@ mana_cost = 12.0
 projectile_scene = ExtResource("1_34kne")
 speed = 400.0
 damage = 4
+shoot_sound = SubResource("AudioStreamWAV_n1an7")
+impact_sound = ExtResource("2_n1an7")
 metadata/_custom_type_script = "uid://dwcqferqt0o7"

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cw80j6viuyg1j"]
 
 [ext_resource type="Texture2D" uid="uid://dk20bmnsdatx1" path="res://assets/enemies/goatman.png" id="1_h2kvf"]
-[ext_resource type="Script" uid="uid://d4laq65x4g3yj" path="res://project/scripts/enemies_gd/enemy_dummy.gd" id="1_vr76l"]
+[ext_resource type="Script" uid="uid://d4laq65x4g3yj" path="res://project/archive/enemy_dummy.gd" id="1_vr76l"]
 [ext_resource type="Script" uid="uid://dseewjhrvrovv" path="res://project/scripts/enemies_gd/hurtbox.gd" id="3_kg38d"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_h2kvf"]

@@ -32,6 +32,7 @@ var inventory_icons: Array[TextureRect] = []
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
+	print("HUD ready, player: ", player)
 
 	inventory_icons = [
 		inventory_slot_1_icon,
@@ -58,6 +59,7 @@ func _process(_delta: float) -> void:
 func toggle_inventory() -> void:
 	inventory_open = not inventory_open
 	inventory_panel.visible = inventory_open
+	print("Inventory open: ", inventory_open)
 
 	if inventory_open:
 		refresh_all_ui()
@@ -85,6 +87,7 @@ func update_spell_selection(active_index: int) -> void:
 		return
 
 	selected_wand_slot = active_index
+	print("Selected wand slot: ", selected_wand_slot)
 	_reset_spell_slots()
 
 	match active_index:
@@ -103,13 +106,16 @@ func refresh_inventory_ui() -> void:
 	if player == null:
 		return
 	if not player.has_node("Inventory"):
+		print("HUD: Player hat keinen Inventory Node")
 		return
 
 	var inventory: InventoryComponent = player.get_node("Inventory")
 	if inventory == null:
+		print("HUD: Inventory ist null")
 		return
 
 	var spells: Array[SpellData] = inventory.get_spells()
+	print("HUD inventory size: ", spells.size())
 
 	for i in range(inventory_icons.size()):
 		var icon_rect: TextureRect = inventory_icons[i]
@@ -127,10 +133,12 @@ func refresh_wand_ui() -> void:
 	if player == null:
 		return
 	if not player.has_node("WandPivot/Wand"):
+		print("HUD: Player hat keinen WandPivot/Wand Node")
 		return
 
 	var wand = player.get_node("WandPivot/Wand")
 	if wand == null:
+		print("HUD: Wand ist null")
 		return
 
 	_update_single_wand_slot(spell_slot_1_icon, wand, 0)
@@ -158,27 +166,48 @@ func _update_single_wand_slot(icon_rect: TextureRect, wand, slot_index: int) -> 
 		icon_rect.visible = false
 
 func _on_inventory_slot_pressed(slot_index: int) -> void:
+	print("Inventory slot clicked: ", slot_index)
+
 	if not inventory_open:
+		print("Abbruch: inventory_open == false")
 		return
 	if player == null:
+		print("Abbruch: player == null")
 		return
 
 	if player.has_method("equip_inventory_spell_to_wand"):
-		player.equip_inventory_spell_to_wand(slot_index, selected_wand_slot)
+		var result: bool = player.equip_inventory_spell_to_wand(slot_index, selected_wand_slot)
+		print("equip_inventory_spell_to_wand result: ", result, " inventory=", slot_index, " wand=", selected_wand_slot)
+	else:
+		print("Player hat equip_inventory_spell_to_wand nicht")
 
 	refresh_all_ui()
 
-func _on_spell_slot_pressed(slot_index: int) -> void:
+func _select_wand_slot(slot_index: int) -> void:
+	print("Wand slot left click: ", slot_index)
+
 	if not inventory_open:
-		return
-	if player == null:
+		print("Abbruch: inventory_open == false")
 		return
 
-	if selected_wand_slot == slot_index:
-		if player.has_method("unequip_wand_spell_to_inventory"):
-			player.unequip_wand_spell_to_inventory(slot_index)
+	update_spell_selection(slot_index)
+	refresh_all_ui()
+
+func _unequip_wand_slot(slot_index: int) -> void:
+	print("Wand slot right click: ", slot_index)
+
+	if not inventory_open:
+		print("Abbruch: inventory_open == false")
+		return
+	if player == null:
+		print("Abbruch: player == null")
+		return
+
+	if player.has_method("unequip_wand_spell_to_inventory"):
+		var result: bool = player.unequip_wand_spell_to_inventory(slot_index)
+		print("unequip_wand_spell_to_inventory result: ", result, " slot=", slot_index)
 	else:
-		update_spell_selection(slot_index)
+		print("Player hat unequip_wand_spell_to_inventory nicht")
 
 	refresh_all_ui()
 
@@ -223,13 +252,22 @@ func _on_slot_8_gui_input(event: InputEvent) -> void:
 		_on_inventory_slot_pressed(7)
 
 func _on_spell_slot_1_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_spell_slot_pressed(0)
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			_select_wand_slot(0)
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			_unequip_wand_slot(0)
 
 func _on_spell_slot_2_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_spell_slot_pressed(1)
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			_select_wand_slot(1)
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			_unequip_wand_slot(1)
 
 func _on_spell_slot_3_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_spell_slot_pressed(2)
+	if event is InputEventMouseButton and event.pressed:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			_select_wand_slot(2)
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			_unequip_wand_slot(2)

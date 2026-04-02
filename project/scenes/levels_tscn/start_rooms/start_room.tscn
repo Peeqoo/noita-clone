@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://n6oxv0v6awb1" path="res://project/scenes/levels_tscn/start_rooms/parallax_background.tscn" id="2_0w6fc"]
 [ext_resource type="PackedScene" uid="uid://5heamha4m34d" path="res://project/scenes/levels_tscn/start_rooms/tile_map_layer.tscn" id="3_1j01w"]
 [ext_resource type="Script" uid="uid://o3a8tdt882yo" path="res://project/scripts/levels_gd/exit_to_dungeon.gd" id="4_n1pir"]
+[ext_resource type="PackedScene" uid="uid://cfm3nv73cr6y7" path="res://project/scenes/enemies_tscn/enemy_monster.tscn" id="5_0w6fc"]
 [ext_resource type="PackedScene" uid="uid://q185s1fbuyce" path="res://project/scenes/hud_tscn/hud.tscn" id="5_265wi"]
 [ext_resource type="PackedScene" uid="uid://0lyddvkn0dgi" path="res://project/scenes/enemies_tscn/enemy_humanoid.tscn" id="6_o5uvg"]
 
@@ -29,6 +30,9 @@ script = ExtResource("1_1j01w")
 position = Vector2(728, 8)
 floor_snap_length = 10.0
 safe_margin = 0.04
+
+[node name="TrashMonster" parent="World/Enemies" unique_id=319552509 instance=ExtResource("5_0w6fc")]
+position = Vector2(416, 0)
 
 [node name="PlayerSpawn" type="Marker2D" parent="World" unique_id=547745996]
 position = Vector2(64, 0)

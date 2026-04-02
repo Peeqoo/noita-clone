@@ -15,13 +15,20 @@ func _on_area_entered(area: Area2D) -> void:
 	if not is_instance_valid(owner_enemy):
 		return
 
+	if area == null:
+		return
+
 	if area.has_method("get_hit_data"):
 		var hit_data: Dictionary = area.get_hit_data()
+
+		if hit_data.is_empty():
+			return
 
 		if area is Node2D:
 			hit_data["source_position"] = area.global_position
 
-		owner_enemy.take_hit(hit_data)
+		if owner_enemy.has_method("take_hit"):
+			owner_enemy.take_hit(hit_data)
 
 		if area.has_method("on_hit_enemy"):
 			area.on_hit_enemy()
@@ -29,9 +36,13 @@ func _on_area_entered(area: Area2D) -> void:
 
 	if area.has_method("get_damage"):
 		var damage: int = int(area.get_damage())
-		var source_position: Vector2 = area.global_position if area is Node2D else owner_enemy.global_position
+		var source_position: Vector2 = owner_enemy.global_position
 
-		owner_enemy.take_damage(damage, false, source_position)
+		if area is Node2D:
+			source_position = area.global_position
+
+		if owner_enemy.has_method("take_damage"):
+			owner_enemy.take_damage(damage, false, source_position)
 
 		if area.has_method("on_hit_enemy"):
 			area.on_hit_enemy()

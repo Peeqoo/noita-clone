@@ -14,6 +14,10 @@ config/name="NoitaClone"
 run/main_scene="uid://b83ticvfxkhkr"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
+[audio]
+
+buses/default_bus_layout="uid://y52226qjd08w"
+
 [autoload]
 
 GameManager="*uid://dmsqroef0d3qc"

@@ -19,3 +19,7 @@ class_name SpellData
 @export var damage: int = 10
 @export_range(0.0, 1.0, 0.01) var crit_chance: float = 0.10
 @export var crit_multiplier: float = 1.5
+
+@export_group("Audio")
+@export var shoot_sound: AudioStream
+@export var impact_sound: AudioStream

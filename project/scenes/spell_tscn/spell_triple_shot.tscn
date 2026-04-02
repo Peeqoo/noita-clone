@@ -674,6 +674,12 @@ shape = SubResource("CircleShape2D_33aod")
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1036190798]
 rect = Rect2(-23, -11, 46, 24)
 
+[node name="ShootPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1083343578]
+bus = &"SFX"
+
+[node name="ImpactPlayer" type="AudioStreamPlayer2D" parent="." unique_id=529149690]
+bus = &"SFX"
+
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="animation_finished" from="ExplodeSprite" to="." method="_on_explode_sprite_animation_finished"]

@@ -8,6 +8,7 @@ signal died
 @export var invincibility_time: float = 0.4
 @export var knockback_force_x: float = 80.0
 @export var knockback_force_y: float = -30.0
+@export var hit_sound: AudioStream
 
 @export var damage_number_scene: PackedScene
 @export var crit_damage_number_scene: PackedScene
@@ -15,6 +16,7 @@ signal died
 
 @onready var player: CharacterBody2D = get_parent()
 @onready var animated_sprite: AnimatedSprite2D = $"../AnimatedSprite2D"
+@onready var hit_player: AudioStreamPlayer2D = $"../HitPlayer"
 
 var health: int
 var is_hurt: bool = false
@@ -44,6 +46,7 @@ func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: 
 	if health <= 0:
 		play_death()
 	else:
+		_play_hit_sound()
 		play_hit()
 		start_invincibility()
 
@@ -141,3 +144,15 @@ func play_death() -> void:
 func on_animation_finished(animation_name: String) -> void:
 	if animation_name == "hit":
 		is_hurt = false
+
+func _play_hit_sound() -> void:
+	if hit_sound == null:
+		return
+
+	if hit_player == null:
+		return
+
+	hit_player.stream = hit_sound
+	hit_player.pitch_scale = randf_range(0.97, 1.03)
+	hit_player.volume_db = randf_range(-2.0, 0.0)
+	hit_player.play()

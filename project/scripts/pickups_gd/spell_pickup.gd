@@ -9,12 +9,24 @@ var player_in_range: Node = null
 func _ready() -> void:
 	update_visual()
 
+func set_spell_data(new_spell_data: SpellData) -> void:
+	spell_data = new_spell_data
+	update_visual()
+
 func update_visual() -> void:
+	if sprite == null:
+		return
+
 	if spell_data != null and spell_data.icon != null:
 		sprite.texture = spell_data.icon
+	else:
+		sprite.texture = null
 
 func _process(_delta: float) -> void:
 	if player_in_range == null:
+		return
+
+	if spell_data == null:
 		return
 
 	if Input.is_action_just_pressed("interact"):
@@ -22,6 +34,8 @@ func _process(_delta: float) -> void:
 			var added: bool = player_in_range.add_spell_to_inventory(spell_data)
 			if added:
 				queue_free()
+			else:
+				print("Pickup nicht aufgenommen: Inventar ist voll.")
 
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):

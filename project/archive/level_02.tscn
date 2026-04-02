@@ -17,12 +17,12 @@
 [ext_resource type="Texture2D" uid="uid://dnw30uv6fuqxd" path="res://assets/paralax/Background01/Layer_0002_7.png" id="11_dsgfr"]
 [ext_resource type="Texture2D" uid="uid://0pj4l0rvirmr" path="res://assets/paralax/Background01/Layer_0000_9.png" id="12_8481x"]
 [ext_resource type="TileSet" uid="uid://bwp1ph5rwlvq6" path="res://project/tilesets/level_01.tres" id="12_jajq3"]
-[ext_resource type="Script" uid="uid://bmqtd7uh58exu" path="res://project/scripts/levels_gd/chunk_manager.gd" id="15_cwl2l"]
+[ext_resource type="Script" uid="uid://bmqtd7uh58exu" path="res://project/archive/chunk_manager.gd" id="15_cwl2l"]
 [ext_resource type="Script" uid="uid://c2spvjd4pd8fi" path="res://project/scripts/levels_gd/fade_parallax.gd" id="16_cwl2l"]
-[ext_resource type="PackedScene" uid="uid://dferb84ile5rq" path="res://project/scenes/levels_tscn/chunk_flat_01.tscn" id="16_jom2k"]
+[ext_resource type="PackedScene" uid="uid://dferb84ile5rq" path="res://project/archive/chunk_flat_01.tscn" id="16_jom2k"]
 [ext_resource type="PackedScene" uid="uid://q185s1fbuyce" path="res://project/scenes/hud_tscn/hud.tscn" id="18_nmqov"]
-[ext_resource type="PackedScene" uid="uid://c35bt762cxjum" path="res://project/scenes/levels_tscn/chunk_flat_02.tscn" id="21_mmpdo"]
-[ext_resource type="PackedScene" uid="uid://bdhaqudgnjokk" path="res://project/scenes/levels_tscn/chunk_flat_03.tscn" id="22_32jen"]
+[ext_resource type="PackedScene" uid="uid://c35bt762cxjum" path="res://project/archive/chunk_flat_02.tscn" id="21_mmpdo"]
+[ext_resource type="PackedScene" uid="uid://bdhaqudgnjokk" path="res://project/archive/chunk_flat_03.tscn" id="22_32jen"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jom2k"]
 radius = 40.792156

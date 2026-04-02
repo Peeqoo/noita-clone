@@ -20,6 +20,10 @@ extends CharacterBody2D
 @export var fall_gravity_multiplier: float = 1.3
 @export var air_control_multiplier: float = 0.6
 
+@export var footstep_sound: AudioStream
+@export var jump_sound: AudioStream
+@export var footstep_frames: Array[int] = [1, 5]
+
 @onready var wand_pivot: Node2D = $WandPivot
 @onready var wand: Node2D = $WandPivot/Wand
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
@@ -28,6 +32,8 @@ extends CharacterBody2D
 @onready var health_component: PlayerHealthComponent = $HealthComponent
 @onready var animation_controller: PlayerAnimationController = $AnimationController
 @onready var player_inventory: PlayerInventoryComponent = $PlayerInventoryComponent
+@onready var footstep_player: AudioStreamPlayer2D = $FootstepPlayer
+@onready var jump_player: AudioStreamPlayer2D = $JumpPlayer
 
 var is_stopping_run: bool = false
 var facing_left: bool = false
@@ -42,6 +48,7 @@ var _regen_running: bool = false
 
 var coyote_timer: float = 0.0
 var jump_buffer_timer: float = 0.0
+var _last_footstep_frame: int = -1
 
 func _ready() -> void:
 	animated_sprite.play("idle")
@@ -108,6 +115,7 @@ func _health_regen_loop() -> void:
 func _physics_process(delta: float) -> void:
 	var raw_input_dir: float = Input.get_axis("move_left", "move_right")
 	var input_dir: float = raw_input_dir
+	var jumped_this_frame: bool = false
 
 	if health_component != null and health_component.is_dead:
 		velocity.x = 0.0
@@ -121,6 +129,7 @@ func _physics_process(delta: float) -> void:
 
 		was_on_floor_last_frame = is_on_floor()
 		was_running_last_frame = false
+		_last_footstep_frame = -1
 		return
 
 	if idle_flip_lock_time > 0.0:
@@ -159,7 +168,6 @@ func _physics_process(delta: float) -> void:
 	else:
 		var stop_friction: float = friction * 1.15
 
-		# schneller stoppen wenn fast still
 		if absf(velocity.x) < 40.0:
 			stop_friction *= 1.6
 
@@ -178,6 +186,7 @@ func _physics_process(delta: float) -> void:
 			velocity.y = jump_velocity
 			jump_buffer_timer = 0.0
 			coyote_timer = 0.0
+			jumped_this_frame = true
 
 		velocity += health_component.knockback_velocity
 		health_component.knockback_velocity = health_component.knockback_velocity.move_toward(Vector2.ZERO, 900.0 * delta)
@@ -186,6 +195,10 @@ func _physics_process(delta: float) -> void:
 			velocity.y = jump_velocity
 			jump_buffer_timer = 0.0
 			coyote_timer = 0.0
+			jumped_this_frame = true
+
+	if jumped_this_frame:
+		_play_jump_sound()
 
 	move_and_slide()
 
@@ -194,6 +207,8 @@ func _physics_process(delta: float) -> void:
 
 	if animation_controller != null:
 		animation_controller.update_animation(input_dir, was_on_floor_last_frame, was_running_last_frame)
+
+	_update_footsteps_from_animation()
 
 	_update_facing(raw_input_dir)
 	_update_wand_pivot_position()
@@ -221,7 +236,7 @@ func unequip_wand_spell_to_inventory(slot_index: int) -> bool:
 	if player_inventory == null:
 		return false
 	return player_inventory.unequip_wand_spell_to_inventory(slot_index)
-	
+
 func _update_aim() -> void:
 	var mouse_pos: Vector2 = get_global_mouse_position()
 	var dir: Vector2 = mouse_pos - wand_pivot.global_position
@@ -268,6 +283,57 @@ func _update_facing(raw_input_dir: float) -> void:
 
 	facing_left = mouse_pos.x < global_position.x
 	animated_sprite.flip_h = facing_left
+
+func _update_footsteps_from_animation() -> void:
+	if footstep_sound == null:
+		_last_footstep_frame = -1
+		return
+
+	if not is_on_floor():
+		_last_footstep_frame = -1
+		return
+
+	if animated_sprite.animation != "run":
+		_last_footstep_frame = -1
+		return
+
+	if absf(velocity.x) <= 5.0:
+		_last_footstep_frame = -1
+		return
+
+	var current_frame: int = animated_sprite.frame
+
+	if current_frame == _last_footstep_frame:
+		return
+
+	if current_frame in footstep_frames:
+		play_footstep_sound()
+
+	_last_footstep_frame = current_frame
+
+func play_footstep_sound() -> void:
+	if footstep_sound == null:
+		return
+
+	if footstep_player == null:
+		return
+
+	footstep_player.stream = footstep_sound
+	footstep_player.pitch_scale = randf_range(0.95, 1.05)
+	footstep_player.volume_db = randf_range(-3.0, 0.0)
+	footstep_player.play()
+
+func _play_jump_sound() -> void:
+	if jump_sound == null:
+		return
+
+	if jump_player == null:
+		return
+
+	jump_player.stream = jump_sound
+	jump_player.pitch_scale = randf_range(0.97, 1.03)
+	jump_player.volume_db = 0.0
+	jump_player.play()
 
 func _on_animation_finished() -> void:
 	if animation_controller != null:

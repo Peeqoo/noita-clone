@@ -6,11 +6,11 @@ class_name EnemyHumanoid
 @export var aggro_range: float = 340.0
 @export var attack_range: float = 72.0
 @export var min_attack_distance: float = 50.0
-@export var preferred_distance: float = 66.0
-@export var disengage_distance: float = 36.0
+@export var preferred_distance: float = 62.0
+@export var disengage_distance: float = 32.0
 @export var attack_damage: int = 11
-@export var attack_cooldown: float = 0.45
-@export var crit_chance: float = 0.12
+@export var attack_cooldown: float = 0.38
+@export var crit_chance: float = 0.16
 @export var crit_multiplier: float = 1.5
 
 @export_group("Humanoid Movement Feel")
@@ -24,7 +24,6 @@ class_name EnemyHumanoid
 @onready var attack_hitbox_shape: CollisionShape2D = $AttackHitbox/CollisionShape2D
 
 var player: Node2D = null
-var can_attack: bool = true
 var has_hit_this_attack: bool = false
 
 func _ready() -> void:
@@ -246,15 +245,19 @@ func start_attack() -> void:
 	if not can_attack:
 		return
 
-	can_attack = false
+	super.start_attack()
+	begin_attack_windup()
+
 	has_hit_this_attack = false
 	velocity.x = 0.0
-	change_state(State.ATTACK)
+	commit_attack()
 
 func finish_attack() -> void:
 	disable_attack_hitbox()
 	velocity.x = 0.0
 	has_hit_this_attack = false
+
+	end_attack()
 
 	if current_state == State.DEATH:
 		return
@@ -275,7 +278,8 @@ func cancel_attack() -> void:
 	disable_attack_hitbox()
 	has_hit_this_attack = false
 	velocity.x = 0.0
-	can_attack = true
+
+	super.cancel_attack()
 
 	if current_state != State.DEATH:
 		change_state(State.IDLE)

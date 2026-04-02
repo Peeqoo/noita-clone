@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://llevxor466y1"]
 
-[ext_resource type="Script" uid="uid://bmqtd7uh58exu" path="res://project/scripts/levels_gd/chunk_manager.gd" id="1_wwr42"]
-[ext_resource type="PackedScene" uid="uid://dferb84ile5rq" path="res://project/scenes/levels_tscn/chunk_flat_01.tscn" id="2_sa8g5"]
-[ext_resource type="PackedScene" uid="uid://c35bt762cxjum" path="res://project/scenes/levels_tscn/chunk_flat_02.tscn" id="3_mpubv"]
-[ext_resource type="PackedScene" uid="uid://bdhaqudgnjokk" path="res://project/scenes/levels_tscn/chunk_flat_03.tscn" id="4_6a3g2"]
-[ext_resource type="Script" uid="uid://c2jnloklrwfyk" path="res://project/scripts/enemies_gd/enemy_manager.gd" id="5_wytcs"]
+[ext_resource type="Script" uid="uid://bmqtd7uh58exu" path="res://project/archive/chunk_manager.gd" id="1_wwr42"]
+[ext_resource type="PackedScene" uid="uid://dferb84ile5rq" path="res://project/archive/chunk_flat_01.tscn" id="2_sa8g5"]
+[ext_resource type="PackedScene" uid="uid://c35bt762cxjum" path="res://project/archive/chunk_flat_02.tscn" id="3_mpubv"]
+[ext_resource type="PackedScene" uid="uid://bdhaqudgnjokk" path="res://project/archive/chunk_flat_03.tscn" id="4_6a3g2"]
+[ext_resource type="Script" uid="uid://c2jnloklrwfyk" path="res://project/archive/enemy_manager.gd" id="5_wytcs"]
 [ext_resource type="PackedScene" uid="uid://0lyddvkn0dgi" path="res://project/scenes/enemies_tscn/enemy_humanoid.tscn" id="6_fdx3w"]
 
 [node name="Chunk_EnemyTest" type="Node2D" unique_id=439596663]

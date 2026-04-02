@@ -105,7 +105,7 @@ func _cast_spell(spell: SpellData) -> void:
 		var hit_data := _build_hit_data(spell)
 
 		if projectile.has_method("setup"):
-			projectile.setup(direction, spell.speed, actor_owner, hit_data, spell.lifetime)
+			projectile.setup(direction, spell.speed, actor_owner, hit_data, spell.lifetime, spell)
 
 func _build_hit_data(spell: SpellData) -> Dictionary:
 	var final_damage: int = maxi(1, int(round(spell.damage * wand_data.damage_multiplier)))

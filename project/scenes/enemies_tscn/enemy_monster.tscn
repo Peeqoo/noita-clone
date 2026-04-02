@@ -9,6 +9,8 @@
 [ext_resource type="Resource" uid="uid://crssv2or2uj0l" path="res://project/resources/spells_tres/magic_bolt.tres" id="5_2d72a"]
 [ext_resource type="Resource" uid="uid://bm2tbsb4vrk10" path="res://project/resources/spells_tres/triple_shot.tres" id="6_dcc7b"]
 [ext_resource type="Resource" uid="uid://b5s87iepb2hud" path="res://project/resources/spells_tres/sniper_needle.tres" id="7_dew2y"]
+[ext_resource type="AudioStream" uid="uid://bhl4cttuxcuvv" path="res://assets/sounds/enemies/FootsteppMonster.wav" id="10_nnnwl"]
+[ext_resource type="AudioStream" uid="uid://vv3uy8wuvfgp" path="res://assets/sounds/enemies/Hit.wav" id="11_2d72a"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_d1vld"]
 atlas = ExtResource("1_w3mfa")
@@ -318,6 +320,8 @@ size = Vector2(84, 46)
 collision_layer = 4
 collision_mask = 515
 script = ExtResource("1_ox87v")
+footstep_sound = ExtResource("10_nnnwl")
+hit_sound = ExtResource("11_2d72a")
 damage_number_scene = ExtResource("2_d2vwo")
 crit_damage_number_scene = ExtResource("3_7gsg1")
 spell_pickup_scene = ExtResource("4_nnnwl")
@@ -363,6 +367,15 @@ collision_mask = 2
 position = Vector2(0, -8)
 shape = SubResource("RectangleShape2D_ox87v")
 debug_color = Color(0, 0.56078434, 0.8901961, 0.101960786)
+
+[node name="FootstepPlayer" type="AudioStreamPlayer2D" parent="." unique_id=221626365]
+bus = &"SFX"
+
+[node name="HitPlayer" type="AudioStreamPlayer2D" parent="." unique_id=880163683]
+bus = &"SFX"
+
+[node name="VoicePlayer" type="AudioStreamPlayer2D" parent="." unique_id=481207042]
+bus = &"SFX"
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animation_finished"]
 [connection signal="frame_changed" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_frame_changed"]

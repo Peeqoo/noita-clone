@@ -8,25 +8,22 @@ class_name EnemyMonster
 @export var attack_range: float = 56.0
 @export var attack_stop_distance: float = 24.0
 @export var attack_damage: int = 9
-@export var attack_cooldown: float = 0.16
-@export var attack_windup: float = 0.18
-@export var crit_chance: float = 0.09
+@export var attack_cooldown: float = 0.22
+@export var attack_windup: float = 0.22
+@export var crit_chance: float = 0.14
 @export var crit_multiplier: float = 1.4
 
 @export_group("Monster Feel")
 @export var attack_hitbox_offset: float = 10.0
-@export var return_to_idle_delay: float = 0.15
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var attack_hitbox_shape: CollisionShape2D = $AttackHitbox/CollisionShape2D
 
 var player: Node2D = null
-var can_attack: bool = true
 var has_hit_this_attack: bool = false
-var is_winding_up: bool = false
 var facing_dir: float = -1.0
-var return_to_idle_token: int = 0
+var is_sleeping: bool = false
 
 func _ready() -> void:
 	max_health = 46
@@ -188,12 +185,23 @@ func _update_facing_visuals() -> void:
 		animated_sprite.flip_h = true
 		attack_hitbox.position.x = absf(attack_hitbox_offset)
 
+func _play_idle_animation() -> void:
+	if sprite == null:
+		return
+
+	if is_sleeping and sprite.sprite_frames.has_animation("sleep"):
+		sprite.play("sleep")
+		return
+
+	super._play_idle_animation()
+
 func start_attack() -> void:
 	if not can_attack:
 		return
 
-	can_attack = false
-	is_winding_up = true
+	super.start_attack()
+	begin_attack_windup()
+
 	has_hit_this_attack = false
 	velocity.x = 0.0
 	change_state(State.IDLE)
@@ -206,27 +214,25 @@ func _start_attack_after_windup() -> void:
 		return
 
 	if current_state == State.HIT:
-		is_winding_up = false
-		can_attack = true
+		reset_attack_state()
 		return
 
 	if is_sleeping:
-		is_winding_up = false
-		can_attack = true
+		reset_attack_state()
 		return
 
 	if player == null or not is_instance_valid(player):
-		is_winding_up = false
-		can_attack = true
+		reset_attack_state()
 		return
 
-	is_winding_up = false
-	change_state(State.ATTACK)
+	commit_attack()
 
 func finish_attack() -> void:
 	disable_attack_hitbox()
 	velocity.x = 0.0
 	has_hit_this_attack = false
+
+	end_attack()
 
 	if current_state == State.DEATH:
 		return
@@ -246,16 +252,15 @@ func finish_attack() -> void:
 func cancel_attack() -> void:
 	disable_attack_hitbox()
 	has_hit_this_attack = false
-	is_winding_up = false
 	velocity.x = 0.0
-	can_attack = true
+
+	super.cancel_attack()
 
 	if current_state != State.DEATH:
 		change_state(State.IDLE)
 
 func aggro_on_hit(source_position: Vector2 = Vector2.ZERO) -> void:
 	is_sleeping = false
-	return_to_idle_token += 1
 	is_returning_to_spawn = false
 	is_searching = false
 
@@ -296,7 +301,6 @@ func _on_detection_area_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
 		player = body
 		is_sleeping = false
-		return_to_idle_token += 1
 		is_returning_to_spawn = false
 		is_searching = false
 		set_last_seen_position(player.global_position)
