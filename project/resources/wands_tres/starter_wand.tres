@@ -11,8 +11,7 @@
 script = ExtResource("1_iomjy")
 display_name = "Starter Wand"
 icon = ExtResource("1_l1q77")
-mana_regen = 18.0
-cast_delay = 0.22
+mana_regen = 22.0
 recharge_time = 0.45
-spell_slots = Array[ExtResource("2_l1q77")]([ExtResource("3_iomjy"), ExtResource("4_l1q77"), ExtResource("5_q31k2")])
+spell_slots = Array[ExtResource("2_l1q77")]([ExtResource("3_iomjy"), ExtResource("4_l1q77"), ExtResource("3_iomjy"), ExtResource("5_q31k2")])
 metadata/_custom_type_script = "uid://dmc23tawwe7nc"

@@ -2,20 +2,38 @@ extends Node2D
 
 @export var wand_data: WandData
 
+@export_group("Mana Visual Feedback")
+@export_range(0.0, 1.0, 0.01) var low_mana_start_ratio: float = 0.35
+@export_range(0.0, 1.0, 0.01) var critical_mana_ratio: float = 0.12
+@export var blink_speed_slow: float = 3.0
+@export var blink_speed_fast: float = 10.0
+@export_range(0.0, 1.0, 0.01) var low_mana_flash_alpha: float = 0.08
+@export_range(0.0, 1.0, 0.01) var critical_mana_flash_alpha: float = 0.22
+@export var empty_flash_duration: float = 0.12
+@export_range(0.0, 1.0, 0.01) var empty_flash_alpha: float = 0.35
+
 @onready var muzzle: Marker2D = $Muzzle
+@onready var flash_sprite: Sprite2D = $Visuals/FlashSprite
 @onready var hud = get_tree().get_first_node_in_group("hud")
 
 var current_mana: float = 0.0
 var cast_cooldown: float = 0.0
 var recharge_cooldown: float = 0.0
-var slot_index: int = 0
+var current_spell_index: int = 0
+var spells_cast_in_cycle: int = 0
 var trigger_held: bool = false
 var actor_owner: Node = null
+
+var empty_flash_timer: float = 0.0
+var blink_time: float = 0.0
 
 var rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
 	rng.randomize()
+
+	if flash_sprite != null:
+		flash_sprite.modulate = Color(1, 1, 1, 0)
 
 	if wand_data == null:
 		return
@@ -23,10 +41,9 @@ func _ready() -> void:
 	current_mana = wand_data.mana_max
 	_update_hud_mana()
 	_update_hud_spell()
+	_update_mana_visual(0.0)
 
 func _process(delta: float) -> void:
-	_handle_spell_input()
-
 	if wand_data == null:
 		return
 
@@ -42,8 +59,13 @@ func _process(delta: float) -> void:
 	if recharge_cooldown > 0.0:
 		recharge_cooldown = max(recharge_cooldown - delta, 0.0)
 
+	if empty_flash_timer > 0.0:
+		empty_flash_timer = max(empty_flash_timer - delta, 0.0)
+
 	if trigger_held:
 		try_cast()
+
+	_update_mana_visual(delta)
 
 func set_trigger_held(held: bool) -> void:
 	trigger_held = held
@@ -61,14 +83,12 @@ func try_cast() -> void:
 	if wand_data.spell_slots.is_empty():
 		return
 
-	if slot_index < 0 or slot_index >= wand_data.spell_slots.size():
-		slot_index = 0
-
-	var spell: SpellData = wand_data.spell_slots[slot_index]
+	var spell: SpellData = _get_current_spell()
 	if spell == null:
 		return
 
 	if current_mana < spell.mana_cost:
+		_trigger_empty_mana_flash()
 		return
 
 	current_mana -= spell.mana_cost
@@ -77,6 +97,79 @@ func try_cast() -> void:
 	cast_cooldown = wand_data.cast_delay + spell.cast_delay_add
 
 	_cast_spell(spell)
+
+	spells_cast_in_cycle += 1
+
+	if spells_cast_in_cycle >= _get_spell_count():
+		_start_recharge()
+	else:
+		_advance_spell_index()
+
+	_update_hud_spell()
+
+func _get_current_spell() -> SpellData:
+	if wand_data == null:
+		return null
+
+	if wand_data.spell_slots.is_empty():
+		return null
+
+	if current_spell_index < 0 or current_spell_index >= wand_data.spell_slots.size():
+		current_spell_index = 0
+
+	var tries: int = 0
+
+	while tries < wand_data.spell_slots.size():
+		var spell: SpellData = wand_data.spell_slots[current_spell_index]
+		if spell != null:
+			return spell
+
+		current_spell_index += 1
+		if current_spell_index >= wand_data.spell_slots.size():
+			current_spell_index = 0
+
+		tries += 1
+
+	return null
+
+func _advance_spell_index() -> void:
+	if wand_data == null:
+		return
+
+	if wand_data.spell_slots.is_empty():
+		current_spell_index = 0
+		return
+
+	var tries: int = 0
+
+	while tries < wand_data.spell_slots.size():
+		current_spell_index += 1
+
+		if current_spell_index >= wand_data.spell_slots.size():
+			current_spell_index = 0
+
+		if wand_data.spell_slots[current_spell_index] != null:
+			return
+
+		tries += 1
+
+	current_spell_index = 0
+
+func _get_spell_count() -> int:
+	if wand_data == null:
+		return 0
+
+	var count: int = 0
+	for spell in wand_data.spell_slots:
+		if spell != null:
+			count += 1
+
+	return count
+
+func _start_recharge() -> void:
+	recharge_cooldown = wand_data.recharge_time
+	spells_cast_in_cycle = 0
+	current_spell_index = 0
 
 func _cast_spell(spell: SpellData) -> void:
 	if spell.projectile_scene == null:
@@ -96,7 +189,9 @@ func _cast_spell(spell: SpellData) -> void:
 		var direction: Vector2 = muzzle.global_transform.x.normalized()
 
 		if count > 1:
-			var t: float = float(i) / float(count - 1)
+			var t: float = 0.5
+			if count > 1:
+				t = float(i) / float(count - 1)
 			var angle_offset: float = lerp(-spread_rad * 0.5, spread_rad * 0.5, t)
 			direction = direction.rotated(angle_offset)
 
@@ -137,6 +232,10 @@ func set_spell_in_slot(slot: int, spell: SpellData) -> bool:
 		return false
 
 	wand_data.spell_slots[slot] = spell
+
+	if current_spell_index < 0 or current_spell_index >= wand_data.spell_slots.size():
+		current_spell_index = 0
+
 	_update_hud_spell()
 	return true
 
@@ -148,26 +247,56 @@ func remove_spell_from_slot(slot: int) -> SpellData:
 
 	var spell: SpellData = wand_data.spell_slots[slot]
 	wand_data.spell_slots[slot] = null
+
+	if current_spell_index >= wand_data.spell_slots.size():
+		current_spell_index = 0
+
 	_update_hud_spell()
 	return spell
 
-func _handle_spell_input() -> void:
-	if wand_data == null:
+func reset_spell_cycle() -> void:
+	current_spell_index = 0
+	spells_cast_in_cycle = 0
+	_update_hud_spell()
+
+func _trigger_empty_mana_flash() -> void:
+	empty_flash_timer = empty_flash_duration
+
+func _update_mana_visual(delta: float) -> void:
+	if flash_sprite == null:
 		return
 
-	if Input.is_action_just_pressed("spell_1"):
-		slot_index = 0
-		_update_hud_spell()
+	if wand_data == null or wand_data.mana_max <= 0.0:
+		flash_sprite.modulate = Color(1, 1, 1, 0)
+		return
 
-	elif Input.is_action_just_pressed("spell_2"):
-		if wand_data.spell_slots.size() > 1:
-			slot_index = 1
-			_update_hud_spell()
+	if empty_flash_timer > 0.0:
+		flash_sprite.modulate = Color(1, 1, 1, empty_flash_alpha)
+		return
 
-	elif Input.is_action_just_pressed("spell_3"):
-		if wand_data.spell_slots.size() > 2:
-			slot_index = 2
-			_update_hud_spell()
+	var mana_ratio: float = clamp(current_mana / wand_data.mana_max, 0.0, 1.0)
+
+	if mana_ratio > low_mana_start_ratio:
+		blink_time = 0.0
+		flash_sprite.modulate = Color(1, 1, 1, 0)
+		return
+
+	var danger_t: float = 1.0
+	if low_mana_start_ratio > 0.0:
+		danger_t = 1.0 - clamp(mana_ratio / low_mana_start_ratio, 0.0, 1.0)
+
+	var blink_speed: float = lerp(blink_speed_slow, blink_speed_fast, danger_t)
+	blink_time += delta * blink_speed
+
+	var wave: float = (sin(blink_time * TAU) + 1.0) * 0.5
+
+	var max_flash_alpha: float = lerp(low_mana_flash_alpha, critical_mana_flash_alpha, danger_t)
+	var flash_alpha: float = lerp(0.0, max_flash_alpha, wave)
+
+	if mana_ratio <= critical_mana_ratio:
+		flash_alpha = lerp(0.0, critical_mana_flash_alpha, wave)
+
+	flash_sprite.modulate = Color(1, 1, 1, flash_alpha)
 
 func _update_hud_mana() -> void:
 	if hud == null:
@@ -187,4 +316,4 @@ func _update_hud_spell() -> void:
 		return
 
 	if hud.has_method("update_spell_selection"):
-		hud.update_spell_selection(slot_index)
+		hud.update_spell_selection(current_spell_index)
