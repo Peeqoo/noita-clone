@@ -7,8 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://lwyh06thq1jt" path="res://project/scenes/popups_tscn/damage_number_enemy_crit.tscn" id="3_7gsg1"]
 [ext_resource type="PackedScene" uid="uid://dav1w1gt6kx6m" path="res://project/scenes/pickups_tscn/spell_pickup.tscn" id="4_nnnwl"]
 [ext_resource type="Resource" uid="uid://crssv2or2uj0l" path="res://project/resources/spells_tres/magic_bolt.tres" id="5_2d72a"]
-[ext_resource type="Resource" uid="uid://bm2tbsb4vrk10" path="res://project/resources/spells_tres/triple_shot.tres" id="6_dcc7b"]
 [ext_resource type="Resource" uid="uid://b5s87iepb2hud" path="res://project/resources/spells_tres/sniper_needle.tres" id="7_dew2y"]
+[ext_resource type="Script" uid="uid://dwcqferqt0o7" path="res://project/scripts/spell_gd/spell_data.gd" id="7_nnnwl"]
 [ext_resource type="AudioStream" uid="uid://bhl4cttuxcuvv" path="res://assets/sounds/enemies/FootsteppMonster.wav" id="10_nnnwl"]
 [ext_resource type="AudioStream" uid="uid://vv3uy8wuvfgp" path="res://assets/sounds/enemies/Hit.wav" id="11_2d72a"]
 
@@ -325,9 +325,7 @@ hit_sound = ExtResource("11_2d72a")
 damage_number_scene = ExtResource("2_d2vwo")
 crit_damage_number_scene = ExtResource("3_7gsg1")
 spell_pickup_scene = ExtResource("4_nnnwl")
-magic_bolt_data = ExtResource("5_2d72a")
-triple_shot_data = ExtResource("6_dcc7b")
-sniper_needle_data = ExtResource("7_dew2y")
+loot_spells = Array[ExtResource("7_nnnwl")]([ExtResource("5_2d72a"), ExtResource("7_dew2y"), ExtResource("5_2d72a")])
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=759377286]
 sprite_frames = SubResource("SpriteFrames_isrhy")

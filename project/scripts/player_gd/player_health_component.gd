@@ -10,6 +10,11 @@ signal died
 @export var knockback_force_y: float = -30.0
 @export var hit_sound: AudioStream
 
+@export var player_hit_shake_strength: float = 5.0
+@export var player_hit_shake_time: float = 0.12
+@export var player_crit_hit_shake_strength: float = 8.0
+@export var player_crit_hit_shake_time: float = 0.16
+
 @export var damage_number_scene: PackedScene
 @export var crit_damage_number_scene: PackedScene
 @export var damage_number_offset: Vector2 = Vector2(0, -40)
@@ -24,9 +29,11 @@ var is_dead: bool = false
 var is_invincible: bool = false
 var knockback_velocity: Vector2 = Vector2.ZERO
 
+
 func _ready() -> void:
 	health = max_health
 	health_changed.emit(health, max_health)
+
 
 func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: bool = false) -> void:
 	if is_dead:
@@ -47,8 +54,10 @@ func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: 
 		play_death()
 	else:
 		_play_hit_sound()
+		_shake_player_camera(is_crit)
 		play_hit()
 		start_invincibility()
+
 
 func heal(amount: int) -> void:
 	if is_dead:
@@ -62,6 +71,7 @@ func heal(amount: int) -> void:
 
 	health = clamp(health + amount, 0, max_health)
 	health_changed.emit(health, max_health)
+
 
 func show_damage_number(amount: int, is_crit: bool = false) -> void:
 	var scene_to_use: PackedScene = damage_number_scene
@@ -88,6 +98,7 @@ func show_damage_number(amount: int, is_crit: bool = false) -> void:
 	if number.has_method("setup"):
 		number.setup(amount, is_crit)
 
+
 func start_invincibility() -> void:
 	is_invincible = true
 
@@ -102,6 +113,7 @@ func start_invincibility() -> void:
 	animated_sprite.visible = true
 	is_invincible = false
 
+
 func apply_knockback(source_position: Vector2) -> void:
 	if source_position == Vector2.ZERO:
 		return
@@ -114,6 +126,7 @@ func apply_knockback(source_position: Vector2) -> void:
 	knockback_velocity.x = dir_x * knockback_force_x
 	knockback_velocity.y = knockback_force_y
 
+
 func play_hit() -> void:
 	if is_dead:
 		return
@@ -122,8 +135,10 @@ func play_hit() -> void:
 	player.is_stopping_run = false
 	animated_sprite.play("hit")
 
+
 func die() -> void:
 	play_death()
+
 
 func play_death() -> void:
 	if is_dead:
@@ -141,9 +156,11 @@ func play_death() -> void:
 	animated_sprite.play("death")
 	died.emit()
 
+
 func on_animation_finished(animation_name: String) -> void:
 	if animation_name == "hit":
 		is_hurt = false
+
 
 func _play_hit_sound() -> void:
 	if hit_sound == null:
@@ -156,3 +173,20 @@ func _play_hit_sound() -> void:
 	hit_player.pitch_scale = randf_range(0.97, 1.03)
 	hit_player.volume_db = randf_range(-2.0, 0.0)
 	hit_player.play()
+
+
+func _shake_player_camera(is_crit: bool) -> void:
+	if player == null:
+		return
+
+	var camera := player.get_node_or_null("PlayerCamera")
+	if camera == null:
+		return
+
+	if not camera.has_method("shake"):
+		return
+
+	if is_crit:
+		camera.shake(player_crit_hit_shake_strength, player_crit_hit_shake_time)
+	else:
+		camera.shake(player_hit_shake_strength, player_hit_shake_time)

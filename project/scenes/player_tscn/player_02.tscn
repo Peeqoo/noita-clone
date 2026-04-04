@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://c8gp50ftj2b18" path="res://project/scenes/popups_tscn/damage_number_player_crit.tscn" id="3_f8wmi"]
 [ext_resource type="Script" uid="uid://ual08sf6fwkl" path="res://project/scripts/player_gd/player_health_component.gd" id="5_hrj1m"]
 [ext_resource type="Script" uid="uid://djabv3jo81ysy" path="res://project/scripts/player_gd/inventory_component.gd" id="6_gdmcs"]
+[ext_resource type="Script" uid="uid://dl0pfyktfjn4y" path="res://project/scripts/player_gd/camera_2d.gd" id="6_ykgb7"]
 [ext_resource type="Script" uid="uid://d1h1drolwfrf2" path="res://project/scripts/player_gd/player_animation_controller.gd" id="8_cjtr1"]
 [ext_resource type="AudioStream" uid="uid://vv3uy8wuvfgp" path="res://assets/sounds/enemies/Hit.wav" id="8_xkhtu"]
 [ext_resource type="Script" uid="uid://dokl2pfrf5f38" path="res://project/scripts/player_gd/player_inventory_component.gd" id="9_1ok13"]
@@ -673,8 +674,12 @@ scale = Vector2(0.9905952, 0.98842883)
 
 [node name="GroundCheck" type="RayCast2D" parent="." unique_id=778677790]
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=771181156]
-offset = Vector2(0, -130)
+[node name="PlayerCamera" type="Camera2D" parent="." unique_id=771181156]
+position_smoothing_speed = 7.5
+drag_horizontal_enabled = true
+drag_top_margin = 0.15
+drag_bottom_margin = 0.25
+script = ExtResource("6_ykgb7")
 
 [node name="HandRight" type="Marker2D" parent="." unique_id=599572895]
 position = Vector2(6, -3)

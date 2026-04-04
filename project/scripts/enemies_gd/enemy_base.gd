@@ -19,6 +19,8 @@ enum State {
 @export var knockback_force: float = 28.0
 @export var crit_knockback_force: float = 52.0
 @export var knockback_decay: float = 4200.0
+@export var enemy_crit_hit_shake_strength: float = 5.0
+@export var enemy_crit_hit_shake_time: float = 0.12
 @export var normal_hits_interrupt_attack: bool = false
 @export var crit_hits_interrupt_attack: bool = true
 @export var normal_hits_use_hit_state: bool = false
@@ -486,6 +488,10 @@ func take_damage(amount: int, is_crit: bool = false, source_position: Vector2 = 
 	apply_damage_knockback(source_position, is_crit)
 	show_damage_number(amount, is_crit)
 	_play_hit_sound()
+
+	if is_crit:
+		_shake_player_camera_on_enemy_crit()
+
 	do_hit_stop(is_crit)
 
 	if health <= 0:
@@ -540,6 +546,21 @@ func die() -> void:
 	_play_death_sound()
 	change_state(State.DEATH)
 	drop_loot()
+
+func _shake_player_camera_on_enemy_crit() -> void:
+	var player := get_tree().get_first_node_in_group("player")
+	if player == null:
+		player = get_tree().current_scene.find_child("Player", true, false)
+
+	if player == null:
+		return
+
+	var camera := player.get_node_or_null("PlayerCamera")
+	if camera == null:
+		return
+
+	if camera.has_method("shake"):
+		camera.shake(enemy_crit_hit_shake_strength, enemy_crit_hit_shake_time)
 
 # =========================
 # Damage Number FX

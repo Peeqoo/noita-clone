@@ -5,14 +5,16 @@
 [ext_resource type="PackedScene" uid="uid://5heamha4m34d" path="res://project/scenes/levels_tscn/start_rooms/tile_map_layer.tscn" id="3_1j01w"]
 [ext_resource type="Script" uid="uid://o3a8tdt882yo" path="res://project/scripts/levels_gd/exit_to_dungeon.gd" id="4_n1pir"]
 [ext_resource type="PackedScene" uid="uid://cfm3nv73cr6y7" path="res://project/scenes/enemies_tscn/enemy_monster.tscn" id="5_0w6fc"]
-[ext_resource type="PackedScene" uid="uid://q185s1fbuyce" path="res://project/scenes/hud_tscn/hud.tscn" id="5_265wi"]
 [ext_resource type="PackedScene" uid="uid://0lyddvkn0dgi" path="res://project/scenes/enemies_tscn/enemy_humanoid.tscn" id="6_o5uvg"]
+[ext_resource type="PackedScene" uid="uid://b1m65sd63omra" path="res://project/scenes/hud_tscn/game_hud.tscn" id="7_0w6fc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vb5sh"]
 size = Vector2(120, 34)
 
 [node name="StartRoom" type="Node2D" unique_id=1899636765]
 script = ExtResource("1_1j01w")
+camera_room_offset = Vector2(0, -120)
+camera_limit_bottom = 166
 
 [node name="World" type="Node2D" parent="." unique_id=143875095]
 
@@ -48,8 +50,6 @@ next_scene_path = "uid://r5qc47fbc57b"
 position = Vector2(-36, -7)
 shape = SubResource("RectangleShape2D_vb5sh")
 
-[node name="HUD" parent="." unique_id=1355603922 instance=ExtResource("5_265wi")]
-
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=291853132]
 
 [node name="FadeRect" type="ColorRect" parent="CanvasLayer" unique_id=1702120691]
@@ -60,5 +60,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.056291588, 0.056291603, 0.056291595, 1)
+
+[node name="CanvasLayer2" parent="." unique_id=1967121560 instance=ExtResource("7_0w6fc")]
 
 [connection signal="body_entered" from="World/ExitToDungeon" to="World/ExitToDungeon" method="_on_body_entered"]

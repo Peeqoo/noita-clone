@@ -1,68 +1,64 @@
 extends CanvasLayer
 
-@onready var health_bar: ProgressBar = $Control/HealthManaMarginContainer/VBoxContainer/HealthBar
-@onready var mana_bar: ProgressBar = $Control/HealthManaMarginContainer/VBoxContainer/ManaBar
+@onready var root_ui: Control = $HUD
 
-@onready var spell_slot_1: Panel = $Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot1
-@onready var spell_slot_2: Panel = $Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot2
-@onready var spell_slot_3: Panel = $Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot3
+@onready var health_bar: Range = $HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/HealthBar
+@onready var mana_bar: Range = $HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/ManaBar
 
-@onready var spell_slot_1_icon: TextureRect = $Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot1/Icon
-@onready var spell_slot_2_icon: TextureRect = $Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot2/Icon
-@onready var spell_slot_3_icon: TextureRect = $Control/WandSpellBar/MarginContainer/HBoxSpell/SpellSlot3/Icon
+@onready var wand_icon: TextureRect = $HUD/WandPanel/WandMargin/WandVBox/WandSlotBar/WandSlot/Center/Icon
 
-@onready var wand_slot_icon: TextureRect = $Control/WandSpellBar/MarginContainer/HBoxWand/WandSlot/Icon
+@onready var spell_slot_panels: Array[Panel] = [
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot1,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot2,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot3,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot4,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot5
+]
 
-@onready var inventory_panel: PanelContainer = $Control/InventoryPanel
+@onready var spell_icons: Array[TextureRect] = [
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot1/Center/Icon,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot2/Center/Icon,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot3/Center/Icon,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot4/Center/Icon,
+	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot5/Center/Icon
+]
 
-@onready var inventory_slot_1_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_1/Icon
-@onready var inventory_slot_2_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_2/Icon
-@onready var inventory_slot_3_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_3/Icon
-@onready var inventory_slot_4_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_4/Icon
-@onready var inventory_slot_5_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_5/Icon
-@onready var inventory_slot_6_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_6/Icon
-@onready var inventory_slot_7_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_7/Icon
-@onready var inventory_slot_8_icon: TextureRect = $Control/InventoryPanel/MarginContainer/InventoryGrid/Slot_8/Icon
+@onready var inventory_panel: Control = $HUD/InventoryPanel
+
+@onready var inventory_icons: Array[TextureRect] = [
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot1/Center/Icon,
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot2/Center/Icon,
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot3/Center/Icon,
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot4/Center/Icon,
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot5/Center/Icon,
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot6/Center/Icon,
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot7/Center/Icon,
+	$HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot8/Center/Icon
+]
 
 var player: Node = null
-var selected_wand_slot: int = 0
 var inventory_open: bool = false
-
-var inventory_icons: Array[TextureRect] = []
+var selected_spell_index: int = 0
 
 func _ready() -> void:
-	player = get_tree().get_first_node_in_group("player")
-	print("HUD ready, player: ", player)
-
-	inventory_icons = [
-		inventory_slot_1_icon,
-		inventory_slot_2_icon,
-		inventory_slot_3_icon,
-		inventory_slot_4_icon,
-		inventory_slot_5_icon,
-		inventory_slot_6_icon,
-		inventory_slot_7_icon,
-		inventory_slot_8_icon
-	]
-
+	add_to_group("hud")
 	inventory_panel.visible = false
-	update_spell_selection(0)
-	refresh_all_ui()
+	_clear_all_icons()
+	_refresh_player_reference()
+	_refresh_all_ui()
 
 func _process(_delta: float) -> void:
-	if player == null:
-		player = get_tree().get_first_node_in_group("player")
+	if player == null or not is_instance_valid(player):
+		_refresh_player_reference()
 
 	if Input.is_action_just_pressed("toggle_inventory"):
 		toggle_inventory()
 
+	_refresh_all_ui()
+
 func toggle_inventory() -> void:
 	inventory_open = not inventory_open
 	inventory_panel.visible = inventory_open
-	print("Inventory open: ", inventory_open)
-
-	if inventory_open:
-		refresh_all_ui()
 
 func is_inventory_open() -> bool:
 	return inventory_open
@@ -72,53 +68,69 @@ func set_health(current: int, max_value: int) -> void:
 		return
 
 	health_bar.max_value = max_value
-	health_bar.value = current
+	health_bar.value = clamp(current, 0, max_value)
 
 func update_mana(current: float, max_value: float) -> void:
 	if mana_bar == null:
 		return
 
 	mana_bar.max_value = max_value
-	mana_bar.value = current
+	mana_bar.value = clamp(current, 0.0, max_value)
 
-func update_spell_selection(active_index: int) -> void:
-	if not is_node_ready():
-		call_deferred("update_spell_selection", active_index)
-		return
+func update_spell_selection(index: int) -> void:
+	selected_spell_index = index
+	_apply_spell_selection_visual()
 
-	selected_wand_slot = active_index
-	print("Selected wand slot: ", selected_wand_slot)
-	_reset_spell_slots()
+func _refresh_player_reference() -> void:
+	player = get_tree().get_first_node_in_group("player")
 
-	match active_index:
-		0:
-			spell_slot_1.modulate = Color(1, 1, 0.6)
-		1:
-			spell_slot_2.modulate = Color(1, 1, 0.6)
-		2:
-			spell_slot_3.modulate = Color(1, 1, 0.6)
+func _refresh_all_ui() -> void:
+	_refresh_health_ui()
+	_refresh_wand_ui()
+	_refresh_inventory_ui()
+	_apply_spell_selection_visual()
 
-func refresh_all_ui() -> void:
-	refresh_inventory_ui()
-	refresh_wand_ui()
-
-func refresh_inventory_ui() -> void:
+func _refresh_health_ui() -> void:
 	if player == null:
 		return
-	if not player.has_node("Inventory"):
-		print("HUD: Player hat keinen Inventory Node")
+
+	var health_component: Node = player.get_node_or_null("HealthComponent")
+	if health_component == null:
+		health_component = player.get_node_or_null("PlayerHealthComponent")
+
+	if health_component == null:
 		return
 
-	var inventory: InventoryComponent = player.get_node("Inventory")
-	if inventory == null:
-		print("HUD: Inventory ist null")
+	var current_health = health_component.get("health")
+	var max_health = health_component.get("max_health")
+
+	if current_health != null and max_health != null:
+		set_health(int(current_health), int(max_health))
+
+func _refresh_wand_ui() -> void:
+	if player == null:
 		return
 
-	var spells: Array[SpellData] = inventory.get_spells()
-	print("HUD inventory size: ", spells.size())
+	var wand: Node = player.get_node_or_null("WandPivot/Wand")
+	if wand == null:
+		return
 
-	for i in range(inventory_icons.size()):
-		var icon_rect: TextureRect = inventory_icons[i]
+	var wand_data = wand.get("wand_data")
+	if wand_data != null and wand_data.icon != null:
+		wand_icon.texture = wand_data.icon
+		wand_icon.visible = true
+	else:
+		wand_icon.texture = null
+		wand_icon.visible = false
+
+	var spells = []
+	if wand_data != null:
+		var slot_data = wand_data.get("spell_slots")
+		if slot_data != null:
+			spells = slot_data
+
+	for i in range(spell_icons.size()):
+		var icon_rect := spell_icons[i]
 		if icon_rect == null:
 			continue
 
@@ -129,145 +141,65 @@ func refresh_inventory_ui() -> void:
 			icon_rect.texture = null
 			icon_rect.visible = false
 
-func refresh_wand_ui() -> void:
+	var current_spell_index_value = wand.get("current_spell_index")
+	if current_spell_index_value != null:
+		selected_spell_index = int(current_spell_index_value)
+
+	var current_mana = wand.get("current_mana")
+	if current_mana != null and wand_data != null:
+		var mana_max = wand_data.get("mana_max")
+		if mana_max != null:
+			update_mana(float(current_mana), float(mana_max))
+
+func _refresh_inventory_ui() -> void:
 	if player == null:
 		return
-	if not player.has_node("WandPivot/Wand"):
-		print("HUD: Player hat keinen WandPivot/Wand Node")
+
+	var inventory: Node = player.get_node_or_null("Inventory")
+	if inventory == null:
 		return
 
-	var wand = player.get_node("WandPivot/Wand")
-	if wand == null:
-		print("HUD: Wand ist null")
-		return
+	var spells = inventory.get("spell_inventory")
+	if spells == null and inventory.has_method("get_spells"):
+		spells = inventory.get_spells()
 
-	_update_single_wand_slot(spell_slot_1_icon, wand, 0)
-	_update_single_wand_slot(spell_slot_2_icon, wand, 1)
-	_update_single_wand_slot(spell_slot_3_icon, wand, 2)
+	if spells == null:
+		spells = []
 
-	var wand_data = wand.get("wand_data")
-	if wand_slot_icon != null and wand_data != null and wand_data.icon != null:
-		wand_slot_icon.texture = wand_data.icon
-		wand_slot_icon.visible = true
-	else:
-		wand_slot_icon.texture = null
-		wand_slot_icon.visible = false
+	for i in range(inventory_icons.size()):
+		var icon_rect := inventory_icons[i]
+		if icon_rect == null:
+			continue
 
-func _update_single_wand_slot(icon_rect: TextureRect, wand, slot_index: int) -> void:
-	if icon_rect == null:
-		return
+		if i < spells.size() and spells[i] != null and spells[i].icon != null:
+			icon_rect.texture = spells[i].icon
+			icon_rect.visible = true
+		else:
+			icon_rect.texture = null
+			icon_rect.visible = false
 
-	var spell: SpellData = wand.get_spell_in_slot(slot_index)
-	if spell != null and spell.icon != null:
-		icon_rect.texture = spell.icon
-		icon_rect.visible = true
-	else:
-		icon_rect.texture = null
-		icon_rect.visible = false
+func _apply_spell_selection_visual() -> void:
+	for i in range(spell_slot_panels.size()):
+		var panel := spell_slot_panels[i]
+		if panel == null:
+			continue
 
-func _on_inventory_slot_pressed(slot_index: int) -> void:
-	print("Inventory slot clicked: ", slot_index)
+		if i == selected_spell_index:
+			panel.modulate = Color(1.2, 1.2, 1.2, 1.0)
+		else:
+			panel.modulate = Color(1, 1, 1, 1)
 
-	if not inventory_open:
-		print("Abbruch: inventory_open == false")
-		return
-	if player == null:
-		print("Abbruch: player == null")
-		return
+func _clear_all_icons() -> void:
+	if wand_icon != null:
+		wand_icon.texture = null
+		wand_icon.visible = false
 
-	if player.has_method("equip_inventory_spell_to_wand"):
-		var result: bool = player.equip_inventory_spell_to_wand(slot_index, selected_wand_slot)
-		print("equip_inventory_spell_to_wand result: ", result, " inventory=", slot_index, " wand=", selected_wand_slot)
-	else:
-		print("Player hat equip_inventory_spell_to_wand nicht")
+	for icon_rect in spell_icons:
+		if icon_rect != null:
+			icon_rect.texture = null
+			icon_rect.visible = false
 
-	refresh_all_ui()
-
-func _select_wand_slot(slot_index: int) -> void:
-	print("Wand slot left click: ", slot_index)
-
-	if not inventory_open:
-		print("Abbruch: inventory_open == false")
-		return
-
-	update_spell_selection(slot_index)
-	refresh_all_ui()
-
-func _unequip_wand_slot(slot_index: int) -> void:
-	print("Wand slot right click: ", slot_index)
-
-	if not inventory_open:
-		print("Abbruch: inventory_open == false")
-		return
-	if player == null:
-		print("Abbruch: player == null")
-		return
-
-	if player.has_method("unequip_wand_spell_to_inventory"):
-		var result: bool = player.unequip_wand_spell_to_inventory(slot_index)
-		print("unequip_wand_spell_to_inventory result: ", result, " slot=", slot_index)
-	else:
-		print("Player hat unequip_wand_spell_to_inventory nicht")
-
-	refresh_all_ui()
-
-func _reset_spell_slots() -> void:
-	if spell_slot_1 == null or spell_slot_2 == null or spell_slot_3 == null:
-		return
-
-	spell_slot_1.modulate = Color(1, 1, 1)
-	spell_slot_2.modulate = Color(1, 1, 1)
-	spell_slot_3.modulate = Color(1, 1, 1)
-
-func _on_slot_1_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(0)
-
-func _on_slot_2_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(1)
-
-func _on_slot_3_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(2)
-
-func _on_slot_4_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(3)
-
-func _on_slot_5_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(4)
-
-func _on_slot_6_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(5)
-
-func _on_slot_7_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(6)
-
-func _on_slot_8_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_on_inventory_slot_pressed(7)
-
-func _on_spell_slot_1_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			_select_wand_slot(0)
-		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			_unequip_wand_slot(0)
-
-func _on_spell_slot_2_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			_select_wand_slot(1)
-		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			_unequip_wand_slot(1)
-
-func _on_spell_slot_3_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			_select_wand_slot(2)
-		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			_unequip_wand_slot(2)
+	for icon_rect in inventory_icons:
+		if icon_rect != null:
+			icon_rect.texture = null
+			icon_rect.visible = false

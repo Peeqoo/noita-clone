@@ -1,0 +1,433 @@
+[gd_scene format=3 uid="uid://b1m65sd63omra"]
+
+[ext_resource type="Texture2D" uid="uid://cpt5l0yjpdsco" path="res://assets/hud/Heart&ManaUi.png" id="1_cuuuh"]
+[ext_resource type="Script" uid="uid://b6p7641m7a5yi" path="res://project/scripts/hud_gd/hud.gd" id="1_jj1yb"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jj1yb"]
+bg_color = Color(1, 0, 0, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 3
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d70ct"]
+atlas = ExtResource("1_cuuuh")
+region = Rect2(2, 2, 16, 10)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ehgog"]
+bg_color = Color(0.14509805, 0.22352941, 0.7490196, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+corner_detail = 3
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qlvh"]
+atlas = ExtResource("1_cuuuh")
+region = Rect2(2, 26, 16, 10)
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=1967121560]
+script = ExtResource("1_jj1yb")
+
+[node name="HUD" type="Control" parent="." unique_id=980857777]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="HealthManaPanel" type="Panel" parent="HUD" unique_id=540194754]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -122.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 44.0
+grow_horizontal = 0
+
+[node name="HealthManaMarginContainer" type="MarginContainer" parent="HUD/HealthManaPanel" unique_id=1788672282]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="HealthManaBox" type="VBoxContainer" parent="HUD/HealthManaPanel/HealthManaMarginContainer" unique_id=1308502918]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HealthBar" type="ProgressBar" parent="HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox" unique_id=1359742747]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_jj1yb")
+value = 100.0
+fill_mode = 1
+show_percentage = false
+
+[node name="Icon" type="TextureRect" parent="HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/HealthBar" unique_id=301517984]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -12.0
+offset_top = -3.0
+offset_bottom = 3.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = SubResource("AtlasTexture_d70ct")
+stretch_mode = 5
+
+[node name="ManaBar" type="ProgressBar" parent="HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox" unique_id=2093683568]
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_ehgog")
+value = 100.0
+fill_mode = 1
+show_percentage = false
+
+[node name="Icon" type="TextureRect" parent="HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/ManaBar" unique_id=259755285]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -12.0
+offset_top = -3.0
+offset_bottom = 3.0
+grow_horizontal = 0
+grow_vertical = 2
+texture = SubResource("AtlasTexture_8qlvh")
+stretch_mode = 5
+
+[node name="WandPanel" type="Panel" parent="HUD" unique_id=7912591]
+custom_minimum_size = Vector2(144, 68)
+layout_mode = 1
+anchors_preset = -1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 148.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WandMargin" type="MarginContainer" parent="HUD/WandPanel" unique_id=1020232411]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="WandVBox" type="VBoxContainer" parent="HUD/WandPanel/WandMargin" unique_id=778053464]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="WandSlotBar" type="HBoxContainer" parent="HUD/WandPanel/WandMargin/WandVBox" unique_id=243788603]
+layout_mode = 2
+
+[node name="WandSlot" type="Panel" parent="HUD/WandPanel/WandMargin/WandVBox/WandSlotBar" unique_id=477640310]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/WandPanel/WandMargin/WandVBox/WandSlotBar/WandSlot" unique_id=1680513075]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/WandPanel/WandMargin/WandVBox/WandSlotBar/WandSlot/Center" unique_id=1382501758]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SpellSlotBar" type="HBoxContainer" parent="HUD/WandPanel/WandMargin/WandVBox" unique_id=1990417216]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="SpellSlot1" type="Panel" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar" unique_id=816487158]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot1" unique_id=716861817]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot1/Center" unique_id=1070392982]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SpellSlot2" type="Panel" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar" unique_id=1624086058]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot2" unique_id=231202007]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot2/Center" unique_id=1142795693]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SpellSlot3" type="Panel" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar" unique_id=1496716691]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot3" unique_id=1282693107]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot3/Center" unique_id=285547421]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SpellSlot4" type="Panel" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar" unique_id=685885961]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot4" unique_id=397189965]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot4/Center" unique_id=1574435575]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SpellSlot5" type="Panel" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar" unique_id=257157344]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot5" unique_id=1853399013]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot5/Center" unique_id=450585370]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="InventoryPanel" type="Panel" parent="HUD" unique_id=835403714]
+custom_minimum_size = Vector2(124, 60)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -62.0
+offset_top = -72.0
+offset_right = 62.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 0
+metadata/_edit_use_anchors_ = true
+
+[node name="InventoryMargin" type="MarginContainer" parent="HUD/InventoryPanel" unique_id=1279896505]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="InventoryGrid" type="GridContainer" parent="HUD/InventoryPanel/InventoryMargin" unique_id=377199284]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 4
+
+[node name="Slot1" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=120133203]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot1" unique_id=561541012]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot1/Center" unique_id=1485566516]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot2" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=1198771301]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot2" unique_id=2028487764]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot2/Center" unique_id=281000273]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot3" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=1330545435]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot3" unique_id=729351133]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot3/Center" unique_id=1016916518]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot4" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=1909645562]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot4" unique_id=485592086]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot4/Center" unique_id=1277433676]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot5" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=989381621]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot5" unique_id=375213498]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot5/Center" unique_id=1723842153]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot6" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=1437521620]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot6" unique_id=195507352]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot6/Center" unique_id=1750504054]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot7" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=1995993986]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot7" unique_id=190832942]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot7/Center" unique_id=841358923]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Slot8" type="Panel" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid" unique_id=839731354]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
+[node name="Center" type="CenterContainer" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot8" unique_id=20060210]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="HUD/InventoryPanel/InventoryMargin/InventoryGrid/Slot8/Center" unique_id=807267310]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
