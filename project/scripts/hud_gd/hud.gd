@@ -5,6 +5,11 @@ extends CanvasLayer
 @onready var health_bar: Range = $HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/HealthBar
 @onready var mana_bar: Range = $HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/ManaBar
 
+@onready var dash_charge_fills: Array[ColorRect] = [
+	$HUD/HealthManaPanel/HealthManaMarginContainer/DashChargeBox/DashCharge1/Fill,
+	$HUD/HealthManaPanel/HealthManaMarginContainer/DashChargeBox/DashCharge2/Fill
+]
+
 @onready var wand_icon: TextureRect = $HUD/WandPanel/WandMargin/WandVBox/WandSlotBar/WandSlot/Center/Icon
 
 @onready var spell_slot_panels: Array[Panel] = [
@@ -88,16 +93,14 @@ func _refresh_all_ui() -> void:
 	_refresh_health_ui()
 	_refresh_wand_ui()
 	_refresh_inventory_ui()
+	_refresh_dash_ui()
 	_apply_spell_selection_visual()
 
 func _refresh_health_ui() -> void:
 	if player == null:
 		return
 
-	var health_component: Node = player.get_node_or_null("HealthComponent")
-	if health_component == null:
-		health_component = player.get_node_or_null("PlayerHealthComponent")
-
+	var health_component: Node = player.get_node_or_null("Components/HealthComponent")
 	if health_component == null:
 		return
 
@@ -111,7 +114,7 @@ func _refresh_wand_ui() -> void:
 	if player == null:
 		return
 
-	var wand: Node = player.get_node_or_null("WandPivot/Wand")
+	var wand: Node = player.get_node_or_null("Visuals/WandPivot/Wand")
 	if wand == null:
 		return
 
@@ -155,7 +158,7 @@ func _refresh_inventory_ui() -> void:
 	if player == null:
 		return
 
-	var inventory: Node = player.get_node_or_null("Inventory")
+	var inventory: Node = player.get_node_or_null("Components/InventoryComponent")
 	if inventory == null:
 		return
 
@@ -177,6 +180,37 @@ func _refresh_inventory_ui() -> void:
 		else:
 			icon_rect.texture = null
 			icon_rect.visible = false
+
+func _refresh_dash_ui() -> void:
+	for fill in dash_charge_fills:
+		if fill != null:
+			fill.visible = false
+
+	if player == null:
+		return
+
+	var dash_component: Node = player.get_node_or_null("Components/DashComponent")
+	if dash_component == null:
+		return
+
+	if not dash_component.has_method("get_dash_charges"):
+		return
+
+	var charges: int = dash_component.get_dash_charges()
+	var max_charges: int = dash_charge_fills.size()
+
+	if dash_component.has_method("get_max_dash_charges"):
+		max_charges = min(dash_component.get_max_dash_charges(), dash_charge_fills.size())
+
+	for i in range(dash_charge_fills.size()):
+		var fill: ColorRect = dash_charge_fills[i]
+		if fill == null:
+			continue
+
+		if i < max_charges and i < charges:
+			fill.visible = true
+		else:
+			fill.visible = false
 
 func _apply_spell_selection_visual() -> void:
 	for i in range(spell_slot_panels.size()):
@@ -203,3 +237,7 @@ func _clear_all_icons() -> void:
 		if icon_rect != null:
 			icon_rect.texture = null
 			icon_rect.visible = false
+
+	for fill in dash_charge_fills:
+		if fill != null:
+			fill.visible = true

@@ -3,7 +3,7 @@ class_name EnemyMonster
 
 @export_group("Monster Combat")
 @export var move_speed: float = 102.0
-@export var chase_speed_multiplier: float = 1.0
+@export var chase_speed_multiplier: float = 1.2
 @export var close_chase_speed_multiplier: float = 0.68
 @export var attack_range: float = 56.0
 @export var attack_stop_distance: float = 24.0
@@ -12,6 +12,17 @@ class_name EnemyMonster
 @export var attack_windup: float = 0.22
 @export var crit_chance: float = 0.14
 @export var crit_multiplier: float = 1.4
+
+@export_group("Catch Up Chase")
+@export var use_catch_up_speed: bool = true
+@export var catch_up_distance: float = 140.0
+@export var catch_up_speed_multiplier: float = 0.8
+
+@export_group("Aggro Chase")
+@export var use_aggro_chase: bool = true
+@export var aggro_bonus_per_hit: float = 0.04
+@export var max_aggro_bonus: float = 0.18
+@export var aggro_decay_per_second: float = 0.10
 
 @export_group("Monster Feel")
 @export var attack_hitbox_offset: float = 10.0
@@ -24,6 +35,7 @@ var player: Node2D = null
 var has_hit_this_attack: bool = false
 var facing_dir: float = -1.0
 var is_sleeping: bool = false
+var aggro_chase_bonus: float = 0.0
 
 func _ready() -> void:
 	max_health = 46
@@ -34,8 +46,8 @@ func _ready() -> void:
 	use_patrol = false
 
 	use_soft_separation = true
-	separation_radius = 18.0
-	separation_strength = 42.0
+	separation_radius = 30.0
+	separation_strength = 80.0
 
 	use_gravity = true
 	use_ledge_check = false
@@ -57,6 +69,7 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEATH:
 		return
 
+	_update_aggro_decay(delta)
 	apply_gravity(delta)
 
 	if current_state == State.HIT:
@@ -166,16 +179,44 @@ func _handle_player_state(delta: float) -> void:
 			change_state(State.IDLE)
 
 	elif distance <= attack_range:
-		velocity.x = dir * move_speed * close_chase_speed_multiplier
+		var close_speed_mult: float = close_chase_speed_multiplier + aggro_chase_bonus * 0.35
+		velocity.x = dir * move_speed * close_speed_mult
 		change_state(State.RUN)
 
 	else:
-		velocity.x = dir * move_speed * chase_speed_multiplier
+		var final_chase_multiplier: float = _get_current_chase_multiplier(distance)
+		velocity.x = dir * move_speed * final_chase_multiplier
 		change_state(State.RUN)
 
 	velocity.x += get_separation_velocity_x()
 	velocity.x += get_knockback_velocity_x(delta)
 	move_and_slide_with_step(delta)
+
+func _get_current_chase_multiplier(distance: float) -> float:
+	var final_multiplier: float = chase_speed_multiplier
+
+	if use_aggro_chase:
+		final_multiplier += aggro_chase_bonus
+
+	if use_catch_up_speed and distance > catch_up_distance:
+		final_multiplier *= catch_up_speed_multiplier
+
+	return final_multiplier
+
+func _update_aggro_decay(delta: float) -> void:
+	if not use_aggro_chase:
+		return
+
+	if aggro_chase_bonus <= 0.0:
+		return
+
+	aggro_chase_bonus = maxf(0.0, aggro_chase_bonus - aggro_decay_per_second * delta)
+
+func _add_aggro_from_hit() -> void:
+	if not use_aggro_chase:
+		return
+
+	aggro_chase_bonus = minf(max_aggro_bonus, aggro_chase_bonus + aggro_bonus_per_hit)
 
 func _update_facing_visuals() -> void:
 	if facing_dir < 0.0:
@@ -263,6 +304,7 @@ func aggro_on_hit(source_position: Vector2 = Vector2.ZERO) -> void:
 	is_sleeping = false
 	is_returning_to_spawn = false
 	is_searching = false
+	_add_aggro_from_hit()
 
 	var found_player := get_tree().get_first_node_in_group("player")
 	if found_player != null and found_player is Node2D:

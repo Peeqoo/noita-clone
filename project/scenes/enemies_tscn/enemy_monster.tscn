@@ -318,7 +318,7 @@ size = Vector2(84, 46)
 
 [node name="TrashMonster" type="CharacterBody2D" unique_id=319552509 groups=["enemy"]]
 collision_layer = 4
-collision_mask = 515
+collision_mask = 513
 script = ExtResource("1_ox87v")
 footstep_sound = ExtResource("10_nnnwl")
 hit_sound = ExtResource("11_2d72a")

@@ -6,13 +6,18 @@
 [ext_resource type="PackedScene" uid="uid://dlsv21irpatrw" path="res://project/scenes/popups_tscn/damage_number_player.tscn" id="2_x42q5"]
 [ext_resource type="PackedScene" uid="uid://c8gp50ftj2b18" path="res://project/scenes/popups_tscn/damage_number_player_crit.tscn" id="3_f8wmi"]
 [ext_resource type="Script" uid="uid://ual08sf6fwkl" path="res://project/scripts/player_gd/player_health_component.gd" id="5_hrj1m"]
+[ext_resource type="Script" uid="uid://ddx61vjkkymt8" path="res://project/scripts/player_gd/player_movement_component.gd" id="6_fpucg"]
 [ext_resource type="Script" uid="uid://djabv3jo81ysy" path="res://project/scripts/player_gd/inventory_component.gd" id="6_gdmcs"]
 [ext_resource type="Script" uid="uid://dl0pfyktfjn4y" path="res://project/scripts/player_gd/camera_2d.gd" id="6_ykgb7"]
+[ext_resource type="Script" uid="uid://867onqwegito" path="res://project/scripts/player_gd/player_dash_component.gd" id="7_rj2wf"]
 [ext_resource type="Script" uid="uid://d1h1drolwfrf2" path="res://project/scripts/player_gd/player_animation_controller.gd" id="8_cjtr1"]
+[ext_resource type="Script" uid="uid://lonjrtpy04ay" path="res://project/scripts/player_gd/player_combat_state_component.gd" id="8_mq3u0"]
 [ext_resource type="AudioStream" uid="uid://vv3uy8wuvfgp" path="res://assets/sounds/enemies/Hit.wav" id="8_xkhtu"]
 [ext_resource type="Script" uid="uid://dokl2pfrf5f38" path="res://project/scripts/player_gd/player_inventory_component.gd" id="9_1ok13"]
 [ext_resource type="AudioStream" uid="uid://4x7g81nnc36l" path="res://assets/sounds/player/FootsteppPlayer.wav" id="10_4q4wt"]
 [ext_resource type="AudioStream" uid="uid://6ejgbln1ef5n" path="res://assets/sounds/player/Jump.wav" id="11_xkhtu"]
+[ext_resource type="Script" uid="uid://dhweik7qmxmct" path="res://project/scripts/player_gd/player_aim_component.gd" id="14_a4q24"]
+[ext_resource type="Script" uid="uid://bx7u7hxk7688i" path="res://project/scripts/player_gd/player_contact_push_component.gd" id="14_n0vbx"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pdsk0"]
 radius = 3.0
@@ -97,6 +102,30 @@ region = Rect2(256, 320, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_v41ir"]
 atlas = ExtResource("1_pdsk0")
 region = Rect2(288, 320, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s0cm0"]
+atlas = ExtResource("1_pdsk0")
+region = Rect2(0, 256, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cia8j"]
+atlas = ExtResource("1_pdsk0")
+region = Rect2(32, 256, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3542x"]
+atlas = ExtResource("1_pdsk0")
+region = Rect2(64, 256, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kw0sp"]
+atlas = ExtResource("1_pdsk0")
+region = Rect2(96, 256, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d0tpw"]
+atlas = ExtResource("1_pdsk0")
+region = Rect2(128, 256, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1tu2x"]
+atlas = ExtResource("1_pdsk0")
+region = Rect2(160, 256, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4rbrk"]
 atlas = ExtResource("1_pdsk0")
@@ -322,31 +351,7 @@ region = Rect2(96, 64, 32, 32)
 atlas = ExtResource("1_pdsk0")
 region = Rect2(0, 64, 32, 32)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_s0cm0"]
-atlas = ExtResource("1_pdsk0")
-region = Rect2(0, 256, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_cia8j"]
-atlas = ExtResource("1_pdsk0")
-region = Rect2(32, 256, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_3542x"]
-atlas = ExtResource("1_pdsk0")
-region = Rect2(64, 256, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_kw0sp"]
-atlas = ExtResource("1_pdsk0")
-region = Rect2(96, 256, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_d0tpw"]
-atlas = ExtResource("1_pdsk0")
-region = Rect2(128, 256, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1tu2x"]
-atlas = ExtResource("1_pdsk0")
-region = Rect2(160, 256, 32, 32)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_e5eqh"]
+[sub_resource type="SpriteFrames" id="SpriteFrames_a4q24"]
 animations = [{
 "frames": [{
 "duration": 1.0,
@@ -411,7 +416,30 @@ animations = [{
 }],
 "loop": false,
 "name": &"attack",
-"speed": 10.0
+"speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s0cm0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cia8j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3542x")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kw0sp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d0tpw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1tu2x")
+}],
+"loop": false,
+"name": &"ausweich_dash",
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -439,8 +467,8 @@ animations = [{
 "texture": SubResource("AtlasTexture_tri4i")
 }],
 "loop": false,
-"name": &"dash",
-"speed": 10.0
+"name": &"block_dash",
+"speed": 20.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -620,59 +648,86 @@ animations = [{
 "loop": false,
 "name": &"stop_run",
 "speed": 10.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_s0cm0")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_cia8j")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_3542x")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_kw0sp")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_d0tpw")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_1tu2x")
-}],
-"loop": false,
-"name": &"teleport",
-"speed": 10.0
 }]
 
 [node name="Player02" type="CharacterBody2D" unique_id=1587487172 groups=["player"]]
 collision_layer = 2
-collision_mask = 1589
+collision_mask = 1585
 script = ExtResource("1_higxc")
-footstep_sound = ExtResource("10_4q4wt")
-jump_sound = ExtResource("11_xkhtu")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1219825577]
 position = Vector2(2, -4)
 shape = SubResource("CapsuleShape2D_pdsk0")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1806039168]
-sprite_frames = SubResource("SpriteFrames_e5eqh")
-animation = &"run"
+[node name="Visuals" type="Node2D" parent="." unique_id=1115640477]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visuals" unique_id=1806039168]
+sprite_frames = SubResource("SpriteFrames_a4q24")
+animation = &"idle"
 autoplay = "idle"
-frame = 7
 offset = Vector2(0, -11)
 
-[node name="WandPivot" type="Node2D" parent="." unique_id=1051900051]
-position = Vector2(2, -6)
-rotation = -0.20116594
+[node name="WandPivot" type="Node2D" parent="Visuals" unique_id=1051900051]
+position = Vector2(2, -7)
 
-[node name="Wand" parent="WandPivot" unique_id=248208459 instance=ExtResource("2_mcjsd")]
+[node name="Wand" parent="Visuals/WandPivot" unique_id=248208459 instance=ExtResource("2_mcjsd")]
 position = Vector2(14.117304, 0.83769786)
-rotation = 0.064341225
 scale = Vector2(0.9905952, 0.98842883)
 
-[node name="GroundCheck" type="RayCast2D" parent="." unique_id=778677790]
+[node name="HandRight" type="Marker2D" parent="Visuals" unique_id=599572895]
+position = Vector2(6, -5)
+
+[node name="HandLeft" type="Marker2D" parent="Visuals" unique_id=641450391]
+position = Vector2(-2, -5)
+
+[node name="Components" type="Node" parent="." unique_id=2035479831]
+
+[node name="MovementComponent" type="Node" parent="Components" unique_id=349947778]
+script = ExtResource("6_fpucg")
+footstep_sound = ExtResource("10_4q4wt")
+jump_sound = ExtResource("11_xkhtu")
+
+[node name="DashComponent" type="Node" parent="Components" unique_id=1434222206]
+script = ExtResource("7_rj2wf")
+
+[node name="CombatStateComponent" type="Node" parent="Components" unique_id=1507810832]
+script = ExtResource("8_mq3u0")
+
+[node name="HealthComponent" type="Node" parent="Components" unique_id=629853167]
+script = ExtResource("5_hrj1m")
+damage_number_scene = ExtResource("2_x42q5")
+crit_damage_number_scene = ExtResource("3_f8wmi")
+hit_sound = ExtResource("8_xkhtu")
+
+[node name="AnimationController" type="Node" parent="Components" unique_id=1109033422]
+script = ExtResource("8_cjtr1")
+
+[node name="AimComponent" type="Node" parent="Components" unique_id=1350134358]
+script = ExtResource("14_a4q24")
+
+[node name="InventoryComponent" type="Node" parent="Components" unique_id=825697389]
+script = ExtResource("6_gdmcs")
+
+[node name="PlayerInventoryComponent" type="Node" parent="Components" unique_id=871542569]
+script = ExtResource("9_1ok13")
+
+[node name="PlayerContactPushComponent" type="Node" parent="Components" unique_id=2137848317]
+script = ExtResource("14_n0vbx")
+
+[node name="Helpers" type="Node" parent="." unique_id=1515108302]
+
+[node name="GroundCheck" type="RayCast2D" parent="Helpers" unique_id=778677790]
+
+[node name="Audio" type="Node2D" parent="." unique_id=1065004060]
+
+[node name="FootstepPlayer" type="AudioStreamPlayer2D" parent="Audio" unique_id=1090825641]
+bus = &"SFX"
+
+[node name="JumpPlayer" type="AudioStreamPlayer2D" parent="Audio" unique_id=1182717496]
+bus = &"SFX"
+
+[node name="HitPlayer" type="AudioStreamPlayer2D" parent="Audio" unique_id=1820867723]
+bus = &"SFX"
 
 [node name="PlayerCamera" type="Camera2D" parent="." unique_id=771181156]
 position_smoothing_speed = 7.5
@@ -681,35 +736,4 @@ drag_top_margin = 0.15
 drag_bottom_margin = 0.25
 script = ExtResource("6_ykgb7")
 
-[node name="HandRight" type="Marker2D" parent="." unique_id=599572895]
-position = Vector2(6, -3)
-
-[node name="HandLeft" type="Marker2D" parent="." unique_id=641450391]
-position = Vector2(-2, -3)
-
-[node name="Inventory" type="Node2D" parent="." unique_id=1523198260]
-script = ExtResource("6_gdmcs")
-
-[node name="HealthComponent" type="Node2D" parent="." unique_id=1585939947]
-script = ExtResource("5_hrj1m")
-hit_sound = ExtResource("8_xkhtu")
-damage_number_scene = ExtResource("2_x42q5")
-crit_damage_number_scene = ExtResource("3_f8wmi")
-
-[node name="AnimationController" type="Node2D" parent="." unique_id=69102457]
-script = ExtResource("8_cjtr1")
-
-[node name="PlayerInventoryComponent" type="Node2D" parent="." unique_id=351875900]
-script = ExtResource("9_1ok13")
-
-[node name="FootstepPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1090825641]
-bus = &"SFX"
-
-[node name="JumpPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1182717496]
-bus = &"SFX"
-
-[node name="HitPlayer" type="AudioStreamPlayer2D" parent="." unique_id=1820867723]
-bus = &"SFX"
-
-[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animation_finished"]
-[connection signal="health_changed" from="HealthComponent" to="." method="_on_player_health_component_health_changed"]
+[connection signal="animation_finished" from="Visuals/AnimatedSprite2D" to="Components/AnimationController" method="on_animation_finished"]

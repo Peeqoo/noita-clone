@@ -1,8 +1,8 @@
 extends Node
 class_name PlayerInventoryComponent
 
-@onready var inventory: InventoryComponent = $"../Inventory"
-@onready var wand = $"../WandPivot/Wand"
+@onready var inventory: InventoryComponent = $"../InventoryComponent"
+@onready var wand = $"../../Visuals/WandPivot/Wand"
 
 func equip_inventory_spell_to_wand(inventory_index: int, slot_index: int) -> bool:
 	if inventory == null:

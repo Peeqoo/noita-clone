@@ -6,12 +6,24 @@ class_name EnemyHumanoid
 @export var aggro_range: float = 340.0
 @export var attack_range: float = 72.0
 @export var min_attack_distance: float = 50.0
-@export var preferred_distance: float = 62.0
+@export var preferred_distance: float = 52.0
 @export var disengage_distance: float = 32.0
 @export var attack_damage: int = 11
-@export var attack_cooldown: float = 0.38
+@export var attack_cooldown: float = 0.28
 @export var crit_chance: float = 0.16
 @export var crit_multiplier: float = 1.5
+
+@export_group("Catch Up Chase")
+@export var use_catch_up_speed: bool = true
+@export var catch_up_distance: float = 170.0
+@export var catch_up_speed_multiplier: float = 1.12
+
+@export_group("Aggro Chase")
+@export var use_aggro_chase: bool = true
+@export var aggro_bonus_per_hit: float = 0.10
+@export var max_aggro_bonus: float = 0.45
+@export var aggro_decay_per_second: float = 0.14
+@export var aggro_preferred_distance_reduction: float = 10.0
 
 @export_group("Humanoid Movement Feel")
 @export var sprite_offset: float = 35.0
@@ -25,12 +37,13 @@ class_name EnemyHumanoid
 
 var player: Node2D = null
 var has_hit_this_attack: bool = false
+var aggro_chase_bonus: float = 0.0
 
 func _ready() -> void:
 	max_health = 62
 	max_chase_distance = 620.0
 	return_to_spawn_speed = 68.0
-	search_duration = 2.6
+	search_duration = 2.8
 
 	use_patrol = true
 	patrol_distance = 42.0
@@ -38,8 +51,8 @@ func _ready() -> void:
 	patrol_speed = 26.0
 
 	use_soft_separation = true
-	separation_radius = 26.0
-	separation_strength = 58.0
+	separation_radius = 30.0
+	separation_strength = 80.0
 
 	use_gravity = true
 	use_ledge_check = true
@@ -57,6 +70,7 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.DEATH:
 		return
 
+	_update_aggro_decay(delta)
 	apply_gravity(delta)
 
 	if current_state == State.HIT:
@@ -172,6 +186,14 @@ func _handle_player_state(delta: float) -> void:
 
 	update_facing_and_attack_hitbox(dir)
 
+	var current_preferred_distance: float = preferred_distance
+	if use_aggro_chase:
+		var aggro_ratio: float = 0.0
+		if max_aggro_bonus > 0.0:
+			aggro_ratio = aggro_chase_bonus / max_aggro_bonus
+		current_preferred_distance -= aggro_preferred_distance_reduction * aggro_ratio
+		current_preferred_distance = maxf(min_attack_distance + 2.0, current_preferred_distance)
+
 	if distance <= disengage_distance:
 		var retreat_dir: float = -dir
 
@@ -189,7 +211,7 @@ func _handle_player_state(delta: float) -> void:
 		else:
 			change_state(State.IDLE)
 
-	elif distance < preferred_distance:
+	elif distance < current_preferred_distance:
 		var reposition_dir: float = -dir
 
 		if can_move_in_direction(reposition_dir):
@@ -204,6 +226,12 @@ func _handle_player_state(delta: float) -> void:
 		if distance < approach_slowdown_distance:
 			move_mult = 0.7
 
+		if use_aggro_chase:
+			move_mult += aggro_chase_bonus
+
+		if use_catch_up_speed and distance > catch_up_distance:
+			move_mult *= catch_up_speed_multiplier
+
 		if can_move_in_direction(dir):
 			velocity.x = dir * move_speed * move_mult
 			change_state(State.RUN)
@@ -214,6 +242,21 @@ func _handle_player_state(delta: float) -> void:
 	velocity.x += get_separation_velocity_x()
 	velocity.x += get_knockback_velocity_x(delta)
 	move_and_slide_with_step(delta)
+
+func _update_aggro_decay(delta: float) -> void:
+	if not use_aggro_chase:
+		return
+
+	if aggro_chase_bonus <= 0.0:
+		return
+
+	aggro_chase_bonus = maxf(0.0, aggro_chase_bonus - aggro_decay_per_second * delta)
+
+func _add_aggro_from_hit() -> void:
+	if not use_aggro_chase:
+		return
+
+	aggro_chase_bonus = minf(max_aggro_bonus, aggro_chase_bonus + aggro_bonus_per_hit)
 
 func update_facing_and_attack_hitbox(dir: float) -> void:
 	animated_sprite.flip_h = dir > 0.0
@@ -288,6 +331,7 @@ func aggro_on_hit(source_position: Vector2 = Vector2.ZERO) -> void:
 	is_returning_to_spawn = false
 	is_searching = false
 	is_patrol_waiting = false
+	_add_aggro_from_hit()
 
 	var found_player := get_tree().get_first_node_in_group("player")
 	if found_player != null and found_player is Node2D:

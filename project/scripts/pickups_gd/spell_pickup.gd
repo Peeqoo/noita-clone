@@ -68,14 +68,25 @@ func _process(_delta: float) -> void:
 		return
 
 	if Input.is_action_just_pressed("interact"):
-		if player_in_range.has_method("add_spell_to_inventory"):
-			var added: bool = player_in_range.add_spell_to_inventory(spell_data)
-			if added:
-				queue_free()
-			else:
-				print("Pickup nicht aufgenommen: Inventar ist voll.")
+		var inventory = player_in_range.get_node_or_null("Components/InventoryComponent")
+		if inventory == null:
+			print("Pickup fehlgeschlagen: InventoryComponent nicht gefunden.")
+			return
+
+		if not inventory.has_method("add_spell"):
+			print("Pickup fehlgeschlagen: add_spell() fehlt auf InventoryComponent.")
+			return
+
+		var added: bool = inventory.add_spell(spell_data)
+		if added:
+			queue_free()
+		else:
+			print("Pickup nicht aufgenommen: Inventar ist voll.")
 
 func _on_body_entered(body: Node) -> void:
+	if body == null:
+		return
+
 	if not body.is_in_group("player"):
 		return
 

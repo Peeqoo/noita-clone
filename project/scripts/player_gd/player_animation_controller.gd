@@ -1,9 +1,10 @@
 extends Node
 class_name PlayerAnimationController
 
-@onready var player: CharacterBody2D = get_parent()
-@onready var animated_sprite: AnimatedSprite2D = $"../AnimatedSprite2D"
+@onready var player: CharacterBody2D = get_parent().get_parent()
+@onready var animated_sprite: AnimatedSprite2D = $"../../Visuals/AnimatedSprite2D"
 @onready var health_component: PlayerHealthComponent = $"../HealthComponent"
+@onready var dash_component: PlayerDashComponent = $"../DashComponent"
 
 func update_animation(input_dir: float, was_on_floor_last_frame: bool, was_running_last_frame: bool) -> void:
 	if health_component == null:
@@ -17,6 +18,16 @@ func update_animation(input_dir: float, was_on_floor_last_frame: bool, was_runni
 	if health_component.is_hurt:
 		if animated_sprite.animation != "hit":
 			animated_sprite.play("hit")
+		return
+
+	if dash_component != null and dash_component.is_block_dashing:
+		if animated_sprite.animation != "block_dash":
+			animated_sprite.play("block_dash")
+		return
+
+	if dash_component != null and dash_component.is_dashing:
+		if animated_sprite.animation != "ausweich_dash":
+			animated_sprite.play("ausweich_dash")
 		return
 
 	if not player.is_on_floor():

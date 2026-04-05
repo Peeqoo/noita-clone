@@ -32,7 +32,7 @@ enum State {
 @export_group("Base Chase")
 @export var max_chase_distance: float = 420.0
 @export var return_to_spawn_speed: float = 70.0
-@export var search_duration: float = 1.2
+@export var search_duration: float = 1.6
 
 # =========================
 # Base Patrol
@@ -48,8 +48,8 @@ enum State {
 # =========================
 @export_group("Base Separation")
 @export var use_soft_separation: bool = true
-@export var separation_radius: float = 22.0
-@export var separation_strength: float = 55.0
+@export var separation_radius: float = 30.0
+@export var separation_strength: float = 80.0
 
 # =========================
 # Base Movement

@@ -327,7 +327,7 @@ size = Vector2(38, 36)
 
 [node name="EnemyHumanoid" type="CharacterBody2D" unique_id=1182090847 groups=["enemy"]]
 collision_layer = 4
-collision_mask = 515
+collision_mask = 513
 floor_snap_length = 8.0
 safe_margin = 0.02
 script = ExtResource("1_m3375")

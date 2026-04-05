@@ -22,6 +22,7 @@ var recharge_cooldown: float = 0.0
 var current_spell_index: int = 0
 var spells_cast_in_cycle: int = 0
 var trigger_held: bool = false
+var input_enabled: bool = true
 var actor_owner: Node = null
 
 var empty_flash_timer: float = 0.0
@@ -46,6 +47,11 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if wand_data == null:
 		return
+
+	if input_enabled:
+		trigger_held = Input.is_action_pressed("shoot")
+	else:
+		trigger_held = false
 
 	var old_mana: float = current_mana
 	current_mana = min(current_mana + wand_data.mana_regen * delta, wand_data.mana_max)
@@ -72,6 +78,11 @@ func set_trigger_held(held: bool) -> void:
 
 func set_actor_owner(new_owner: Node) -> void:
 	actor_owner = new_owner
+
+func set_input_enabled(enabled: bool) -> void:
+	input_enabled = enabled
+	if not input_enabled:
+		trigger_held = false
 
 func try_cast() -> void:
 	if wand_data == null:
@@ -259,61 +270,39 @@ func reset_spell_cycle() -> void:
 	spells_cast_in_cycle = 0
 	_update_hud_spell()
 
+func _update_hud_mana() -> void:
+	if hud == null or not is_instance_valid(hud):
+		hud = get_tree().get_first_node_in_group("hud")
+
+	if hud != null and hud.has_method("update_mana") and wand_data != null:
+		hud.update_mana(current_mana, wand_data.mana_max)
+
+func _update_hud_spell() -> void:
+	if hud == null or not is_instance_valid(hud):
+		hud = get_tree().get_first_node_in_group("hud")
+
+	if hud != null and hud.has_method("update_spell_selection"):
+		hud.update_spell_selection(current_spell_index)
+
 func _trigger_empty_mana_flash() -> void:
 	empty_flash_timer = empty_flash_duration
 
 func _update_mana_visual(delta: float) -> void:
-	if flash_sprite == null:
-		return
-
-	if wand_data == null or wand_data.mana_max <= 0.0:
-		flash_sprite.modulate = Color(1, 1, 1, 0)
+	if flash_sprite == null or wand_data == null or wand_data.mana_max <= 0.0:
 		return
 
 	if empty_flash_timer > 0.0:
-		flash_sprite.modulate = Color(1, 1, 1, empty_flash_alpha)
+		flash_sprite.modulate.a = empty_flash_alpha
 		return
 
-	var mana_ratio: float = clamp(current_mana / wand_data.mana_max, 0.0, 1.0)
-
-	if mana_ratio > low_mana_start_ratio:
-		blink_time = 0.0
-		flash_sprite.modulate = Color(1, 1, 1, 0)
-		return
-
-	var danger_t: float = 1.0
-	if low_mana_start_ratio > 0.0:
-		danger_t = 1.0 - clamp(mana_ratio / low_mana_start_ratio, 0.0, 1.0)
-
-	var blink_speed: float = lerp(blink_speed_slow, blink_speed_fast, danger_t)
-	blink_time += delta * blink_speed
-
-	var wave: float = (sin(blink_time * TAU) + 1.0) * 0.5
-
-	var max_flash_alpha: float = lerp(low_mana_flash_alpha, critical_mana_flash_alpha, danger_t)
-	var flash_alpha: float = lerp(0.0, max_flash_alpha, wave)
+	var mana_ratio: float = current_mana / wand_data.mana_max
 
 	if mana_ratio <= critical_mana_ratio:
-		flash_alpha = lerp(0.0, critical_mana_flash_alpha, wave)
-
-	flash_sprite.modulate = Color(1, 1, 1, flash_alpha)
-
-func _update_hud_mana() -> void:
-	if hud == null:
-		hud = get_tree().get_first_node_in_group("hud")
-
-	if hud == null:
-		return
-
-	if hud.has_method("update_mana"):
-		hud.update_mana(current_mana, wand_data.mana_max)
-
-func _update_hud_spell() -> void:
-	if hud == null:
-		hud = get_tree().get_first_node_in_group("hud")
-
-	if hud == null:
-		return
-
-	if hud.has_method("update_spell_selection"):
-		hud.update_spell_selection(current_spell_index)
+		blink_time += delta * blink_speed_fast
+		flash_sprite.modulate.a = (sin(blink_time) * 0.5 + 0.5) * critical_mana_flash_alpha
+	elif mana_ratio <= low_mana_start_ratio:
+		blink_time += delta * blink_speed_slow
+		flash_sprite.modulate.a = (sin(blink_time) * 0.5 + 0.5) * low_mana_flash_alpha
+	else:
+		blink_time = 0.0
+		flash_sprite.modulate.a = 0.0
