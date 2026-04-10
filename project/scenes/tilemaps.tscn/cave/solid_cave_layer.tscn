@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://c52uxo5hyixgw"]
+
+[ext_resource type="TileSet" uid="uid://c5p3w1su44ywb" path="res://project/resources/tilesets.tres/cave_tileset.tres" id="1_lol4y"]
+
+[node name="SolidLayer" type="TileMapLayer" unique_id=1042203033]
+tile_set = ExtResource("1_lol4y")

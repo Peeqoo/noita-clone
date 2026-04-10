@@ -507,7 +507,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"explode",
-"speed": 40.0
+"speed": 20.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_agnwn"]
@@ -521,11 +521,14 @@ script = ExtResource("1_agnwn")
 [node name="MovingSprite" type="AnimatedSprite2D" parent="." unique_id=699374862]
 sprite_frames = SubResource("SpriteFrames_er0oa")
 animation = &"moving"
+speed_scale = 5.0
 
 [node name="ExplodeSprite" type="AnimatedSprite2D" parent="." unique_id=1631722533]
 sprite_frames = SubResource("SpriteFrames_cql4g")
 animation = &"explode"
-frame = 10
+frame = 39
+frame_progress = 1.0
+speed_scale = 5.0
 offset = Vector2(24, 10)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1222105669]

@@ -640,7 +640,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"explode",
-"speed": 40.0
+"speed": 20.0
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_33aod"]
@@ -655,16 +655,16 @@ script = ExtResource("1_33aod")
 scale = Vector2(0.8, 0.8)
 sprite_frames = SubResource("SpriteFrames_w530a")
 animation = &"moving"
-frame_progress = 0.99015254
+frame = 29
+frame_progress = 0.9073702
+speed_scale = 5.0
 
 [node name="ExplodeSprite" type="AnimatedSprite2D" parent="." unique_id=1544941206]
 position = Vector2(-2.3841858e-07, 0)
 scale = Vector2(0.4, 0.4)
 sprite_frames = SubResource("SpriteFrames_gn0vg")
 animation = &"explode"
-frame = 43
-frame_progress = 1.0
-speed_scale = 2.0
+speed_scale = 5.0
 offset = Vector2(30, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=780424422]

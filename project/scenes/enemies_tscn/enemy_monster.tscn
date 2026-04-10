@@ -112,6 +112,30 @@ region = Rect2(128, 128, 64, 64)
 atlas = ExtResource("1_w3mfa")
 region = Rect2(0, 128, 64, 64)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_nnnwl"]
+atlas = ExtResource("1_w3mfa")
+region = Rect2(0, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2d72a"]
+atlas = ExtResource("1_w3mfa")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dcc7b"]
+atlas = ExtResource("1_w3mfa")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dew2y"]
+atlas = ExtResource("1_w3mfa")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3lnak"]
+atlas = ExtResource("1_w3mfa")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d1bpc"]
+atlas = ExtResource("1_w3mfa")
+region = Rect2(320, 0, 64, 64)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_4rwcl"]
 atlas = ExtResource("1_w3mfa")
 region = Rect2(0, 0, 64, 64)
@@ -259,6 +283,29 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_nnnwl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2d72a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dcc7b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dew2y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3lnak")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d1bpc")
+}],
+"loop": false,
+"name": &"jump",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_4rwcl")
 }, {
 "duration": 1.0,
@@ -311,14 +358,13 @@ radius = 16.0
 height = 32.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_d2vwo"]
-size = Vector2(220, 100)
+size = Vector2(220, 102)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ox87v"]
 size = Vector2(84, 46)
 
 [node name="TrashMonster" type="CharacterBody2D" unique_id=319552509 groups=["enemy"]]
 collision_layer = 4
-collision_mask = 513
 script = ExtResource("1_ox87v")
 footstep_sound = ExtResource("10_nnnwl")
 hit_sound = ExtResource("11_2d72a")
@@ -329,7 +375,7 @@ loot_spells = Array[ExtResource("7_nnnwl")]([ExtResource("5_2d72a"), ExtResource
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=759377286]
 sprite_frames = SubResource("SpriteFrames_isrhy")
-animation = &"run"
+animation = &"sleep"
 autoplay = "sleep"
 offset = Vector2(0, -16)
 
@@ -353,7 +399,7 @@ collision_layer = 128
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=1727426332]
-position = Vector2(0, -31)
+position = Vector2(0, -12)
 shape = SubResource("RectangleShape2D_d2vwo")
 debug_color = Color(0.5921569, 0.54509807, 0.11764706, 0.21176471)
 

@@ -323,11 +323,10 @@ height = 54.0
 size = Vector2(300, 110)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m3375"]
-size = Vector2(38, 36)
+size = Vector2(62, 36)
 
 [node name="EnemyHumanoid" type="CharacterBody2D" unique_id=1182090847 groups=["enemy"]]
 collision_layer = 4
-collision_mask = 513
 floor_snap_length = 8.0
 safe_margin = 0.02
 script = ExtResource("1_m3375")
@@ -342,9 +341,8 @@ loot_spells = Array[ExtResource("7_vqbwx")]([ExtResource("8_8awfw"), ExtResource
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=269747789]
 sprite_frames = SubResource("SpriteFrames_vv3y6")
-animation = &"run"
+animation = &"idle"
 autoplay = "idle"
-frame = 7
 offset = Vector2(-35, -45.5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=895462029]

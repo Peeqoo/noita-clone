@@ -29,10 +29,13 @@ camera_limit_bottom = 166
 [node name="Enemies" type="Node2D" parent="World" unique_id=1780541862]
 
 [node name="EnemyHumanoid" parent="World/Enemies" unique_id=1182090847 instance=ExtResource("6_o5uvg")]
-position = Vector2(728, 8)
+position = Vector2(720, 8)
 
 [node name="TrashMonster" parent="World/Enemies" unique_id=319552509 instance=ExtResource("5_0w6fc")]
-position = Vector2(592, 8)
+position = Vector2(1128, -24)
+
+[node name="TrashMonster2" parent="World/Enemies" unique_id=886478406 instance=ExtResource("5_0w6fc")]
+position = Vector2(872, -8)
 
 [node name="PlayerSpawn" type="Marker2D" parent="World" unique_id=547745996]
 position = Vector2(64, 0)

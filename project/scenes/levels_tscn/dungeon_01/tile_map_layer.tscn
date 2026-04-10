@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://cu64bc33ue5f8"]
 
-[ext_resource type="TileSet" uid="uid://bwp1ph5rwlvq6" path="res://project/tilesets/level_01.tres" id="1_6p7xb"]
+[ext_resource type="TileSet" uid="uid://bwp1ph5rwlvq6" path="res://project/resources/tilesets.tres/level_01.tres" id="1_6p7xb"]
 
 [node name="TileMapLayer" type="Node2D" unique_id=1360277920]
 

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dkc57kjb6pvb1"]
+
+[ext_resource type="PackedScene" uid="uid://c52uxo5hyixgw" path="res://project/scenes/tilemaps.tscn/cave/solid_cave_layer.tscn" id="1_7a24x"]
+[ext_resource type="Script" uid="uid://begimwofxxgxo" path="res://project/scripts/levels_gd/cave/noise_v2_generator.gd" id="1_fwos6"]
+
+[node name="LevelCave" type="Node2D" unique_id=310375383]
+script = ExtResource("1_fwos6")
+
+[node name="SolidLayer" parent="." unique_id=1042203033 instance=ExtResource("1_7a24x")]
+
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=1169497615]
+position = Vector2(140, 132)
+
+[node name="ExitSpawn" type="Marker2D" parent="." unique_id=2127334614]
+position = Vector2(884, 1076)

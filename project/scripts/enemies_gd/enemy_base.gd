@@ -11,31 +11,34 @@ enum State {
 
 # =========================
 # Base Combat
+# Shared defaults for all enemies.
+# Enemy-specific tuning should live in the child scripts and then be applied to these base values in _ready().
 # =========================
 @export_group("Base Combat")
 @export var max_health: int = 50
 @export var hit_stop_duration: float = 0.015
 @export var crit_hit_stop_duration: float = 0.03
-@export var knockback_force: float = 28.0
-@export var crit_knockback_force: float = 52.0
-@export var knockback_decay: float = 4200.0
+@export var knockback_force: float = 24.0
+@export var crit_knockback_force: float = 44.0
+@export var knockback_decay: float = 4800.0
 @export var enemy_crit_hit_shake_strength: float = 5.0
 @export var enemy_crit_hit_shake_time: float = 0.12
 @export var normal_hits_interrupt_attack: bool = false
 @export var crit_hits_interrupt_attack: bool = true
 @export var normal_hits_use_hit_state: bool = false
 @export var crit_hits_use_hit_state: bool = true
-
 # =========================
 # Base Chase
+# Generic tracking / leash defaults.
 # =========================
 @export_group("Base Chase")
-@export var max_chase_distance: float = 420.0
-@export var return_to_spawn_speed: float = 70.0
-@export var search_duration: float = 1.6
+@export var max_chase_distance: float = 500.0
+@export var return_to_spawn_speed: float = 78.0
+@export var search_duration: float = 2.2
 
 # =========================
 # Base Patrol
+# Generic patrol defaults.
 # =========================
 @export_group("Base Patrol")
 @export var use_patrol: bool = false
@@ -45,6 +48,7 @@ enum State {
 
 # =========================
 # Base Separation
+# Generic crowd handling defaults.
 # =========================
 @export_group("Base Separation")
 @export var use_soft_separation: bool = true
@@ -53,6 +57,7 @@ enum State {
 
 # =========================
 # Base Movement
+# Generic movement defaults.
 # =========================
 @export_group("Base Movement")
 @export var use_gravity: bool = true
@@ -62,6 +67,7 @@ enum State {
 
 # =========================
 # Base Step Up
+# Generic terrain traversal defaults.
 # =========================
 @export_group("Base Step Up")
 @export var use_step_up: bool = true

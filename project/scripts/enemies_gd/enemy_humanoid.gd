@@ -2,34 +2,39 @@ extends EnemyBase
 class_name EnemyHumanoid
 
 @export_group("Humanoid Combat")
-@export var move_speed: float = 92.0
-@export var aggro_range: float = 340.0
-@export var attack_range: float = 72.0
-@export var min_attack_distance: float = 50.0
-@export var preferred_distance: float = 52.0
-@export var disengage_distance: float = 32.0
-@export var attack_damage: int = 11
-@export var attack_cooldown: float = 0.28
-@export var crit_chance: float = 0.16
-@export var crit_multiplier: float = 1.5
+@export var move_speed: float = 98.0
+@export var aggro_range: float = 350.0
+@export var attack_range: float = 84.0
+@export var min_attack_distance: float = 58.0
+@export var preferred_distance: float = 70.0
+@export var disengage_distance: float = 46.0
+@export var attack_damage: int = 8
+@export var attack_cooldown: float = 0.46
+@export var attack_windup: float = 0.12
+@export var crit_chance: float = 0.10
+@export var crit_multiplier: float = 1.35
 
 @export_group("Catch Up Chase")
 @export var use_catch_up_speed: bool = true
-@export var catch_up_distance: float = 170.0
-@export var catch_up_speed_multiplier: float = 1.12
+@export var catch_up_distance: float = 145.0
+@export var catch_up_speed_multiplier: float = 1.32
 
 @export_group("Aggro Chase")
 @export var use_aggro_chase: bool = true
-@export var aggro_bonus_per_hit: float = 0.10
-@export var max_aggro_bonus: float = 0.45
-@export var aggro_decay_per_second: float = 0.14
-@export var aggro_preferred_distance_reduction: float = 10.0
+@export var aggro_bonus_per_hit: float = 0.06
+@export var max_aggro_bonus: float = 0.24
+@export var aggro_decay_per_second: float = 0.09
+@export var aggro_preferred_distance_reduction: float = 14.0
 
 @export_group("Humanoid Movement Feel")
 @export var sprite_offset: float = 35.0
-@export var attack_hitbox_offset: float = 60.0
-@export var backstep_speed_multiplier: float = 0.82
-@export var approach_slowdown_distance: float = 96.0
+@export var attack_hitbox_offset: float = 62.0
+@export var backstep_speed_multiplier: float = 0.94
+@export var approach_slowdown_distance: float = 116.0
+
+@export_group("Humanoid Attack Validation")
+@export var require_height_alignment: bool = true
+@export var max_attack_height_diff: float = 22.0
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_hitbox: Area2D = $AttackHitbox
@@ -206,7 +211,7 @@ func _handle_player_state(delta: float) -> void:
 
 	elif is_player_in_attack_position(dx, distance):
 		velocity.x = 0.0
-		if can_attack:
+		if can_attack and _is_player_on_valid_attack_height():
 			start_attack()
 		else:
 			change_state(State.IDLE)
@@ -268,6 +273,16 @@ func update_facing_and_attack_hitbox(dir: float) -> void:
 		animated_sprite.offset.x = -sprite_offset
 		attack_hitbox.position.x = -attack_hitbox_offset
 
+func _is_player_on_valid_attack_height() -> bool:
+	if player == null or not is_instance_valid(player):
+		return false
+
+	if not require_height_alignment:
+		return true
+
+	var dy: float = absf(player.global_position.y - global_position.y)
+	return dy <= max_attack_height_diff
+
 func is_player_in_attack_position(dx: float, distance: float) -> bool:
 	if distance > attack_range:
 		return false
@@ -293,6 +308,38 @@ func start_attack() -> void:
 
 	has_hit_this_attack = false
 	velocity.x = 0.0
+	_start_attack_after_windup()
+
+func _start_attack_after_windup() -> void:
+	await get_tree().create_timer(attack_windup).timeout
+
+	if current_state == State.DEATH:
+		return
+
+	if current_state == State.HIT:
+		reset_attack_state()
+		return
+
+	if player == null or not is_instance_valid(player):
+		reset_attack_state()
+		return
+
+	var dx: float = player.global_position.x - global_position.x
+	var distance: float = absf(dx)
+	var dir: float = 1.0 if dx > 0.0 else -1.0
+
+	update_facing_and_attack_hitbox(dir)
+
+	if not is_player_in_attack_position(dx, distance):
+		reset_attack_state()
+		change_state(State.IDLE)
+		return
+
+	if not _is_player_on_valid_attack_height():
+		reset_attack_state()
+		change_state(State.IDLE)
+		return
+
 	commit_attack()
 
 func finish_attack() -> void:
