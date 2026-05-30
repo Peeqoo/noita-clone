@@ -39,6 +39,7 @@ signal died
 @onready var player: CharacterBody2D = get_parent().get_parent()
 @onready var animated_sprite: AnimatedSprite2D = $"../../Visuals/AnimatedSprite2D"
 @onready var hit_player: AudioStreamPlayer2D = $"../../Audio/HitPlayer"
+@onready var dash_component: PlayerDashComponent = $"../DashComponent"
 
 var is_dead: bool = false
 var is_hurt: bool = false
@@ -53,13 +54,14 @@ func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: 
 	if is_dead:
 		return
 
+	if DebugManager != null and DebugManager.is_god_mode_enabled():
+		return
+
 	if amount <= 0:
 		return
 
 	if is_invincible:
 		return
-
-	show_damage_number(amount, is_crit)
 
 	if player.has_method("is_in_block_dash_iframe") and player.is_in_block_dash_iframe():
 		return
@@ -69,13 +71,18 @@ func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: 
 
 	if player.has_method("is_in_block_dash_guard_window") and player.is_in_block_dash_guard_window():
 		_play_hit_sound()
-		_shake_block_guard_camera()
+
+		if dash_component != null:
+			dash_component.trigger_block_dash_success()
+
 		return
 
 	if player.has_method("is_in_dash_guard_window") and player.is_in_dash_guard_window():
 		_play_hit_sound()
 		_shake_dash_guard_camera()
 		return
+
+	show_damage_number(amount, is_crit)
 
 	health -= amount
 	health = max(health, 0)
@@ -146,7 +153,7 @@ func start_invincibility() -> void:
 	animated_sprite.visible = true
 	is_invincible = false
 
-func apply_knockback(source_position: Vector2, is_crit: bool = false) -> void:
+func apply_knockback(source_position: Vector2 = Vector2.ZERO, is_crit: bool = false) -> void:
 	if source_position == Vector2.ZERO:
 		return
 

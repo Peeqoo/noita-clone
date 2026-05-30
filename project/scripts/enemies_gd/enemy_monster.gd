@@ -8,6 +8,7 @@ class_name EnemyMonster
 @export var attack_range: float = 72.0
 @export var attack_stop_distance: float = 40.0
 @export var attack_damage: int = 7
+@export var attack_jump_damage: int = 11
 @export var attack_cooldown: float = 0.30
 @export var attack_windup: float = 0.10
 @export var crit_chance: float = 0.08
@@ -58,6 +59,11 @@ class_name EnemyMonster
 @export var monster_min_step_forward_check: float = 6.0
 @export var monster_step_forward_padding: float = 3.0
 
+@export_group("Animation")
+@export var run_anim_base_speed: float = 1.0
+@export var run_anim_min_scale: float = 0.6
+@export var run_anim_max_scale: float = 1.6
+
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var attack_hitbox_shape: CollisionShape2D = $AttackHitbox/CollisionShape2D
@@ -69,6 +75,7 @@ var is_sleeping: bool = false
 var aggro_chase_bonus: float = 0.0
 
 var is_attack_jumping: bool = false
+var is_jump_attack: bool = false
 var attack_jump_timer: float = 0.0
 var attack_jump_dir: float = 0.0
 var attack_jump_target_distance: float = 0.0
@@ -107,6 +114,7 @@ func _apply_monster_base_settings() -> void:
 
 func _physics_process(delta: float) -> void:
 	if current_state == State.DEATH:
+		_update_run_animation_speed()
 		return
 
 	_update_aggro_decay(delta)
@@ -116,6 +124,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
 		move_and_slide_with_step(delta)
+		_update_run_animation_speed()
 		return
 
 	if check_leash():
@@ -132,10 +141,12 @@ func _physics_process(delta: float) -> void:
 		velocity.x += get_knockback_velocity_x(delta)
 		change_state(State.IDLE)
 		move_and_slide_with_step(delta)
+		_update_run_animation_speed()
 		return
 
 	if is_attack_jumping:
 		_update_attack_jump(delta)
+		_update_run_animation_speed()
 		return
 
 	if is_winding_up:
@@ -143,19 +154,23 @@ func _physics_process(delta: float) -> void:
 		velocity.x += get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
 		move_and_slide_with_step(delta)
+		_update_run_animation_speed()
 		return
 
 	if current_state == State.ATTACK:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
 		move_and_slide_with_step(delta)
+		_update_run_animation_speed()
 		return
 
 	if player == null or not is_instance_valid(player):
 		_handle_no_player_state(delta)
+		_update_run_animation_speed()
 		return
 
 	_handle_player_state(delta)
+	_update_run_animation_speed()
 
 func _handle_no_player_state(delta: float) -> void:
 	if has_last_seen_position:
@@ -220,6 +235,9 @@ func _handle_player_state(delta: float) -> void:
 		start_attack_jump(dir)
 		return
 
+	if can_attack and abs_distance_x(distance, dx) <= attack_range and is_on_floor() and not is_attack_jumping:
+		pass
+
 	if distance <= attack_stop_distance:
 		velocity.x = 0.0
 		if can_attack and not is_winding_up:
@@ -241,21 +259,21 @@ func _handle_player_state(delta: float) -> void:
 	velocity.x += get_knockback_velocity_x(delta)
 	move_and_slide_with_step(delta)
 
+func abs_distance_x(distance: float, _dx: float) -> float:
+	return distance
+
 func _should_start_attack_jump(distance: float) -> bool:
 	if not use_attack_jump:
 		return false
 	if not can_attack or is_winding_up or is_attack_jumping:
 		return false
 
-	# zu nah = normale attack
 	if distance <= attack_jump_min_distance:
 		return false
 
-	# zu weit = weiter chasen
 	if distance > attack_jump_trigger_distance:
 		return false
 
-	# nur in sinnvoller mittlerer distanz = jump attack
 	if attack_jump_requires_run_state:
 		var is_actively_running: bool = current_state == State.RUN or absf(velocity.x) >= attack_jump_min_run_speed
 		if not is_actively_running:
@@ -302,6 +320,20 @@ func _update_facing_visuals() -> void:
 		animated_sprite.flip_h = true
 		attack_hitbox.position.x = absf(attack_hitbox_offset)
 
+func _update_run_animation_speed() -> void:
+	if animated_sprite == null:
+		return
+
+	if current_state != State.RUN:
+		animated_sprite.speed_scale = 1.0
+		return
+
+	var speed_ratio: float = absf(velocity.x) / move_speed
+	var anim_speed_scale: float = speed_ratio * run_anim_base_speed
+	anim_speed_scale = clampf(anim_speed_scale, run_anim_min_scale, run_anim_max_scale)
+
+	animated_sprite.speed_scale = anim_speed_scale
+
 func _play_idle_animation() -> void:
 	if sprite == null:
 		return
@@ -338,6 +370,7 @@ func start_attack_jump(dir: float) -> void:
 		return
 
 	is_attack_jumping = true
+	is_jump_attack = true
 	attack_jump_timer = attack_jump_duration
 	attack_jump_dir = dir
 	attack_jump_target_distance = desired_jump_distance
@@ -395,6 +428,7 @@ func _update_attack_jump(delta: float) -> void:
 
 func _cancel_attack_jump() -> void:
 	is_attack_jumping = false
+	is_jump_attack = false
 	attack_jump_timer = 0.0
 	attack_jump_dir = 0.0
 	attack_jump_target_distance = 0.0
@@ -529,6 +563,9 @@ func _on_attack_hitbox_body_entered(body: Node) -> void:
 			body.set_in_combat()
 
 		var result: Dictionary = roll_damage(attack_damage)
+		if is_jump_attack:
+			result = roll_damage(attack_jump_damage)
+
 		body.take_damage(result["damage"], global_position, result["is_crit"])
 		has_hit_this_attack = true
 

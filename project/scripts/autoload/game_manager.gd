@@ -1,7 +1,6 @@
 extends Node
 
 var player_scene: PackedScene = preload("res://project/scenes/player_tscn/player_02.tscn")
-
 var player: Node2D = null
 var current_spawn_name: String = "PlayerSpawn"
 var fade_rect: ColorRect = null
@@ -17,6 +16,10 @@ func ensure_player_exists() -> void:
 		player = player_scene.instantiate() as Node2D
 		player.name = "Player"
 
+func get_player() -> Node2D:
+	ensure_player_exists()
+	return player
+
 func set_fade_rect(node: ColorRect) -> void:
 	fade_rect = node
 
@@ -29,10 +32,8 @@ func place_player_in_current_scene(spawn_name: String = "PlayerSpawn") -> void:
 		return
 
 	var spawn := _find_spawn(scene, spawn_name)
-
 	if spawn == null:
 		push_warning("GameManager: Spawn '%s' not found in scene '%s'." % [spawn_name, scene.name])
-
 		if player.get_parent() != scene:
 			if player.get_parent():
 				player.get_parent().remove_child(player)
@@ -104,5 +105,31 @@ func _change_level_deferred(scene_path: String) -> void:
 	place_player_in_current_scene(current_spawn_name)
 
 	await get_tree().process_frame
-
 	await fade_in(0.6)
+
+func reload_current_level() -> void:
+	var current_scene := get_tree().current_scene
+	if current_scene == null:
+		push_warning("GameManager: current_scene is null in reload_current_level")
+		return
+
+	var scene_path := current_scene.scene_file_path
+	if scene_path.is_empty():
+		push_warning("GameManager: scene_file_path is empty in reload_current_level")
+		return
+
+	call_deferred("_reload_current_level_deferred", scene_path)
+
+func _reload_current_level_deferred(scene_path: String) -> void:
+	ensure_player_exists()
+
+	if player.get_parent():
+		player.get_parent().remove_child(player)
+
+	get_tree().change_scene_to_file(scene_path)
+
+	await get_tree().process_frame
+	await get_tree().process_frame
+	await get_tree().process_frame
+
+	place_player_in_current_scene(current_spawn_name)

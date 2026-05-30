@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://b1m65sd63omra" path="res://project/scenes/hud_tscn/game_hud.tscn" id="7_0w6fc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_vb5sh"]
-size = Vector2(120, 34)
+size = Vector2(122, 23)
 
 [node name="StartRoom" type="Node2D" unique_id=1899636765]
 script = ExtResource("1_1j01w")
@@ -32,23 +32,23 @@ camera_limit_bottom = 166
 position = Vector2(720, 8)
 
 [node name="TrashMonster" parent="World/Enemies" unique_id=319552509 instance=ExtResource("5_0w6fc")]
-position = Vector2(1128, -24)
+position = Vector2(1245, -8)
 
 [node name="TrashMonster2" parent="World/Enemies" unique_id=886478406 instance=ExtResource("5_0w6fc")]
-position = Vector2(872, -8)
+position = Vector2(1548, 8)
 
 [node name="PlayerSpawn" type="Marker2D" parent="World" unique_id=547745996]
-position = Vector2(64, 0)
+position = Vector2(52, -8)
 
 [node name="ExitToDungeon" type="Area2D" parent="World" unique_id=1639912397]
-position = Vector2(1760, 48)
+position = Vector2(3314, 37)
 collision_layer = 1024
 collision_mask = 2
 script = ExtResource("4_n1pir")
 next_scene_path = "uid://r5qc47fbc57b"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="World/ExitToDungeon" unique_id=412414333]
-position = Vector2(-36, -7)
+position = Vector2(-69, -7)
 shape = SubResource("RectangleShape2D_vb5sh")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=291853132]

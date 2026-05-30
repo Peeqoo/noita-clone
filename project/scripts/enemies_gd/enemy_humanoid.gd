@@ -36,6 +36,11 @@ class_name EnemyHumanoid
 @export var require_height_alignment: bool = true
 @export var max_attack_height_diff: float = 22.0
 
+@export_group("Animation")
+@export var run_anim_base_speed: float = 1.0
+@export var run_anim_min_scale: float = 0.6
+@export var run_anim_max_scale: float = 1.6
+
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var attack_hitbox: Area2D = $AttackHitbox
 @onready var attack_hitbox_shape: CollisionShape2D = $AttackHitbox/CollisionShape2D
@@ -73,6 +78,7 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if current_state == State.DEATH:
+		_update_run_animation_speed()
 		return
 
 	_update_aggro_decay(delta)
@@ -82,12 +88,14 @@ func _physics_process(delta: float) -> void:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
 		move_and_slide_with_step(delta)
+		_update_run_animation_speed()
 		return
 
 	if current_state == State.ATTACK:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
 		move_and_slide_with_step(delta)
+		_update_run_animation_speed()
 		return
 
 	if check_leash():
@@ -98,9 +106,11 @@ func _physics_process(delta: float) -> void:
 
 	if player == null or not is_instance_valid(player):
 		_handle_no_player_state(delta)
+		_update_run_animation_speed()
 		return
 
 	_handle_player_state(delta)
+	_update_run_animation_speed()
 
 func _handle_no_player_state(delta: float) -> void:
 	if has_last_seen_position:
@@ -272,6 +282,20 @@ func update_facing_and_attack_hitbox(dir: float) -> void:
 	else:
 		animated_sprite.offset.x = -sprite_offset
 		attack_hitbox.position.x = -attack_hitbox_offset
+
+func _update_run_animation_speed() -> void:
+	if animated_sprite == null:
+		return
+
+	if current_state != State.RUN:
+		animated_sprite.speed_scale = 1.0
+		return
+
+	var speed_ratio: float = absf(velocity.x) / move_speed
+	var anim_speed_scale: float = speed_ratio * run_anim_base_speed
+	anim_speed_scale = clampf(anim_speed_scale, run_anim_min_scale, run_anim_max_scale)
+
+	animated_sprite.speed_scale = anim_speed_scale
 
 func _is_player_on_valid_attack_height() -> bool:
 	if player == null or not is_instance_valid(player):

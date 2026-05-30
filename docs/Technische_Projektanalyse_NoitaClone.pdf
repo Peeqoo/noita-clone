@@ -1,0 +1,1150 @@
+%PDF-1.4
+2 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+4 0 obj
+<< /Length 4448 >>
+stream
+BT
+/F3 16 Tf
+1 0 0 1 50 786.89 Tm
+(Technische Projektanalyse - NoitaClone \(Godot 4.6.1\)) Tj
+/F2 9 Tf
+1 0 0 1 50 765.89 Tm
+(Datum: 30. Mai 2026) Tj
+/F2 9 Tf
+1 0 0 1 50 754.89 Tm
+(Engine: Godot 4.6.1) Tj
+/F2 9 Tf
+1 0 0 1 50 743.89 Tm
+(Plugin: BetterTerrain) Tj
+/F2 9 Tf
+1 0 0 1 50 732.89 Tm
+(Spieltyp: 2D Action-Platformer / Combat-Roguelite \(Noita-inspiriert\)) Tj
+ET
+50 715.89 m 545.28 715.89 l S
+BT
+/F2 9 Tf
+1 0 0 1 50 699.89 Tm
+(  Hinweis: Analyse ohne Codeänderungen. Funde sind als sicher, wahrscheinlich oder) Tj
+/F2 9 Tf
+1 0 0 1 50 688.89 Tm
+(  Vermutung markiert.) Tj
+ET
+50 671.89 m 545.28 671.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 655.89 Tm
+(Inhaltsverzeichnis) Tj
+/F2 9 Tf
+1 0 0 1 50 635.89 Tm
+(  * 1. Executive Summary) Tj
+/F2 9 Tf
+1 0 0 1 50 624.89 Tm
+(  * 2. Projektstruktur-Analyse) Tj
+/F2 9 Tf
+1 0 0 1 50 613.89 Tm
+(  * 3. Dateistruktur und Referenzen) Tj
+/F2 9 Tf
+1 0 0 1 50 602.89 Tm
+(  * 4. Szenenstruktur-Analyse) Tj
+/F2 9 Tf
+1 0 0 1 50 591.89 Tm
+(  * 5. Codestruktur-Analyse) Tj
+/F2 9 Tf
+1 0 0 1 50 580.89 Tm
+(  * 6. Dead Code und Cleanup) Tj
+/F2 9 Tf
+1 0 0 1 50 569.89 Tm
+(  * 7. Bug-Suche und Risikoanalyse) Tj
+/F2 9 Tf
+1 0 0 1 50 558.89 Tm
+(  * 8. System-Zusammenhänge) Tj
+/F2 9 Tf
+1 0 0 1 50 547.89 Tm
+(  * 9. Gamefeel-Analyse) Tj
+/F2 9 Tf
+1 0 0 1 50 536.89 Tm
+(  * 10. Gameplay-Loop-Analyse) Tj
+/F2 9 Tf
+1 0 0 1 50 525.89 Tm
+(  * 11. Godot-4.6.1-Prüfung) Tj
+/F2 9 Tf
+1 0 0 1 50 514.89 Tm
+(  * 12. Testplan und Debug-Tools) Tj
+/F2 9 Tf
+1 0 0 1 50 503.89 Tm
+(  * 13. Priorisierte TODO-Liste) Tj
+/F2 9 Tf
+1 0 0 1 50 492.89 Tm
+(  * 14. Konkreter Cleanup-Plan) Tj
+/F2 9 Tf
+1 0 0 1 50 481.89 Tm
+(  * 15. Abschluss) Tj
+ET
+50 464.89 m 545.28 464.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 448.89 Tm
+(1. EXECUTIVE SUMMARY) Tj
+/F3 11 Tf
+1 0 0 1 50 428.89 Tm
+(Gesamtbewertung) Tj
+/F3 10 Tf
+1 0 0 1 50 411.89 Tm
+(Dimension | Einschätzung \(1-10\) | Kurz) Tj
+/F2 9 Tf
+1 0 0 1 50 400.89 Tm
+(Produktionsreife | 4 | Solider Prototyp, kein shippbarer Loop) Tj
+/F2 9 Tf
+1 0 0 1 50 389.89 Tm
+(Erweiterbarkeit | 6 | Gute Player-/Enemy-Basis, Level-/Run-Layer fehlt) Tj
+/F2 9 Tf
+1 0 0 1 50 378.89 Tm
+(Debugbarkeit | 8 | DebugManager + Overlay stark) Tj
+/F2 9 Tf
+1 0 0 1 50 367.89 Tm
+(Lesbarkeit | 7 | Klare Ordner, teils Duck-Typing) Tj
+/F2 9 Tf
+1 0 0 1 50 356.89 Tm
+(Stabilität | 5 | Death/TimeScale/Fade-Risiken) Tj
+/F2 9 Tf
+1 0 0 1 50 345.89 Tm
+(Performance-Risiko | 5 | HUD-Poll, Contact-Push O\(n\), Generator schwer) Tj
+/F2 9 Tf
+1 0 0 1 50 334.89 Tm
+(Gamefeel-Potenzial | 7 | Movement/Dash/FX gut angelegt) Tj
+/F2 9 Tf
+1 0 0 1 50 323.89 Tm
+(Vertical-Slice-Risiko | 6 | Kernkampf da, Meta-/Build-Loop nicht) Tj
+/F3 11 Tf
+1 0 0 1 50 302.89 Tm
+(Technische Gesundheit) Tj
+/F2 9 Tf
+1 0 0 1 50 285.89 Tm
+(Das Projekt ist technisch gesund für einen frühen Vertical-Slice-Prototypen, aber noch nicht) Tj
+/F2 9 Tf
+1 0 0 1 50 274.89 Tm
+(produktionsreif. Die Architektur zeigt bewusste Godot-4-Patterns \(Components, Resources,) Tj
+/F2 9 Tf
+1 0 0 1 50 263.89 Tm
+(Autoloads, TileMapLayer, BetterTerrain\), mit gezieltem Cleanup \(Archiv-Generatoren entfernt,) Tj
+/F2 9 Tf
+1 0 0 1 50 252.89 Tm
+(GameManager/DebugManager als Autoloads, main_tileset, standardisierte Level mit World/*\).) Tj
+/F3 11 Tf
+1 0 0 1 50 235.89 Tm
+(Architektur) Tj
+/F2 9 Tf
+1 0 0 1 50 218.89 Tm
+(Sauber im Kern, inkonsistent am Rand: Player ist klar komponentisiert; Enemies nutzen eine) Tj
+/F2 9 Tf
+1 0 0 1 50 207.89 Tm
+(starke EnemyBase; Wand/Spell über WandData/SpellData ist erweiterbar. Schwächen: globale) Tj
+/F2 9 Tf
+1 0 0 1 50 196.89 Tm
+(Kopplung über GameManager.player, HUD pollt statt Signals, Inventar-Equip existiert im Code) Tj
+/F2 9 Tf
+1 0 0 1 50 185.89 Tm
+(aber nicht in der UX, Level-HUD wird pro Szene dupliziert.) Tj
+/F3 11 Tf
+1 0 0 1 50 168.89 Tm
+(Starke Systeme) Tj
+/F2 9 Tf
+1 0 0 1 50 151.89 Tm
+(  * Player Movement \(Coyote, Buffer, variable Accel/Friction\)) Tj
+/F2 9 Tf
+1 0 0 1 50 140.89 Tm
+(  * Dash + Block-Dash \(Frame-basierte Guard-Windows, Charges\)) Tj
+/F2 9 Tf
+1 0 0 1 50 129.89 Tm
+(  * EnemyBase \(Patrol, Chase, Separation, Hit-Stop, Loot, Damage Numbers\)) Tj
+/F2 9 Tf
+1 0 0 1 50 118.88999999999999 Tm
+(  * Wand-Cast-Pipeline \(Mana, Recharge, Multi-Projectile, Crit\)) Tj
+/F2 9 Tf
+1 0 0 1 50 107.88999999999999 Tm
+(  * Level-Transitions \(BaseLevel + GameManager.change_level\)) Tj
+/F2 9 Tf
+1 0 0 1 50 96.88999999999999 Tm
+(  * DebugManager \(God Mode, Spawn, Slow-Mo, Overlay\)) Tj
+/F3 11 Tf
+1 0 0 1 50 79.88999999999999 Tm
+(Fragile Systeme) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 595.28 841.89] /Contents 4 0 R /Resources << /Font << /F2 2 0 R /F3 3 0 R >> >> >>
+endobj
+6 0 obj
+<< /Length 4365 >>
+stream
+BT
+/F2 9 Tf
+1 0 0 1 50 786.89 Tm
+(  * Player Death \(queue_free vs. persistenter GameManager.player\)) Tj
+/F2 9 Tf
+1 0 0 1 50 775.89 Tm
+(  * Engine.time_scale \(Enemy Hit-Stop vs. Debug Slow-Mo\)) Tj
+/F2 9 Tf
+1 0 0 1 50 764.89 Tm
+(  * HUD \(voller Refresh jeden Frame\)) Tj
+/F2 9 Tf
+1 0 0 1 50 753.89 Tm
+(  * Inventar ? Wand \(API da, keine UI-Anbindung\)) Tj
+/F2 9 Tf
+1 0 0 1 50 742.89 Tm
+(  * Dungeon FadeRect \(Layout wahrscheinlich kaputt\)) Tj
+/F2 9 Tf
+1 0 0 1 50 731.89 Tm
+(  * Projekteinstieg \(kein run/main_scene in project.godot\)) Tj
+/F3 11 Tf
+1 0 0 1 50 714.89 Tm
+(Blockiert Content-Ausbau) Tj
+/F2 9 Tf
+1 0 0 1 50 697.89 Tm
+(  * Kein Run-/Room-Graph, kein Death/Restart, keine Meta-Progression) Tj
+/F2 9 Tf
+1 0 0 1 50 686.89 Tm
+(  * Kein Wandbench/Shop/Safe Room) Tj
+/F2 9 Tf
+1 0 0 1 50 675.89 Tm
+(  * Inventory-Build-Readability unvollständig) Tj
+/F2 9 Tf
+1 0 0 1 50 664.89 Tm
+(  * Procedural Generator \(804 Zeilen\) noch nicht im Gameplay-Loop integriert) Tj
+/F3 11 Tf
+1 0 0 1 50 647.89 Tm
+(Kritische Risiken) Tj
+/F3 10 Tf
+1 0 0 1 50 630.89 Tm
+(Schweregrad | Thema) Tj
+/F2 9 Tf
+1 0 0 1 50 619.89 Tm
+(BLOCKER | Kein run/main_scene in project.godot \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 608.89 Tm
+(BLOCKER | Input-Konflikt: dash und hover = gleiche Taste \(Shift\) \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 597.89 Tm
+(HIGH | GameManager.player nach Tod ungültig \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 586.89 Tm
+(HIGH | Dungeon FadeRect nur 40×40 px \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 575.89 Tm
+(HIGH | is_in_block_dash_iframe\(\) gibt immer false zurück \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 564.89 Tm
+(HIGH | Engine.time_scale global für Hit-Stop \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 553.89 Tm
+(MEDIUM | Projektile ohne Tilemap-Kollision \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 542.89 Tm
+(MEDIUM | PlayerInventoryComponent nirgends aufgerufen \(sicher\)) Tj
+/F2 9 Tf
+1 0 0 1 50 531.89 Tm
+(MEDIUM | spell_1-spell_3, hover ungenutzt \(sicher\)) Tj
+/F3 11 Tf
+1 0 0 1 50 510.89 Tm
+(Cleanups zuerst) Tj
+/F2 9 Tf
+1 0 0 1 50 493.89 Tm
+(  * 1. Git-Delete committen \(Archiv, alte Cave-Szenen\)) Tj
+/F2 9 Tf
+1 0 0 1 50 482.89 Tm
+(  * 2. run/main_scene setzen) Tj
+/F2 9 Tf
+1 0 0 1 50 471.89 Tm
+(  * 3. Input-Map bereinigen \(Dash/Hover trennen\)) Tj
+/F2 9 Tf
+1 0 0 1 50 460.89 Tm
+(  * 4. Dungeon FadeRect an start_room-Standard anpassen) Tj
+/F2 9 Tf
+1 0 0 1 50 449.89 Tm
+(  * 5. Doppelte Parallax-Szenen konsolidieren) Tj
+/F3 11 Tf
+1 0 0 1 50 432.89 Tm
+(Refactors warten) Tj
+/F2 9 Tf
+1 0 0 1 50 415.89 Tm
+(  * HUD auf Signals umstellen) Tj
+/F2 9 Tf
+1 0 0 1 50 404.89 Tm
+(  * Hit-Stop ohne globales time_scale) Tj
+/F2 9 Tf
+1 0 0 1 50 393.89 Tm
+(  * fast_noise_generator.gd modularisieren) Tj
+/F2 9 Tf
+1 0 0 1 50 382.89 Tm
+(  * LimboAI entfernen oder aktiv nutzen) Tj
+ET
+50 365.89 m 545.28 365.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 349.89 Tm
+(2. PROJEKTSTRUKTUR-ANALYSE) Tj
+/F3 11 Tf
+1 0 0 1 50 329.89 Tm
+(Aktuelle Struktur) Tj
+/F2 8 Tf
+1 0 0 1 50 312.89 Tm
+(noita-clone/) Tj
+/F2 8 Tf
+1 0 0 1 50 301.89 Tm
+(??? project.godot) Tj
+/F2 8 Tf
+1 0 0 1 50 290.89 Tm
+(??? addons/) Tj
+/F2 8 Tf
+1 0 0 1 50 279.89 Tm
+(?   ??? better-terrain/     \(aktiv\)) Tj
+/F2 8 Tf
+1 0 0 1 50 268.89 Tm
+(?   ??? limboai/            \(nicht aktiv genutzt\)) Tj
+/F2 8 Tf
+1 0 0 1 50 257.89 Tm
+(??? assets/) Tj
+/F2 8 Tf
+1 0 0 1 50 246.89 Tm
+(??? project/) Tj
+/F2 8 Tf
+1 0 0 1 50 235.89 Tm
+(??? resources/          \(spells, wands, tilesets\)) Tj
+/F2 8 Tf
+1 0 0 1 50 224.89 Tm
+(??? scenes/             \(*_tscn Ordner\)) Tj
+/F2 8 Tf
+1 0 0 1 50 213.89 Tm
+(??? scripts/            \(*_gd Ordner, autoload/\)) Tj
+/F2 9 Tf
+1 0 0 1 50 196.89 Tm
+(Aktive Scenes: 20 .tscn | Gameplay-Scripts: 26 .gd) Tj
+/F3 11 Tf
+1 0 0 1 50 179.89 Tm
+(Problemstellen) Tj
+/F3 10 Tf
+1 0 0 1 50 162.89 Tm
+(Problem | Details) Tj
+/F2 9 Tf
+1 0 0 1 50 151.89 Tm
+(Ordner-Suffix _tscn / _gd | Ungewöhnlich, aber konsistent) Tj
+/F2 9 Tf
+1 0 0 1 50 140.89 Tm
+(assets/ vs project/resources/ | Split Wand-Icons vs Daten) Tj
+/F2 9 Tf
+1 0 0 1 50 129.89 Tm
+(Typo paralax | Pfad assets/paralax/) Tj
+/F2 9 Tf
+1 0 0 1 50 118.88999999999999 Tm
+(Doppelte Parallax | start_rooms + dungeon_01) Tj
+/F2 9 Tf
+1 0 0 1 50 107.88999999999999 Tm
+(LimboAI-Bloat | ~200 Dateien, 0 Code-Refs in project/) Tj
+/F2 9 Tf
+1 0 0 1 50 96.88999999999999 Tm
+(Cave-Assets | Wahrscheinlich ohne aktive Scene) Tj
+/F3 11 Tf
+1 0 0 1 50 75.88999999999999 Tm
+(Empfohlene Zielstruktur) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 595.28 841.89] /Contents 6 0 R /Resources << /Font << /F2 2 0 R /F3 3 0 R >> >> >>
+endobj
+8 0 obj
+<< /Length 3705 >>
+stream
+BT
+/F2 8 Tf
+1 0 0 1 50 786.89 Tm
+(project/) Tj
+/F2 8 Tf
+1 0 0 1 50 775.89 Tm
+(??? core/autoload/) Tj
+/F2 8 Tf
+1 0 0 1 50 764.89 Tm
+(??? gameplay/{player,combat,enemies,pickups}/) Tj
+/F2 8 Tf
+1 0 0 1 50 753.89 Tm
+(??? world/{levels,tilemaps,generation}/) Tj
+/F2 8 Tf
+1 0 0 1 50 742.89 Tm
+(??? ui/hud/) Tj
+/F2 8 Tf
+1 0 0 1 50 731.89 Tm
+(??? data/resources/) Tj
+/F3 11 Tf
+1 0 0 1 50 714.89 Tm
+(Sichere Cleanup-Reihenfolge) Tj
+/F2 9 Tf
+1 0 0 1 50 697.89 Tm
+(  * 1. Git-Delete committen ? 2. Main Scene + Input ? 3. Addon-Cleanup ? 4. Ordner-Renames) Tj
+/F2 9 Tf
+1 0 0 1 50 686.89 Tm
+(  * mit Godot ? 5. Parallax-Merge) Tj
+ET
+50 669.89 m 545.28 669.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 653.89 Tm
+(3. DATEISTRUKTUR UND REFERENZEN) Tj
+/F3 11 Tf
+1 0 0 1 50 633.89 Tm
+(Dependency Map \(Kern\)) Tj
+/F2 9 Tf
+1 0 0 1 50 616.89 Tm
+(  * GameManager ? preload player_02.tscn, fade, level change) Tj
+/F2 9 Tf
+1 0 0 1 50 605.89 Tm
+(  * DebugManager ? Test-Spawns, Overlay, God Mode) Tj
+/F2 9 Tf
+1 0 0 1 50 594.89 Tm
+(  * start_room / dungeon_01 ? base_level.gd, game_hud, exit_to_dungeon) Tj
+/F2 9 Tf
+1 0 0 1 50 583.89 Tm
+(  * player_02 ? Components, wand.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 572.89 Tm
+(  * spell ? hurtbox ? EnemyBase.take_hit) Tj
+/F3 11 Tf
+1 0 0 1 50 555.89 Tm
+(Datei-Gruppen) Tj
+/F3 10 Tf
+1 0 0 1 50 538.89 Tm
+(Gruppe | Beispiele) Tj
+/F2 9 Tf
+1 0 0 1 50 527.89 Tm
+(Sicher behalten | game_manager, player components, enemy_base, wand/spell, base_level) Tj
+/F2 9 Tf
+1 0 0 1 50 516.89 Tm
+(Sicher löschbar | limboai \(wenn ungeplant\)) Tj
+/F2 9 Tf
+1 0 0 1 50 505.89 Tm
+(Manuell prüfen | cave assets, Ruins_Tileset, Parallax-Duplikat) Tj
+/F2 9 Tf
+1 0 0 1 50 494.89 Tm
+(Später refactoren | fast_noise_generator, hud.gd, enemy variants) Tj
+/F2 9 Tf
+1 0 0 1 50 483.89 Tm
+(Kritisch | game_manager, health, dash, enemy_base) Tj
+/F3 11 Tf
+1 0 0 1 50 462.89 Tm
+(Ungenutzte Input Actions) Tj
+/F2 9 Tf
+1 0 0 1 50 445.89 Tm
+(spell_1, spell_2, spell_3, hover - keine GD-Referenz \(sicher\).) Tj
+ET
+50 428.89 m 545.28 428.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 412.89 Tm
+(4. SZENENSTRUKTUR-ANALYSE) Tj
+/F3 11 Tf
+1 0 0 1 50 392.89 Tm
+(Level-Muster \(gut\)) Tj
+/F2 8 Tf
+1 0 0 1 50 375.89 Tm
+(Node2D + base_level.gd) Tj
+/F2 8 Tf
+1 0 0 1 50 364.89 Tm
+(??? World \(Parallax, Tiles, Enemies, PlayerSpawn, Exit\)) Tj
+/F2 8 Tf
+1 0 0 1 50 353.89 Tm
+(??? CanvasLayer / FadeRect) Tj
+/F2 8 Tf
+1 0 0 1 50 342.89 Tm
+(??? game_hud.tscn) Tj
+/F3 11 Tf
+1 0 0 1 50 325.89 Tm
+(Abweichungen) Tj
+/F2 9 Tf
+1 0 0 1 50 308.89 Tm
+(  * World/Interactables, Rewards fehlen \(LOW\)) Tj
+/F2 9 Tf
+1 0 0 1 50 297.89 Tm
+(  * HUD pro Level statt global \(MEDIUM\)) Tj
+/F2 9 Tf
+1 0 0 1 50 286.89 Tm
+(  * Dungeon FadeRect defekt \(HIGH\): nur 40×40 px, keine Fullscreen-Anchors) Tj
+/F3 11 Tf
+1 0 0 1 50 269.89 Tm
+(Player in Level) Tj
+/F2 9 Tf
+1 0 0 1 50 252.89 Tm
+(Sicher: Kein eingebetteter Player; Spawn über GameManager + PlayerSpawn.) Tj
+ET
+50 235.89 m 545.28 235.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 219.89 Tm
+(5. CODESTRUKTUR-ANALYSE) Tj
+/F3 11 Tf
+1 0 0 1 50 199.89 Tm
+(Verantwortlichkeiten \(Auswahl\)) Tj
+/F3 10 Tf
+1 0 0 1 50 182.89 Tm
+(Script | Zeilen | Rolle) Tj
+/F2 9 Tf
+1 0 0 1 50 171.89 Tm
+(player.gd | ~245 | Orchestrator, State machine) Tj
+/F2 9 Tf
+1 0 0 1 50 160.89 Tm
+(player_dash_component.gd | ~295 | Dash, Block, Guards) Tj
+/F2 9 Tf
+1 0 0 1 50 149.89 Tm
+(enemy_base.gd | ~771 | Shared AI/Combat) Tj
+/F2 9 Tf
+1 0 0 1 50 138.89 Tm
+(fast_noise_generator.gd | ~804 | Procedural caves) Tj
+/F2 9 Tf
+1 0 0 1 50 127.88999999999999 Tm
+(hud.gd | ~244 | UI Poll) Tj
+/F2 9 Tf
+1 0 0 1 50 116.88999999999999 Tm
+(wand.gd | ~309 | Cast cycle) Tj
+/F3 11 Tf
+1 0 0 1 50 95.88999999999999 Tm
+(Kritische Code-Funde) Tj
+/F3 10 Tf
+1 0 0 1 50 78.88999999999999 Tm
+(Fund | Datei) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 595.28 841.89] /Contents 8 0 R /Resources << /Font << /F2 2 0 R /F3 3 0 R >> >> >>
+endobj
+10 0 obj
+<< /Length 3959 >>
+stream
+BT
+/F2 9 Tf
+1 0 0 1 50 786.89 Tm
+(is_in_block_dash_iframe\(\) ? false | player_dash_component.gd:175) Tj
+/F2 9 Tf
+1 0 0 1 50 775.89 Tm
+(_shake_block_guard_camera\(\) ungenutzt | player_health_component.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 764.89 Tm
+(player_inventory unused | player.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 753.89 Tm
+(Monster pass in Attack-Range | enemy_monster.gd:238) Tj
+/F2 9 Tf
+1 0 0 1 50 742.89 Tm
+(reload ohne Fade | game_manager.gd) Tj
+ET
+50 721.89 m 545.28 721.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 705.89 Tm
+(6. DEAD CODE UND CLEANUP) Tj
+/F3 11 Tf
+1 0 0 1 50 685.89 Tm
+(Gruppe 1 - Sicher entfernbar) Tj
+/F2 9 Tf
+1 0 0 1 50 668.89 Tm
+(  * Input spell_1/2/3) Tj
+/F2 9 Tf
+1 0 0 1 50 657.89 Tm
+(  * addons/limboai/ \(wenn nicht geplant\)) Tj
+/F2 9 Tf
+1 0 0 1 50 646.89 Tm
+(  * Gelöschte Archive-Generatoren \(Git\)) Tj
+/F3 11 Tf
+1 0 0 1 50 629.89 Tm
+(Gruppe 2 - Testen vor Entfernen) Tj
+/F2 9 Tf
+1 0 0 1 50 612.89 Tm
+(  * Input hover) Tj
+/F2 9 Tf
+1 0 0 1 50 601.89 Tm
+(  * WandData.shuffle) Tj
+/F2 9 Tf
+1 0 0 1 50 590.89 Tm
+(  * assets/tilemap/cave/*) Tj
+/F2 9 Tf
+1 0 0 1 50 579.89 Tm
+(  * Duplikat-Parallax) Tj
+/F3 11 Tf
+1 0 0 1 50 562.89 Tm
+(Gruppe 3 - Behalten, später refactoren) Tj
+/F2 9 Tf
+1 0 0 1 50 545.89 Tm
+(  * PlayerInventoryComponent \(geplante UX\)) Tj
+/F2 9 Tf
+1 0 0 1 50 534.89 Tm
+(  * fast_noise_generator.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 523.89 Tm
+(  * Debug print-Statements) Tj
+ET
+50 506.89 m 545.28 506.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 490.89 Tm
+(7. BUG-SUCHE UND RISIKOANALYSE) Tj
+/F3 10 Tf
+1 0 0 1 50 470.89 Tm
+( | Grad | Bug | Datei) Tj
+/F2 9 Tf
+1 0 0 1 50 459.89 Tm
+(1 | BLOCKER | Kein run/main_scene | project.godot) Tj
+/F2 9 Tf
+1 0 0 1 50 448.89 Tm
+(2 | BLOCKER | Dash/Hover Input-Konflikt | project.godot) Tj
+/F2 9 Tf
+1 0 0 1 50 437.89 Tm
+(3 | HIGH | GameManager.player nach Tod tot | player_animation_controller.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 426.89 Tm
+(4 | HIGH | Dungeon FadeRect defekt | dungeon_01.tscn) Tj
+/F2 9 Tf
+1 0 0 1 50 415.89 Tm
+(5 | HIGH | Block I-Frames Stub | player_dash_component.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 404.89 Tm
+(6 | HIGH | Global Hit-Stop | enemy_base.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 393.89 Tm
+(7 | MEDIUM | Projektil vs Wände | spell.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 382.89 Tm
+(8 | MEDIUM | Contact Push global_position | player_contact_push_component.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 371.89 Tm
+(9 | MEDIUM | HUD _process Poll | hud.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 360.89 Tm
+(10 | MEDIUM | Inventory nicht wired | hud.gd, player_inventory_component.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 349.89 Tm
+(11 | MEDIUM | Monster Nahkampf pass | enemy_monster.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 338.89 Tm
+(12 | LOW | Block-Guard ohne Cam-Shake | player_health_component.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 327.89 Tm
+(13 | LOW | Dungeon Exit Self-Loop | dungeon_01.tscn) Tj
+ET
+50 306.89 m 545.28 306.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 290.89 Tm
+(8. SYSTEM-ZUSAMMENHÄNGE) Tj
+/F3 11 Tf
+1 0 0 1 50 270.89 Tm
+(Spielablauf) Tj
+/F2 9 Tf
+1 0 0 1 50 253.89 Tm
+(  * 1. Main Scene lädt Level \(BaseLevel\)) Tj
+/F2 9 Tf
+1 0 0 1 50 242.89 Tm
+(  * 2. GameManager platziert Player an PlayerSpawn) Tj
+/F2 9 Tf
+1 0 0 1 50 231.89 Tm
+(  * 3. HUD findet Player \(group "player"\)) Tj
+/F2 9 Tf
+1 0 0 1 50 220.89 Tm
+(  * 4. Input ? Movement / Dash / Wand) Tj
+/F2 9 Tf
+1 0 0 1 50 209.89 Tm
+(  * 5. Cast ? Projektil ? Hurtbox ? Damage / Hit-Stop / Loot) Tj
+/F2 9 Tf
+1 0 0 1 50 198.89 Tm
+(  * 6. Exit ? fade_out ? change_scene ? fade_in) Tj
+/F2 9 Tf
+1 0 0 1 50 187.89 Tm
+(  * 7. Tod ? Death-Anim ? queue_free \(kein Respawn\)) Tj
+/F3 11 Tf
+1 0 0 1 50 170.89 Tm
+(Autoloads) Tj
+/F2 9 Tf
+1 0 0 1 50 153.89 Tm
+(  * GameManager: Persistenter Player, Fade, Level-Wechsel) Tj
+/F2 9 Tf
+1 0 0 1 50 142.89 Tm
+(  * DebugManager: God Mode, Spawns, Slow-Mo, Overlay) Tj
+/F2 9 Tf
+1 0 0 1 50 131.89 Tm
+(  * BetterTerrain: Tile-Painting) Tj
+ET
+50 114.88999999999999 m 545.28 114.88999999999999 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 98.88999999999999 Tm
+(9. GAMEFEEL-ANALYSE) Tj
+/F3 11 Tf
+1 0 0 1 50 78.88999999999999 Tm
+(Stärken) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 595.28 841.89] /Contents 10 0 R /Resources << /Font << /F2 2 0 R /F3 3 0 R >> >> >>
+endobj
+12 0 obj
+<< /Length 3678 >>
+stream
+BT
+/F2 9 Tf
+1 0 0 1 50 786.89 Tm
+(Movement \(Coyote/Buffer\), Dash \(Ease, Charges\), Block Guard, Camera \(Look-ahead, Shake\),) Tj
+/F2 9 Tf
+1 0 0 1 50 775.89 Tm
+(Damage Numbers, Mana Blink.) Tj
+/F3 11 Tf
+1 0 0 1 50 758.89 Tm
+(Top 10 Probleme) Tj
+/F2 9 Tf
+1 0 0 1 50 741.89 Tm
+(  * 1. Kein Death/Restart-Loop) Tj
+/F2 9 Tf
+1 0 0 1 50 730.89 Tm
+(  * 2. Block I-Frames fehlen) Tj
+/F2 9 Tf
+1 0 0 1 50 719.89 Tm
+(  * 3. Dungeon-Fade kaputt) Tj
+/F2 9 Tf
+1 0 0 1 50 708.89 Tm
+(  * 4. Kein Player-Hitstop) Tj
+/F2 9 Tf
+1 0 0 1 50 697.89 Tm
+(  * 5. Block-Guard ohne Cam-Shake) Tj
+/F2 9 Tf
+1 0 0 1 50 686.89 Tm
+(  * 6. Inventar ohne Equip-Feedback) Tj
+/F2 9 Tf
+1 0 0 1 50 675.89 Tm
+(  * 7. HUD-Dash nur binär) Tj
+/F2 9 Tf
+1 0 0 1 50 664.89 Tm
+(  * 8. Contact Push sticky) Tj
+/F2 9 Tf
+1 0 0 1 50 653.89 Tm
+(  * 9. Projektile durch Wände) Tj
+/F2 9 Tf
+1 0 0 1 50 642.89 Tm
+(  * 10. Monster Nahkampf-Lücke) Tj
+/F3 11 Tf
+1 0 0 1 50 625.89 Tm
+(Top 10 Quick Wins) Tj
+/F2 9 Tf
+1 0 0 1 50 608.89 Tm
+(  * 1. Main Scene + Dungeon FadeRect) Tj
+/F2 9 Tf
+1 0 0 1 50 597.89 Tm
+(  * 2. Input Dash/Hover trennen) Tj
+/F2 9 Tf
+1 0 0 1 50 586.89 Tm
+(  * 3. Block-Guard Camera-Shake) Tj
+/F2 9 Tf
+1 0 0 1 50 575.89 Tm
+(  * 4. HUD Dash-Recovery-Fill) Tj
+/F2 9 Tf
+1 0 0 1 50 564.89 Tm
+(  * 5. spell_1-3 an Slots) Tj
+/F2 9 Tf
+1 0 0 1 50 553.89 Tm
+(  * 6. Empty-Mana-Sound) Tj
+/F2 9 Tf
+1 0 0 1 50 542.89 Tm
+(  * 7. Lokaler Player-Hitstop) Tj
+/F2 9 Tf
+1 0 0 1 50 531.89 Tm
+(  * 8. Block I-Frames implementieren) Tj
+/F2 9 Tf
+1 0 0 1 50 520.89 Tm
+(  * 9. Pickup ?Inventar voll" UI) Tj
+/F2 9 Tf
+1 0 0 1 50 509.89 Tm
+(  * 10. print durch UI-Feedback ersetzen) Tj
+/F3 11 Tf
+1 0 0 1 50 492.89 Tm
+(Tuning-Parameter) Tj
+/F3 10 Tf
+1 0 0 1 50 475.89 Tm
+(Parameter | Wert \(Ist\) | Bereich) Tj
+/F2 9 Tf
+1 0 0 1 50 464.89 Tm
+(coyote_time | 0.1 | 0.08-0.12) Tj
+/F2 9 Tf
+1 0 0 1 50 453.89 Tm
+(jump_buffer_time | 0.1 | 0.1-0.14) Tj
+/F2 9 Tf
+1 0 0 1 50 442.89 Tm
+(block_dash_cooldown | 0.7 | 0.5-0.8) Tj
+/F2 9 Tf
+1 0 0 1 50 431.89 Tm
+(invincibility_time | 0.2 | 0.15-0.25) Tj
+/F2 9 Tf
+1 0 0 1 50 420.89 Tm
+(look_ahead_distance | 60 | 48-72) Tj
+ET
+50 399.89 m 545.28 399.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 383.89 Tm
+(10. GAMEPLAY-LOOP-ANALYSE) Tj
+/F3 10 Tf
+1 0 0 1 50 363.89 Tm
+(Phase | Status) Tj
+/F2 9 Tf
+1 0 0 1 50 352.89 Tm
+(Explore | Teilweise \(2 Level\)) Tj
+/F2 9 Tf
+1 0 0 1 50 341.89 Tm
+(Scout | Fehlt) Tj
+/F2 9 Tf
+1 0 0 1 50 330.89 Tm
+(Engage | Stark) Tj
+/F2 9 Tf
+1 0 0 1 50 319.89 Tm
+(Resolve | Tod ohne Restart) Tj
+/F2 9 Tf
+1 0 0 1 50 308.89 Tm
+(Reward | Pickup + Loot) Tj
+/F2 9 Tf
+1 0 0 1 50 297.89 Tm
+(Rebuild | Inventar ohne Equip-UI) Tj
+/F2 9 Tf
+1 0 0 1 50 286.89 Tm
+(Descend/Branch | Minimal) Tj
+/F2 9 Tf
+1 0 0 1 50 275.89 Tm
+(Safe Room/Shop/Wandbench | Fehlt) Tj
+/F2 9 Tf
+1 0 0 1 50 264.89 Tm
+(Boss | Fehlt) Tj
+/F2 9 Tf
+1 0 0 1 50 253.89 Tm
+(Death or Continue | Fehlt) Tj
+/F2 9 Tf
+1 0 0 1 50 232.89 Tm
+(Vor neuem Content: Main Scene, Death/Restart, Inventory UI, Run-Datenmodell.) Tj
+ET
+50 215.89 m 545.28 215.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 199.89 Tm
+(11. GODOT-4.6.1-PRÜFUNG) Tj
+/F3 10 Tf
+1 0 0 1 50 179.89 Tm
+(Thema | Status) Tj
+/F2 9 Tf
+1 0 0 1 50 168.89 Tm
+(CharacterBody2D + move_and_slide | OK) Tj
+/F2 9 Tf
+1 0 0 1 50 157.89 Tm
+(TileMapLayer + BetterTerrain | OK) Tj
+/F2 9 Tf
+1 0 0 1 50 146.89 Tm
+(Area2D Signals | OK) Tj
+/F2 9 Tf
+1 0 0 1 50 135.89 Tm
+(Autoloads | OK) Tj
+/F2 9 Tf
+1 0 0 1 50 124.88999999999999 Tm
+(@export Typisierung | Teilweise) Tj
+/F2 9 Tf
+1 0 0 1 50 113.88999999999999 Tm
+(Global time_scale Hit-Stop | Problematisch) Tj
+/F2 9 Tf
+1 0 0 1 50 92.88999999999999 Tm
+(Empfehlung: Typed HUD-Refs; Exit auch group "player" prüfen.) Tj
+ET
+50 75.88999999999999 m 545.28 75.88999999999999 l S
+BT
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 595.28 841.89] /Contents 12 0 R /Resources << /Font << /F2 2 0 R /F3 3 0 R >> >> >>
+endobj
+14 0 obj
+<< /Length 3250 >>
+stream
+BT
+/F3 13 Tf
+1 0 0 1 50 786.89 Tm
+(12. TESTPLAN UND DEBUG-TOOLS) Tj
+/F3 11 Tf
+1 0 0 1 50 766.89 Tm
+(Smoke Tests) Tj
+/F2 9 Tf
+1 0 0 1 50 749.89 Tm
+(  * Projekt startet mit Main Scene) Tj
+/F2 9 Tf
+1 0 0 1 50 738.89 Tm
+(  * Player an PlayerSpawn) Tj
+/F2 9 Tf
+1 0 0 1 50 727.89 Tm
+(  * HUD zeigt HP/Mana/Dash) Tj
+/F2 9 Tf
+1 0 0 1 50 716.89 Tm
+(  * 60s ohne Errors) Tj
+/F3 11 Tf
+1 0 0 1 50 699.89 Tm
+(Debug-Tools \(vorhanden\)) Tj
+/F2 9 Tf
+1 0 0 1 50 682.89 Tm
+(God Mode, Spawn Enemy/Spell/Wand, Refill, Reset Dash, Restart Room, Slow-Mo, Overlay,) Tj
+/F2 9 Tf
+1 0 0 1 50 671.89 Tm
+(Teleport Spawn.) Tj
+/F3 11 Tf
+1 0 0 1 50 654.89 Tm
+(Empfohlen \(fehlt\)) Tj
+/F2 9 Tf
+1 0 0 1 50 637.89 Tm
+(Hitbox/Hurtbox Gizmo, AI State, Print Current Build.) Tj
+ET
+50 620.89 m 545.28 620.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 604.89 Tm
+(13. PRIORISIERTE TODO-LISTE) Tj
+/F3 11 Tf
+1 0 0 1 50 584.89 Tm
+(A - Sofort) Tj
+/F3 10 Tf
+1 0 0 1 50 567.89 Tm
+(Aufgabe | Aufwand | Risiko | Nutzen) Tj
+/F2 9 Tf
+1 0 0 1 50 556.89 Tm
+(Main Scene setzen | S | niedrig | hoch) Tj
+/F2 9 Tf
+1 0 0 1 50 545.89 Tm
+(Input Dash/Hover fix | S | niedrig | hoch) Tj
+/F2 9 Tf
+1 0 0 1 50 534.89 Tm
+(Dungeon FadeRect fix | S | niedrig | hoch) Tj
+/F3 11 Tf
+1 0 0 1 50 513.89 Tm
+(B - Nach Cleanup) Tj
+/F2 9 Tf
+1 0 0 1 50 496.89 Tm
+(Git-Delete, limboai entfernen, ungenutzte Inputs.) Tj
+/F3 11 Tf
+1 0 0 1 50 479.89 Tm
+(C - Vor neuem Content) Tj
+/F2 9 Tf
+1 0 0 1 50 462.89 Tm
+(Death/Respawn, Inventory UI, Hit-Stop, Block I-Frames, HUD Signals.) Tj
+/F3 11 Tf
+1 0 0 1 50 445.89 Tm
+(D - Vor Vertical Slice) Tj
+/F2 9 Tf
+1 0 0 1 50 428.89 Tm
+(Run/Room-Modell, Procedural Loop, Projectile-Tiles, Global HUD.) Tj
+/F3 11 Tf
+1 0 0 1 50 411.89 Tm
+(E - Später) Tj
+/F2 9 Tf
+1 0 0 1 50 394.89 Tm
+(Generator split, Wandbench/Shop/Boss, Asset-Pfade.) Tj
+ET
+50 377.89 m 545.28 377.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 361.89 Tm
+(14. KONKRETER CLEANUP-PLAN) Tj
+/F3 10 Tf
+1 0 0 1 50 341.89 Tm
+(Phase | Ziel | Risiko) Tj
+/F2 9 Tf
+1 0 0 1 50 330.89 Tm
+(1 | Analyse \(dieses Dokument\) | -) Tj
+/F2 9 Tf
+1 0 0 1 50 319.89 Tm
+(2 | Sichere Löschungen | niedrig) Tj
+/F2 9 Tf
+1 0 0 1 50 308.89 Tm
+(3 | Ordner/Namen | mittel) Tj
+/F2 9 Tf
+1 0 0 1 50 297.89 Tm
+(4 | Szenenstandard \(Fade, Exits\) | mittel) Tj
+/F2 9 Tf
+1 0 0 1 50 286.89 Tm
+(5 | Code-Refactors + Tests | hoch) Tj
+/F2 9 Tf
+1 0 0 1 50 275.89 Tm
+(6 | Gamefeel Polish | niedrig) Tj
+ET
+50 254.89 m 545.28 254.89 l S
+BT
+/F3 13 Tf
+1 0 0 1 50 238.89 Tm
+(15. ABSCHLUSS) Tj
+/F3 11 Tf
+1 0 0 1 50 218.89 Tm
+(10 wichtigste Probleme) Tj
+/F2 9 Tf
+1 0 0 1 50 201.89 Tm
+(  * 1. Keine Main Scene) Tj
+/F2 9 Tf
+1 0 0 1 50 190.89 Tm
+(  * 2. Dash/Hover Input-Konflikt) Tj
+/F2 9 Tf
+1 0 0 1 50 179.89 Tm
+(  * 3. Player queue_free vs GameManager) Tj
+/F2 9 Tf
+1 0 0 1 50 168.89 Tm
+(  * 4. Dungeon FadeRect defekt) Tj
+/F2 9 Tf
+1 0 0 1 50 157.89 Tm
+(  * 5. Block I-Frames Stub) Tj
+/F2 9 Tf
+1 0 0 1 50 146.89 Tm
+(  * 6. Globaler Hit-Stop) Tj
+/F2 9 Tf
+1 0 0 1 50 135.89 Tm
+(  * 7. Inventar nicht wired) Tj
+/F2 9 Tf
+1 0 0 1 50 124.88999999999999 Tm
+(  * 8. HUD pollt jeden Frame) Tj
+/F2 9 Tf
+1 0 0 1 50 113.88999999999999 Tm
+(  * 9. Kein Death/Restart/Run) Tj
+/F2 9 Tf
+1 0 0 1 50 102.88999999999999 Tm
+(  * 10. Projektile vs Tilemap) Tj
+/F3 11 Tf
+1 0 0 1 50 85.88999999999999 Tm
+(10 wichtigste Chancen) Tj
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 595.28 841.89] /Contents 14 0 R /Resources << /Font << /F2 2 0 R /F3 3 0 R >> >> >>
+endobj
+16 0 obj
+<< /Length 1810 >>
+stream
+BT
+/F2 9 Tf
+1 0 0 1 50 786.89 Tm
+(  * 1. Player-Component-Architektur) Tj
+/F2 9 Tf
+1 0 0 1 50 775.89 Tm
+(  * 2. EnemyBase skalierbar) Tj
+/F2 9 Tf
+1 0 0 1 50 764.89 Tm
+(  * 3. Wand/Spell-Pipeline) Tj
+/F2 9 Tf
+1 0 0 1 50 753.89 Tm
+(  * 4. DebugManager) Tj
+/F2 9 Tf
+1 0 0 1 50 742.89 Tm
+(  * 5. BaseLevel + PlayerSpawn) Tj
+/F2 9 Tf
+1 0 0 1 50 731.89 Tm
+(  * 6. BetterTerrain + Generator) Tj
+/F2 9 Tf
+1 0 0 1 50 720.89 Tm
+(  * 7. Block-Dash als USP) Tj
+/F2 9 Tf
+1 0 0 1 50 709.89 Tm
+(  * 8. Damage Numbers + Crit) Tj
+/F2 9 Tf
+1 0 0 1 50 698.89 Tm
+(  * 9. Coyote/Buffer) Tj
+/F2 9 Tf
+1 0 0 1 50 687.89 Tm
+(  * 10. Physics-Layer benannt) Tj
+/F3 11 Tf
+1 0 0 1 50 670.89 Tm
+(10 erste Aufgaben) Tj
+/F2 9 Tf
+1 0 0 1 50 653.89 Tm
+(  * 1. run/main_scene ? start_room.tscn) Tj
+/F2 9 Tf
+1 0 0 1 50 642.89 Tm
+(  * 2. Hover von Dash trennen) Tj
+/F2 9 Tf
+1 0 0 1 50 631.89 Tm
+(  * 3. Dungeon FadeRect fullscreen) Tj
+/F2 9 Tf
+1 0 0 1 50 620.89 Tm
+(  * 4. Death/Respawn statt queue_free) Tj
+/F2 9 Tf
+1 0 0 1 50 609.89 Tm
+(  * 5. Block I-Frames implementieren) Tj
+/F2 9 Tf
+1 0 0 1 50 598.89 Tm
+(  * 6. Hit-Stop lokal) Tj
+/F2 9 Tf
+1 0 0 1 50 587.89 Tm
+(  * 7. health_changed ? HUD) Tj
+/F2 9 Tf
+1 0 0 1 50 576.89 Tm
+(  * 8. Inventory UI wiring) Tj
+/F2 9 Tf
+1 0 0 1 50 565.89 Tm
+(  * 9. Monster pass ? start_attack\(\)) Tj
+/F2 9 Tf
+1 0 0 1 50 554.89 Tm
+(  * 10. Git-Cleanup committen) Tj
+/F3 11 Tf
+1 0 0 1 50 537.89 Tm
+(Dateien-Priorität) Tj
+/F2 9 Tf
+1 0 0 1 50 520.89 Tm
+(Zuerst: project.godot, dungeon_01.tscn, player_dash_component.gd, hud.gd) Tj
+/F2 9 Tf
+1 0 0 1 50 503.89 Tm
+(Nicht ohne Tests: game_manager.gd, enemy_base.gd, player.gd, wand.gd,) Tj
+/F2 9 Tf
+1 0 0 1 50 492.89 Tm
+(fast_noise_generator.gd) Tj
+ET
+50 475.89 m 545.28 475.89 l S
+BT
+/F2 9 Tf
+1 0 0 1 50 459.89 Tm
+(*Ende der Analyse - NoitaClone / Godot 4.6.1*) Tj
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 18 0 R /MediaBox [0 0 595.28 841.89] /Contents 16 0 R /Resources << /Font << /F2 2 0 R /F3 3 0 R >> >> >>
+endobj
+18 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 7 >>
+endobj
+19 0 obj
+<< /Type /Catalog /Pages 18 0 R >>
+endobj
+xref
+0 19
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000000154 00000 n 
+0000004654 00000 n 
+0000004797 00000 n 
+0000009214 00000 n 
+0000009357 00000 n 
+0000013114 00000 n 
+0000013257 00000 n 
+0000017269 00000 n 
+0000017414 00000 n 
+0000021145 00000 n 
+0000021290 00000 n 
+0000024593 00000 n 
+0000024738 00000 n 
+0000026601 00000 n 
+0000026746 00000 n 
+0000026844 00000 n 
+trailer
+<< /Size 19 /Root 19 0 R >>
+startxref
+26895
+%%EOF

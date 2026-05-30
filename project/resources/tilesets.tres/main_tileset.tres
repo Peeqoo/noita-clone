@@ -1,9 +1,9 @@
 [gd_resource type="TileSet" format=3 uid="uid://c5p3w1su44ywb"]
 
-[ext_resource type="Texture2D" uid="uid://bk1t3gscv82s5" path="res://assets/tilemap/[v1.3] tranquil_tunnels_transparent.png" id="1_8elay"]
+[ext_resource type="Texture2D" uid="uid://bk1t3gscv82s5" path="res://assets/tilemap/[v1.3] tranquil_tunnels_transparent.png" id="1_68dvt"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8elay"]
-texture = ExtResource("1_8elay")
+texture = ExtResource("1_68dvt")
 texture_region_size = Vector2i(8, 8)
 3:30/0 = 0
 3:30/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
@@ -210,7 +210,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 8:33/0 = 0
-8:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
+8:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 0, 4, -1, 4, 4, -1, 4)
 8:33/0/metadata/_better_terrain = {
 0: [0],
 4: [0],
@@ -222,7 +222,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 8:34/0 = 0
-8:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
+8:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 0, -1, -4, 4, -4, 4, 1)
 8:34/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -234,7 +234,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 9:33/0 = 0
-9:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
+9:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 0, 1, 4, -4, 4, -4, -1)
 9:33/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -246,7 +246,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 9:34/0 = 0
-9:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
+9:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(0, 0, -4, 1, -4, -4, 1, -4)
 9:34/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -415,6 +415,7 @@ texture_region_size = Vector2i(8, 8)
 16:32/0 = 0
 16:32/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
 20:30/0 = 0
+20:30/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, 4, -4, 4, 1, -2, 4, -4)
 20:30/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -422,10 +423,15 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 20:31/0 = 0
+20:31/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, -4, 4, 4, -2, -1, -4, -4)
 20:32/0 = 0
+20:32/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, 4, -4, 4, 1, -2, 4, -4)
 20:33/0 = 0
+20:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, 4, -4, 4, 1, -2, 4, -4)
 20:34/0 = 0
+20:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, -4, 4, 4, -2, -1, -4, -4)
 21:30/0 = 0
+21:30/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, 4, -4, -4, 2, 1, 4, 4)
 21:30/0/metadata/_better_terrain = {
 4: [0],
 7: [0],
@@ -433,10 +439,15 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 21:31/0 = 0
+21:31/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, -1, 2, -4, 4)
 21:32/0 = 0
+21:32/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, 4, -4, -4, 2, 1, 4, 4)
 21:33/0 = 0
+21:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, 4, -4, -4, 2, 1, 4, 4)
 21:34/0 = 0
+21:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, -1, 2, -4, 4)
 22:30/0 = 0
+22:30/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, 4, -4, 4, 1, -2, 4, -4)
 22:30/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -444,10 +455,15 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 22:31/0 = 0
+22:31/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, -4, 4, 4, -2, -1, -4, -4)
 22:32/0 = 0
+22:32/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, -4, 4, 4, -2, -1, -4, -4)
 22:33/0 = 0
+22:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, 4, -4, 4, 1, -2, 4, -4)
 22:34/0 = 0
+22:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(4, -4, 4, 4, -2, -1, -4, -4)
 23:30/0 = 0
+23:30/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, 4, -4, -4, 2, 1, 4, 4)
 23:30/0/metadata/_better_terrain = {
 4: [0],
 7: [0],
@@ -455,9 +471,13 @@ texture_region_size = Vector2i(8, 8)
 &"type": 0
 }
 23:31/0 = 0
+23:31/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, -1, 2, -4, 4)
 23:32/0 = 0
+23:32/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, -1, 2, -4, 4)
 23:33/0 = 0
+23:33/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, 4, -4, -4, 2, 1, 4, 4)
 23:34/0 = 0
+23:34/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, -1, 2, -4, 4)
 2:30/0 = 0
 2:30/0/physics_layer_0/polygon_0/points = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)
 2:30/0/metadata/_better_terrain = {
@@ -466,9 +486,8 @@ texture_region_size = Vector2i(8, 8)
 4: [0],
 &"type": 0
 }
-4:53/0 = 0
 25:30/0 = 0
-25:30/0/probability = 0.1
+25:30/0/probability = 0.15
 25:30/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -476,7 +495,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 25:31/0 = 0
-25:31/0/probability = 0.09
+25:31/0/probability = 0.1
 25:31/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -484,7 +503,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 25:32/0 = 0
-25:32/0/probability = 0.08
+25:32/0/probability = 0.1
 25:32/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -492,7 +511,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 25:33/0 = 0
-25:33/0/probability = 0.07
+25:33/0/probability = 0.09
 25:33/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -500,7 +519,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 25:34/0 = 0
-25:34/0/probability = 0.06
+25:34/0/probability = 0.09
 25:34/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -508,7 +527,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 25:35/0 = 0
-25:35/0/probability = 0.05
+25:35/0/probability = 0.07
 25:35/0/metadata/_better_terrain = {
 0: [0],
 3: [0],
@@ -516,7 +535,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 27:30/0 = 0
-27:30/0/probability = 0.1
+27:30/0/probability = 0.15
 27:30/0/metadata/_better_terrain = {
 7: [0],
 8: [0],
@@ -524,7 +543,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 27:31/0 = 0
-27:31/0/probability = 0.09
+27:31/0/probability = 0.1
 27:31/0/metadata/_better_terrain = {
 7: [0],
 8: [0],
@@ -532,7 +551,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 27:32/0 = 0
-27:32/0/probability = 0.08
+27:32/0/probability = 0.1
 27:32/0/metadata/_better_terrain = {
 7: [0],
 8: [0],
@@ -540,7 +559,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 27:33/0 = 0
-27:33/0/probability = 0.07
+27:33/0/probability = 0.09
 27:33/0/metadata/_better_terrain = {
 7: [0],
 8: [0],
@@ -548,7 +567,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 27:34/0 = 0
-27:34/0/probability = 0.06
+27:34/0/probability = 0.09
 27:34/0/metadata/_better_terrain = {
 7: [0],
 8: [0],
@@ -556,7 +575,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 27:35/0 = 0
-27:35/0/probability = 0.05
+27:35/0/probability = 0.07
 27:35/0/metadata/_better_terrain = {
 7: [0],
 8: [0],
@@ -644,7 +663,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 29:30/0 = 0
-29:30/0/probability = 0.04
+29:30/0/probability = 0.15
 29:30/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -652,7 +671,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 29:31/0 = 0
-29:31/0/probability = 0.04
+29:31/0/probability = 0.15
 29:31/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -660,7 +679,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 29:32/0 = 0
-29:32/0/probability = 0.04
+29:32/0/probability = 0.15
 29:32/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -668,7 +687,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 30:30/0 = 0
-30:30/0/probability = 0.04
+30:30/0/probability = 0.1
 30:30/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -676,7 +695,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 30:31/0 = 0
-30:31/0/probability = 0.04
+30:31/0/probability = 0.1
 30:31/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -684,7 +703,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 30:32/0 = 0
-30:32/0/probability = 0.04
+30:32/0/probability = 0.1
 30:32/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -692,7 +711,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 31:30/0 = 0
-31:30/0/probability = 0.04
+31:30/0/probability = 0.08
 31:30/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -700,7 +719,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 31:31/0 = 0
-31:31/0/probability = 0.04
+31:31/0/probability = 0.08
 31:31/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -708,7 +727,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 31:32/0 = 0
-31:32/0/probability = 0.04
+31:32/0/probability = 0.08
 31:32/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -716,7 +735,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 32:30/0 = 0
-32:30/0/probability = 0.04
+32:30/0/probability = 0.06
 32:30/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -724,7 +743,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 32:31/0 = 0
-32:31/0/probability = 0.04
+32:31/0/probability = 0.06
 32:31/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -732,7 +751,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 32:32/0 = 0
-32:32/0/probability = 0.04
+32:32/0/probability = 0.06
 32:32/0/metadata/_better_terrain = {
 3: [0],
 4: [0],
@@ -832,7 +851,7 @@ texture_region_size = Vector2i(8, 8)
 &"type": -1
 }
 18:31/0 = 0
-18:31/0/probability = 0.04
+18:31/0/probability = 0.07
 18:31/0/metadata/_better_terrain = {
 3: [0],
 4: [0],

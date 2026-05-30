@@ -8,9 +8,7 @@ class_name PlayerDashComponent
 @export var allow_air_dash: bool = true
 @export var use_dash_animation_duration: bool = true
 @export var dash_animation_name: StringName = &"ausweich_dash"
-@export var dash_iframe_start_frame: int = 0
-@export var dash_iframe_end_frame: int = 2
-@export var dash_guard_start_frame: int = 3
+@export var dash_guard_start_frame: int = 2
 @export var dash_guard_end_frame: int = 5
 
 @export_group("Dash Charges")
@@ -23,10 +21,11 @@ class_name PlayerDashComponent
 @export var allow_air_block_dash: bool = false
 @export var use_block_dash_animation_duration: bool = true
 @export var block_dash_animation_name: StringName = &"block_dash"
-@export var block_dash_iframe_start_frame: int = 0
-@export var block_dash_iframe_end_frame: int = 3
-@export var block_dash_guard_start_frame: int = 4
-@export var block_dash_guard_end_frame: int = 7
+@export var block_dash_guard_start_frame: int = 1
+@export var block_dash_guard_end_frame: int = 6
+@export var block_dash_recoil_force: float = 220.0
+@export var block_dash_recoil_upward_force: float = 60.0
+@export var block_dash_recoil_duration: float = 0.08
 
 @onready var player: CharacterBody2D = get_parent().get_parent()
 @onready var animated_sprite: AnimatedSprite2D = $"../../Visuals/AnimatedSprite2D"
@@ -44,6 +43,10 @@ var block_dash_timer: float = 0.0
 var block_dash_cooldown_timer: float = 0.0
 var can_air_block_dash: bool = true
 var block_dash_total_duration: float = 0.16
+
+var block_dash_success_triggered: bool = false
+var block_dash_recoil_timer: float = 0.0
+var block_dash_recoil_velocity: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	_setup_dash_duration_from_animation()
@@ -63,6 +66,9 @@ func reset_air_actions() -> void:
 func force_stop_all() -> void:
 	is_dashing = false
 	is_block_dashing = false
+	block_dash_success_triggered = false
+	block_dash_recoil_timer = 0.0
+	block_dash_recoil_velocity = Vector2.ZERO
 
 func try_start_dash(raw_input_dir: float) -> bool:
 	if is_dashing or is_block_dashing:
@@ -107,6 +113,9 @@ func try_start_block_dash(raw_input_dir: float) -> bool:
 
 	is_block_dashing = true
 	block_dash_timer = block_dash_total_duration
+	block_dash_success_triggered = false
+	block_dash_recoil_timer = 0.0
+	block_dash_recoil_velocity = Vector2.ZERO
 	player.is_stopping_run = false
 	player.velocity = Vector2.ZERO
 	block_dash_cooldown_timer = block_dash_cooldown
@@ -140,16 +149,23 @@ func physics_process_dash(delta: float) -> void:
 
 func physics_process_block_dash(delta: float) -> void:
 	block_dash_timer -= delta
-	player.velocity = Vector2.ZERO
+
+	if block_dash_recoil_timer > 0.0:
+		block_dash_recoil_timer -= delta
+		player.velocity = block_dash_recoil_velocity
+	else:
+		player.velocity = Vector2.ZERO
+
 	player.is_stopping_run = false
 
 	if block_dash_timer <= 0.0:
 		is_block_dashing = false
+		block_dash_success_triggered = false
+		block_dash_recoil_timer = 0.0
+		block_dash_recoil_velocity = Vector2.ZERO
 
 func is_in_dash_iframe() -> bool:
-	if not is_dashing:
-		return false
-	return _is_current_frame_between(dash_animation_name, dash_iframe_start_frame, dash_iframe_end_frame)
+	return is_dashing
 
 func is_in_dash_guard_window() -> bool:
 	if not is_dashing:
@@ -157,14 +173,34 @@ func is_in_dash_guard_window() -> bool:
 	return _is_current_frame_between(dash_animation_name, dash_guard_start_frame, dash_guard_end_frame)
 
 func is_in_block_dash_iframe() -> bool:
-	if not is_block_dashing:
-		return false
-	return _is_current_frame_between(block_dash_animation_name, block_dash_iframe_start_frame, block_dash_iframe_end_frame)
+	return false
 
 func is_in_block_dash_guard_window() -> bool:
 	if not is_block_dashing:
 		return false
 	return _is_current_frame_between(block_dash_animation_name, block_dash_guard_start_frame, block_dash_guard_end_frame)
+
+func trigger_block_dash_success() -> void:
+	if block_dash_success_triggered:
+		return
+
+	block_dash_success_triggered = true
+	apply_block_dash_recoil()
+
+func apply_block_dash_recoil() -> void:
+	var recoil_direction_x: float = 0.0
+
+	if player.velocity.x != 0.0:
+		recoil_direction_x = -signf(player.velocity.x)
+	else:
+		if player.facing_left:
+			recoil_direction_x = 1.0
+		else:
+			recoil_direction_x = -1.0
+
+	block_dash_recoil_velocity.x = recoil_direction_x * block_dash_recoil_force
+	block_dash_recoil_velocity.y = -block_dash_recoil_upward_force
+	block_dash_recoil_timer = block_dash_recoil_duration
 
 func get_dash_charges() -> int:
 	return current_dash_charges

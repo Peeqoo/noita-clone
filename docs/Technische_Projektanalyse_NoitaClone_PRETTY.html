@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Technische Projektanalyse — NoitaClone (Godot 4.6.1)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0e14; --bg-elevated: #12151f; --bg-card: #161a26; --border: #252a3a;
+      --text: #e8eaef; --text-muted: #9aa3b8; --accent: #7c6cf0; --accent-soft: rgba(124,108,240,0.15);
+      --gold: #e8b84a; --code-bg: #1a1f2e; --sidebar-w: 280px; --radius: 10px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.35);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0; font-family: "DM Sans", system-ui, sans-serif; font-size: 15px; line-height: 1.65;
+      color: var(--text); background: var(--bg);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,108,240,0.18), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 0%, rgba(232,184,74,0.06), transparent);
+    }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; overflow-y: auto;
+      background: var(--bg-elevated); border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem 2rem; z-index: 100;
+    }
+    .sidebar-brand { font-weight: 700; font-size: 0.95rem; color: var(--gold); margin-bottom: 0.25rem; }
+    .sidebar-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+    .toc-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .toc a { display: block; color: var(--text-muted); text-decoration: none; font-size: 0.8rem; padding: 0.28rem 0.5rem; border-radius: 6px; margin-bottom: 2px; transition: color 0.15s, background 0.15s; }
+    .toc a:hover { color: var(--text); background: var(--accent-soft); }
+    .toc a.toc-l1 { font-weight: 600; color: var(--text); margin-top: 0.5rem; }
+    .toc a.toc-l2 { padding-left: 0.75rem; }
+    .toc a.toc-l3 { padding-left: 1.25rem; font-size: 0.75rem; }
+    .main { margin-left: var(--sidebar-w); flex: 1; max-width: 920px; padding: 2.5rem 3rem 4rem; }
+    .hero {
+      background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 2rem 2.25rem; margin-bottom: 2.5rem; box-shadow: var(--shadow);
+    }
+    .hero h1 {
+      margin: 0 0 0.75rem; font-size: 1.85rem; font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.85rem; color: var(--text-muted); }
+    .hero-meta span { background: var(--bg); border: 1px solid var(--border); padding: 0.25rem 0.65rem; border-radius: 999px; }
+    .content h1 { font-size: 1.65rem; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); color: #fff; }
+    .content h2 { font-size: 1.35rem; margin: 2.25rem 0 0.85rem; color: var(--gold); }
+    .content h3 { font-size: 1.1rem; margin: 1.75rem 0 0.65rem; color: #c5cad6; }
+    .content h4 { font-size: 1rem; margin: 1.25rem 0 0.5rem; color: var(--text-muted); }
+    .content p { margin: 0 0 1rem; }
+    .content strong { color: #fff; font-weight: 600; }
+    .content a { color: var(--accent); text-decoration: none; }
+    .content a:hover { text-decoration: underline; }
+    blockquote { margin: 1rem 0; padding: 0.85rem 1.15rem; border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 var(--radius) var(--radius) 0; color: var(--text-muted); font-size: 0.92rem; }
+    .section-rule { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 2rem 0; }
+    .table-wrap { overflow-x: auto; margin: 1rem 0 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 0.65rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--bg-card); color: var(--gold); font-weight: 600; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.15rem; overflow-x: auto; margin: 1rem 0 1.25rem; font-family: "JetBrains Mono", monospace; font-size: 0.8rem; line-height: 1.5; }
+    code.inline-code { font-family: "JetBrains Mono", monospace; font-size: 0.82em; background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; color: #b8a9ff; border: 1px solid var(--border); }
+    pre code { color: #b4bcd0; }
+    ul, ol { margin: 0 0 1rem; padding-left: 1.35rem; }
+    li { margin-bottom: 0.35rem; }
+    ul.checklist { list-style: none; padding-left: 0; }
+    ul.checklist li.unchecked::before { content: "☐ "; color: var(--text-muted); }
+    .mermaid-wrap { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin: 1.25rem 0 1.75rem; overflow-x: auto; }
+    .badge { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 0.2em 0.55em; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .sev-blocker { background: #5c1a1a; color: #ff8a8a; }
+    .sev-high { background: #5c3a12; color: #ffc266; }
+    .sev-medium { background: #3d3a12; color: #e8e06a; }
+    .sev-low { background: #1a3d2e; color: #7dcea0; }
+    .sev-nice { background: #1a2a3d; color: #85c1e9; }
+    .conf-sure { background: #1a3d32; color: #6ee7b7; }
+    .print-btn { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 200; background: var(--accent); color: #fff; border: none; padding: 0.65rem 1.1rem; border-radius: 999px; font-family: inherit; font-weight: 600; font-size: 0.85rem; cursor: pointer; box-shadow: var(--shadow); }
+    .print-btn:hover { filter: brightness(1.1); }
+    @media print { .sidebar, .print-btn { display: none !important; } .main { margin-left: 0; max-width: 100%; } body { background: #fff; color: #111; } .content h1, .content h2, .hero h1 { -webkit-text-fill-color: #111; color: #111; } }
+    @media (max-width: 900px) { .sidebar { position: relative; width: 100%; height: auto; } .layout { flex-direction: column; } .main { margin-left: 0; padding: 1.5rem; } }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">NoitaClone</div>
+      <div class="sidebar-meta">Godot 4.6.1 · Technische Analyse</div>
+      <div class="toc-title">Inhaltsverzeichnis</div>
+      <nav class="toc"><a class="toc-l1" href="#technische-projektanalyse-noitaclone-godot-4-6-1">Technische Projektanalyse — NoitaClone (Godot 4.6.1)</a>
+<a class="toc-l2" href="#inhaltsverzeichnis">Inhaltsverzeichnis</a>
+<a class="toc-l2" href="#1-executive-summary">EXECUTIVE SUMMARY</a>
+<a class="toc-l3" href="#1-1-gesamtbewertung">1 Gesamtbewertung</a>
+<a class="toc-l3" href="#1-2-technische-gesundheit">2 Technische Gesundheit</a>
+<a class="toc-l3" href="#1-3-architektur">3 Architektur</a>
+<a class="toc-l3" href="#1-4-starke-systeme">4 Starke Systeme</a>
+<a class="toc-l3" href="#1-5-fragile-systeme">5 Fragile Systeme</a>
+<a class="toc-l3" href="#1-6-blockiert-spateren-content-ausbau">6 Blockiert späteren Content-Ausbau</a>
+<a class="toc-l3" href="#1-7-kritische-risiken-schweregrade">7 Kritische Risiken (Schweregrade)</a>
+<a class="toc-l3" href="#1-8-cleanups-zuerst-vs-refactors-spater">8 Cleanups zuerst vs. Refactors später</a>
+<a class="toc-l2" href="#2-projektstruktur-analyse">PROJEKTSTRUKTUR-ANALYSE</a>
+<a class="toc-l3" href="#2-1-aktuelle-struktur-zusammenfassung">1 Aktuelle Struktur-Zusammenfassung</a>
+<a class="toc-l3" href="#2-2-problemstellen">2 Problemstellen</a>
+<a class="toc-l3" href="#2-3-empfohlene-zielstruktur">3 Empfohlene Zielstruktur</a>
+<a class="toc-l3" href="#2-4-konkrete-rename-move-vorschlage">4 Konkrete Rename-/Move-Vorschläge</a>
+<a class="toc-l3" href="#2-5-sichere-reihenfolge-fur-cleanups">5 Sichere Reihenfolge für Cleanups</a>
+<a class="toc-l2" href="#3-dateistruktur-und-referenzen">DATEISTRUKTUR UND REFERENZEN</a>
+<a class="toc-l3" href="#3-1-broken-references">1 Broken References</a>
+<a class="toc-l3" href="#3-2-ungenutzte-ressourcen-kandidaten">2 Ungenutzte Ressourcen (Kandidaten)</a>
+<a class="toc-l3" href="#3-3-dependency-map">3 Dependency Map</a>
+<a class="toc-l3" href="#3-4-gamemanager-abhangigkeiten">4 GameManager-Abhängigkeiten</a>
+<a class="toc-l3" href="#3-5-starke-kopplung">5 Starke Kopplung</a>
+<a class="toc-l3" href="#3-6-datei-gruppen">6 Datei-Gruppen</a>
+<a class="toc-l2" href="#4-szenenstruktur-analyse">SZENENSTRUKTUR-ANALYSE</a>
+<a class="toc-l3" href="#4-1-ist-szenenubersicht-20-dateien">1 Ist-Szenenübersicht (20 Dateien)</a>
+<a class="toc-l3" href="#4-2-erkanntes-level-muster-gut">2 Erkanntes Level-Muster (gut)</a>
+<a class="toc-l3" href="#4-3-abweichungen-vom-ziel-room-standard">3 Abweichungen vom Ziel-Room-Standard</a>
+<a class="toc-l3" href="#4-4-faderect-vergleich-sicher">4 FadeRect-Vergleich (**sicher**)</a>
+<a class="toc-l3" href="#4-5-hitbox-hurtbox-physics">5 Hitbox / Hurtbox / Physics</a>
+<a class="toc-l3" href="#4-6-harte-nodepaths">6 Harte NodePaths</a>
+<a class="toc-l3" href="#4-7-prioritat-szenen-anderungen">7 Priorität Szenen-Änderungen</a>
+<a class="toc-l2" href="#5-codestruktur-analyse">CODESTRUKTUR-ANALYSE</a>
+<a class="toc-l3" href="#5-1-codearchitektur-map">1 Codearchitektur-Map</a>
+<a class="toc-l3" href="#5-2-systemverantwortlichkeiten">2 Systemverantwortlichkeiten</a>
+<a class="toc-l3" href="#5-3-gefahrliche-abhangigkeiten">3 Gefährliche Abhängigkeiten</a>
+<a class="toc-l3" href="#5-4-kritische-code-funde">4 Kritische Code-Funde</a>
+<a class="toc-l3" href="#5-5-refactor-kandidaten-sichere-reihenfolge">5 Refactor-Kandidaten (sichere Reihenfolge)</a>
+<a class="toc-l3" href="#5-6-magic-numbers-auswahl">6 Magic Numbers (Auswahl)</a>
+<a class="toc-l2" href="#6-dead-code-und-cleanup">DEAD CODE UND CLEANUP</a>
+<a class="toc-l3" href="#6-1-gruppe-1-sicher-entfernbar">1 Gruppe 1 — Sicher entfernbar</a>
+<a class="toc-l3" href="#6-2-gruppe-2-wahrscheinlich-entfernbar-testen">2 Gruppe 2 — Wahrscheinlich entfernbar (testen)</a>
+<a class="toc-l3" href="#6-3-gruppe-3-nicht-entfernen-spater-refactoren">3 Gruppe 3 — Nicht entfernen, später refactoren</a>
+<a class="toc-l2" href="#7-bug-suche-und-risikoanalyse">BUG-SUCHE UND RISIKOANALYSE</a>
+<a class="toc-l2" href="#8-system-zusammenhange">SYSTEM-ZUSAMMENHÄNGE</a>
+<a class="toc-l3" href="#8-1-spielstart-bis-level-exit">1 Spielstart bis Level-Exit</a>
+<a class="toc-l3" href="#8-2-diagramm-system-dependencies">2 Diagramm — System Dependencies</a>
+<a class="toc-l3" href="#8-3-diagramm-scene-transition">3 Diagramm — Scene Transition</a>
+<a class="toc-l3" href="#8-4-diagramm-spell-hit-loot">4 Diagramm — Spell → Hit → Loot</a>
+<a class="toc-l3" href="#8-5-diagramm-enemy-ai">5 Diagramm — Enemy AI</a>
+<a class="toc-l3" href="#8-6-diagramm-pickup-inventory-hud">6 Diagramm — Pickup → Inventory → HUD</a>
+<a class="toc-l2" href="#9-gamefeel-analyse">GAMEFEEL-ANALYSE</a>
+<a class="toc-l3" href="#9-1-bewertung-code-szenen">1 Bewertung (Code/Szenen)</a>
+<a class="toc-l3" href="#9-2-top-10-gamefeel-probleme">2 Top 10 Gamefeel-Probleme</a>
+<a class="toc-l3" href="#9-3-top-10-quick-wins">3 Top 10 Quick Wins</a>
+<a class="toc-l3" href="#9-4-tuning-parameter">4 Tuning-Parameter</a>
+<a class="toc-l3" href="#9-5-empfohlene-debug-overlays">5 Empfohlene Debug-Overlays</a>
+<a class="toc-l2" href="#10-gameplay-loop-analyse">GAMEPLAY-LOOP-ANALYSE</a>
+<a class="toc-l3" href="#10-1-ziel-core-loop-vs-ist">1 Ziel-Core-Loop vs. Ist</a>
+<a class="toc-l3" href="#10-2-wand-spell-als-identitat">2 Wand/Spell als Identität</a>
+<a class="toc-l3" href="#10-3-vor-neuem-content-stabilisieren">3 Vor neuem Content stabilisieren</a>
+<a class="toc-l2" href="#11-godot-4-6-1-prufung">GODOT-4.6.1-PRÜFUNG</a>
+<a class="toc-l2" href="#12-testplan-und-debug-tools">TESTPLAN UND DEBUG-TOOLS</a>
+<a class="toc-l3" href="#12-1-smoke-tests">1 Smoke Tests</a>
+<a class="toc-l3" href="#12-2-playthrough-tests">2 Playthrough Tests</a>
+<a class="toc-l3" href="#12-3-spezial-tests">3 Spezial-Tests</a>
+<a class="toc-l3" href="#12-4-performance-tests">4 Performance Tests</a>
+<a class="toc-l3" href="#12-5-debug-tools">5 Debug-Tools</a>
+<a class="toc-l2" href="#13-priorisierte-todo-liste">PRIORISIERTE TODO-LISTE</a>
+<a class="toc-l3" href="#a-sofort-machen">A — Sofort machen</a>
+<a class="toc-l3" href="#b-nach-erstem-cleanup">B — Nach erstem Cleanup</a>
+<a class="toc-l3" href="#c-vor-neuem-content">C — Vor neuem Content</a>
+<a class="toc-l3" href="#d-vor-vertical-slice">D — Vor Vertical Slice</a>
+<a class="toc-l3" href="#e-spater">E — Später</a>
+<a class="toc-l2" href="#14-konkreter-cleanup-plan">KONKRETER CLEANUP-PLAN</a>
+<a class="toc-l3" href="#phase-1-nur-analyse">Phase 1 — Nur Analyse ✓</a>
+<a class="toc-l3" href="#phase-2-sichere-loschungen">Phase 2 — Sichere Löschungen</a>
+<a class="toc-l3" href="#phase-3-namenskonventionen-ordner">Phase 3 — Namenskonventionen / Ordner</a>
+<a class="toc-l3" href="#phase-4-szenenstandardisierung">Phase 4 — Szenenstandardisierung</a>
+<a class="toc-l3" href="#phase-5-code-refactors-mit-tests">Phase 5 — Code-Refactors mit Tests</a>
+<a class="toc-l3" href="#phase-6-gamefeel-ux-polish">Phase 6 — Gamefeel / UX Polish</a>
+<a class="toc-l2" href="#15-abschluss">ABSCHLUSS</a>
+<a class="toc-l3" href="#15-1-die-10-wichtigsten-probleme">1 Die 10 wichtigsten Probleme</a>
+<a class="toc-l3" href="#15-2-die-10-wichtigsten-chancen">2 Die 10 wichtigsten Chancen</a>
+<a class="toc-l3" href="#15-3-die-10-ersten-konkreten-aufgaben">3 Die 10 ersten konkreten Aufgaben</a>
+<a class="toc-l3" href="#15-4-dateien-prioritat">4 Dateien-Priorität</a>
+<a class="toc-l3" href="#15-5-gamefeel-wert-vs-technisches-risiko">5 Gamefeel-Wert vs. technisches Risiko</a>
+<a class="toc-l2" href="#anhang-a-aktive-scripts-26">Anhang A — Aktive Scripts (26)</a>
+<a class="toc-l2" href="#anhang-b-pdf-erzeugen">Anhang B — PDF erzeugen</a></nav>
+    </aside>
+    <main class="main">
+      <header class="hero">
+        <h1>Technische Projektanalyse</h1>
+        <div class="hero-meta">
+          <span>Godot 4.6.1</span><span>BetterTerrain</span><span>30. Mai 2026</span><span>Read-only Audit</span>
+        </div>
+      </header>
+      <article class="content"><h1 id="technische-projektanalyse-noitaclone-godot-4-6-1">Technische Projektanalyse — NoitaClone (Godot 4.6.1)</h1>
+<div class="table-wrap"><table><thead><tr><th><strong>Datum</strong></th><th>30. Mai 2026</th></tr></thead><tbody><tr><td><strong>Engine</strong></td><td>Godot 4.6.1</td></tr><tr><td><strong>Plugin</strong></td><td>BetterTerrain</td></tr><tr><td><strong>Genre</strong></td><td>2D Action-Platformer / Combat-Roguelite (Noita-inspiriert)</td></tr><tr><td><strong>Scope</strong></td><td>Read-only-Analyse, keine Codeänderungen</td></tr></tbody></table></div>
+<blockquote><strong>Legende:</strong> Funde sind als <strong>sicher</strong>, <strong>wahrscheinlich</strong> oder <strong>Vermutung</strong> markiert, sofern nicht anders angegeben.</blockquote>
+<hr class="section-rule" />
+<h2 id="inhaltsverzeichnis">Inhaltsverzeichnis</h2>
+<ol><li><a href="#1-executive-summary">Executive Summary</a></li>
+<li><a href="#2-projektstruktur-analyse">Projektstruktur-Analyse</a></li>
+<li><a href="#3-dateistruktur-und-referenzen">Dateistruktur und Referenzen</a></li>
+<li><a href="#4-szenenstruktur-analyse">Szenenstruktur-Analyse</a></li>
+<li><a href="#5-codestruktur-analyse">Codestruktur-Analyse</a></li>
+<li><a href="#6-dead-code-und-cleanup">Dead Code und Cleanup</a></li>
+<li><a href="#7-bug-suche-und-risikoanalyse">Bug-Suche und Risikoanalyse</a></li>
+<li><a href="#8-system-zusammenhänge">System-Zusammenhänge</a></li>
+<li><a href="#9-gamefeel-analyse">Gamefeel-Analyse</a></li>
+<li><a href="#10-gameplay-loop-analyse">Gameplay-Loop-Analyse</a></li>
+<li><a href="#11-godot-461-prüfung">Godot-4.6.1-Prüfung</a></li>
+<li><a href="#12-testplan-und-debug-tools">Testplan und Debug-Tools</a></li>
+<li><a href="#13-priorisierte-todo-liste">Priorisierte TODO-Liste</a></li>
+<li><a href="#14-konkreter-cleanup-plan">Konkreter Cleanup-Plan</a></li>
+<li><a href="#15-abschluss">Abschluss</a></li>
+</ol>
+<hr class="section-rule" />
+<h2 id="1-executive-summary">1. EXECUTIVE SUMMARY</h2>
+<h3 id="1-1-gesamtbewertung">1.1 Gesamtbewertung</h3>
+<div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Score (1–10)</th><th>Kurzfassung</th></tr></thead><tbody><tr><td>Produktionsreife</td><td><strong>4</strong></td><td>Solider Prototyp, kein shippbarer Core Loop</td></tr><tr><td>Erweiterbarkeit</td><td><strong>6</strong></td><td>Player/Enemy/Wand-Basis gut, Run-Layer fehlt</td></tr><tr><td>Debugbarkeit</td><td><strong>8</strong></td><td><code class="inline-code">DebugManager</code> + Overlay sehr stark</td></tr><tr><td>Lesbarkeit</td><td><strong>7</strong></td><td>Klare Ordner, teils Duck-Typing</td></tr><tr><td>Stabilität</td><td><strong>5</strong></td><td>Death, TimeScale, Fade-Risiken</td></tr><tr><td>Performance-Risiko</td><td><strong>5</strong></td><td>HUD-Poll, Contact-Push O(n), Generator schwer</td></tr><tr><td>Gamefeel-Potenzial</td><td><strong>7</strong></td><td>Movement/Dash/FX gut angelegt</td></tr><tr><td>Vertical-Slice-Risiko</td><td><strong>6</strong></td><td>Kampf da, Meta/Build-Loop nicht</td></tr></tbody></table></div>
+<h3 id="1-2-technische-gesundheit">1.2 Technische Gesundheit</h3>
+<p>Das Projekt ist <strong>technisch gesund für einen frühen Vertical-Slice-Prototypen</strong>, aber <strong>noch nicht produktionsreif</strong>. Die Architektur zeigt bewusste Godot-4-Patterns:</p>
+<ul><li>Component-basierter Player</li>
+<li>Resource-basierte Wand/Spell-Daten (<code class="inline-code">WandData</code>, <code class="inline-code">SpellData</code>)</li>
+<li>Autoloads für Session (<code class="inline-code">GameManager</code>, <code class="inline-code">DebugManager</code>) und Terrain (<code class="inline-code">BetterTerrain</code>)</li>
+<li><code class="inline-code">TileMapLayer</code> + BetterTerrain für Höhlen</li>
+<li>Level-Standard mit <code class="inline-code">World/*</code>, <code class="inline-code">PlayerSpawn</code>, <code class="inline-code">FadeRect</code>, <code class="inline-code">BaseLevel</code></li>
+</ul>
+<p>Aktiver Cleanup (Git-Status): Archiv-Generatoren entfernt, <code class="inline-code">GameManager</code>/<code class="inline-code">DebugManager</code> als Autoloads, <code class="inline-code">main_tileset</code>, konsolidierte TileMap-Szene.</p>
+<h3 id="1-3-architektur">1.3 Architektur</h3>
+<p><strong>Sauber im Kern, inkonsistent am Rand.</strong></p>
+<div class="table-wrap"><table><thead><tr><th>Stärke</th><th>Schwäche</th></tr></thead><tbody><tr><td>Player-Komponenten klar getrennt</td><td>Globale Kopplung <code class="inline-code">GameManager.player</code></td></tr><tr><td><code class="inline-code">EnemyBase</code> skaliert für Archetypen</td><td><code class="inline-code">enemy_base.gd</code> sehr groß (~771 Z.)</td></tr><tr><td>Wand-Cast-Pipeline funktional</td><td>HUD pollt statt Signals</td></tr><tr><td>Level-Transitions mit Fade</td><td>HUD pro Level dupliziert</td></tr><tr><td>Debug-Infrastruktur</td><td>Inventar-Equip ohne UI</td></tr></tbody></table></div>
+<h3 id="1-4-starke-systeme">1.4 Starke Systeme</h3>
+<ol><li><strong>Player Movement</strong> — Coyote Time, Jump Buffer, variable Accel/Friction, Fall-Multiplier</li>
+<li><strong>Dash + Block-Dash</strong> — Charges, anim-sync Duration, Frame-Guard-Windows</li>
+<li><strong>EnemyBase</strong> — Patrol, Chase, Separation, Step-Up, Hit-Stop, Loot, Damage Numbers</li>
+<li><strong>Wand/Spell</strong> — Mana, Recharge-Cycle, Multi-Projectile, Crit-Roll</li>
+<li><strong>Level-Transitions</strong> — <code class="inline-code">BaseLevel</code> + <code class="inline-code">GameManager.change_level</code></li>
+<li><strong>DebugManager</strong> — God Mode, Spawns, Slow-Mo, Overlay, Restart Room</li>
+</ol>
+<h3 id="1-5-fragile-systeme">1.5 Fragile Systeme</h3>
+<ol><li><strong>Player Death</strong> — <code class="inline-code">queue_free()</code> vs. persistenter <code class="inline-code">GameManager.player</code></li>
+<li><strong><code class="inline-code">Engine.time_scale</code></strong> — Enemy Hit-Stop kollidiert mit Debug Slow-Mo</li>
+<li><strong>HUD</strong> — <code class="inline-code">_refresh_all_ui()</code> jeden Frame</li>
+<li><strong>Inventar ↔ Wand</strong> — <code class="inline-code">PlayerInventoryComponent</code> existiert, keine UI-Anbindung</li>
+<li><strong>Dungeon FadeRect</strong> — Layout vermutlich defekt (40×40 px)</li>
+<li><strong>Projekteinstieg</strong> — kein <code class="inline-code">run/main_scene</code> in <code class="inline-code">project.godot</code> (<strong>sicher</strong>)</li>
+</ol>
+<h3 id="1-6-blockiert-spateren-content-ausbau">1.6 Blockiert späteren Content-Ausbau</h3>
+<ul><li>Kein <strong>Run-/Room-Graph</strong>, kein <strong>Death/Restart</strong>, keine <strong>Meta-Progression</strong></li>
+<li>Kein <strong>Safe Room</strong>, <strong>Shop</strong>, <strong>Wandbench</strong>, <strong>Boss</strong></li>
+<li><strong>Build-Readability</strong> (Inventory-Equip) unvollständig</li>
+<li><strong>Procedural Generator</strong> (<code class="inline-code">fast_noise_generator.gd</code>, ~804 Z.) nicht im Live-Loop (<code class="inline-code">generate_on_ready = false</code>)</li>
+</ul>
+<h3 id="1-7-kritische-risiken-schweregrade">1.7 Kritische Risiken (Schweregrade)</h3>
+<div class="table-wrap"><table><thead><tr><th>Grad</th><th>Thema</th><th>Sicherheit</th></tr></thead><tbody><tr><td><span class="badge sev-blocker">BLOCKER</span></td><td>Kein <code class="inline-code">run/main_scene</code> in <code class="inline-code">project.godot</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-blocker">BLOCKER</span></td><td>Input-Konflikt: <code class="inline-code">dash</code> und <code class="inline-code">hover</code> = Shift (<code class="inline-code">4194325</code>)</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-high">HIGH</span></td><td><code class="inline-code">GameManager.player</code> nach Tod ungültig</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-high">HIGH</span></td><td>Dungeon <code class="inline-code">FadeRect</code> nur 40×40, keine Fullscreen-Anchors</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-high">HIGH</span></td><td><code class="inline-code">is_in_block_dash_iframe()</code> → immer <code class="inline-code">false</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-high">HIGH</span></td><td>Globaler <code class="inline-code">Engine.time_scale</code> Hit-Stop</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-medium">MEDIUM</span></td><td>Projektile ohne Tilemap-Kollision</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-medium">MEDIUM</span></td><td><code class="inline-code">PlayerInventoryComponent</code> nirgends aufgerufen</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-medium">MEDIUM</span></td><td><code class="inline-code">spell_1</code>–<code class="inline-code">spell_3</code>, <code class="inline-code">hover</code> ungenutzt</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-low">LOW</span></td><td>Dungeon-Exit Self-Loop (Test)</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><span class="badge sev-nice">NICE</span></td><td>Typo <code class="inline-code">paralax</code>, <code class="inline-code">limboai</code>-Addon-Bloat</td><td>sicher / wahrscheinlich</td></tr></tbody></table></div>
+<h3 id="1-8-cleanups-zuerst-vs-refactors-spater">1.8 Cleanups zuerst vs. Refactors später</h3>
+<p><strong>Zuerst:</strong> Main Scene, Input-Map, Dungeon FadeRect, Git-Delete committen, <code class="inline-code">limboai</code> prüfen.</p>
+<p><strong>Warten:</strong> HUD-Signals, Hit-Stop-Stack, Generator-Split, globales HUD, Enemy-AI-Refactor.</p>
+<hr class="section-rule" />
+<h2 id="2-projektstruktur-analyse">2. PROJEKTSTRUKTUR-ANALYSE</h2>
+<h3 id="2-1-aktuelle-struktur-zusammenfassung">2.1 Aktuelle Struktur-Zusammenfassung</h3>
+<pre><code>noita-clone/
+├── project.godot
+├── addons/
+│   ├── better-terrain/          ← aktiv (editor_plugins)
+│   └── limboai/                   ← vorhanden, nicht in editor_plugins, 0 Refs in project/
+├── assets/
+│   ├── paralax/                   ← Tippfehler im Pfad
+│   ├── player/, enemies/, tilemap/, sounds/, textures/
+│   └── resources/wand/            ← Wand-Icons
+└── project/
+    ├── resources/
+    │   ├── spells_tres/           (3 Spells)
+    │   ├── wands_tres/            (starter_wand)
+    │   └── tilesets.tres/         (main_tileset.tres)
+    ├── scenes/
+    │   ├── player_tscn/           (player_02.tscn)
+    │   ├── enemies_tscn/          (humanoid, monster)
+    │   ├── hud_tscn/              (game_hud.tscn)
+    │   ├── levels_tscn/           (start_room, dungeon_01)
+    │   ├── spell_tscn/            (3 Projektile)
+    │   ├── wand_tscn/, pickups_tscn/, popups_tscn/, tilemaps.tscn/
+    └── scripts/
+        ├── autoload/              (game_manager, debug_manager)
+        └── *_gd/                  (spiegelt scenes)</code></pre>
+<p><strong>Zahlen (sicher):</strong> 20 aktive <code class="inline-code">.tscn</code>, 26 Gameplay-<code class="inline-code">.gd</code> unter <code class="inline-code">project/scripts/</code>.</p>
+<h3 id="2-2-problemstellen">2.2 Problemstellen</h3>
+<div class="table-wrap"><table><thead><tr><th>Problem</th><th>Details</th><th>Sicherheit</th></tr></thead><tbody><tr><td>Ordner-Suffix <code class="inline-code">_tscn</code> / <code class="inline-code">_gd</code></td><td>Ungewöhnlich, intern konsistent</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td>Split <code class="inline-code">assets/</code> vs <code class="inline-code">project/resources/</code></td><td>Icons vs <code class="inline-code">.tres</code>-Daten</td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td>Typo <code class="inline-code">paralax</code></td><td><code class="inline-code">assets/paralax/</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td>Doppelte Parallax-Szenen</td><td><code class="inline-code">start_rooms/</code> + <code class="inline-code">dungeon_01/</code> parallax_background</td><td>wahrscheinlich</td></tr><tr><td>Gelöschtes Archiv (Git)</td><td><code class="inline-code">project/archive/generators/*</code>, <code class="inline-code">level_cave</code>, <code class="inline-code">hud.tscn</code>, <code class="inline-code">cave_tileset</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td>LimboAI</td><td>~200 Dateien, nicht aktiv, 0 Code-Refs in <code class="inline-code">project/</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td>Cave-Assets ohne Scene</td><td><code class="inline-code">assets/tilemap/cave/*</code></td><td>wahrscheinlich alt</td></tr><tr><td>Zwei Tilesets</td><td><code class="inline-code">main_tileset.tres</code> + <code class="inline-code">Ruins_Tileset_Day.tres</code> in assets</td><td>manuell prüfen</td></tr></tbody></table></div>
+<h3 id="2-3-empfohlene-zielstruktur">2.3 Empfohlene Zielstruktur</h3>
+<pre><code>project/
+├── core/autoload/
+├── gameplay/
+│   ├── player/
+│   ├── combat/          # spell, wand, hurtbox
+│   ├── enemies/
+│   └── pickups/
+├── world/
+│   ├── levels/
+│   ├── tilemaps/
+│   └── generation/
+├── ui/hud/
+└── data/resources/</code></pre>
+<h3 id="2-4-konkrete-rename-move-vorschlage">2.4 Konkrete Rename-/Move-Vorschläge</h3>
+<div class="table-wrap"><table><thead><tr><th>Von</th><th>Nach</th><th>Risiko</th></tr></thead><tbody><tr><td><code class="inline-code">scripts/autoload/</code></td><td><code class="inline-code">core/autoload/</code></td><td>mittel</td></tr><tr><td><code class="inline-code">scenes/hud_tscn/game_hud.tscn</code></td><td><code class="inline-code">ui/game_hud.tscn</code></td><td>mittel</td></tr><tr><td><code class="inline-code">assets/paralax/</code> → <code class="inline-code">assets/parallax/</code></td><td>hoch (.import)</td></tr><tr><td>Parallax → eine <code class="inline-code">shared/parallax_background.tscn</code></td><td>mittel</td></tr><tr><td><code class="inline-code">limboai/</code> entfernen</td><td>niedrig</td></tr></tbody></table></div>
+<h3 id="2-5-sichere-reihenfolge-fur-cleanups">2.5 Sichere Reihenfolge für Cleanups</h3>
+<ol><li>Git-Delete abschließen (Archiv, Cave-Scenes)</li>
+<li><code class="inline-code">run/main_scene</code> + Input-Map</li>
+<li>Ungenutztes Addon (<code class="inline-code">limboai</code>)</li>
+<li>Dungeon FadeRect fixen</li>
+<li>Ordner-Renames nur mit Godot „Update Paths“</li>
+<li>Parallax konsolidieren</li>
+</ol>
+<hr class="section-rule" />
+<h2 id="3-dateistruktur-und-referenzen">3. DATEISTRUKTUR UND REFERENZEN</h2>
+<h3 id="3-1-broken-references">3.1 Broken References</h3>
+<div class="table-wrap"><table><thead><tr><th>Referenz</th><th>Status</th></tr></thead><tbody><tr><td><code class="inline-code">project/archive/*</code></td><td>Gelöscht im Working Tree — nach Commit ok</td></tr><tr><td><code class="inline-code">cave_tileset</code> → <code class="inline-code">main_tileset</code></td><td>Migration — Editor prüfen</td></tr><tr><td><code class="inline-code">hud.tscn</code> (alt)</td><td>Keine Treffer in aktivem Code — obsolet</td></tr><tr><td>Aktive 20 Scenes</td><td>Pfade konsistent (<strong>sicher</strong>)</td></tr></tbody></table></div>
+<h3 id="3-2-ungenutzte-ressourcen-kandidaten">3.2 Ungenutzte Ressourcen (Kandidaten)</h3>
+<div class="table-wrap"><table><thead><tr><th>Asset</th><th>Grund</th><th>Test</th></tr></thead><tbody><tr><td><code class="inline-code">addons/limboai/</code></td><td>Nicht in <code class="inline-code">editor_plugins</code></td><td>Projekt öffnen</td></tr><tr><td>Input <code class="inline-code">spell_1/2/3</code>, <code class="inline-code">hover</code></td><td>Keine <code class="inline-code">.gd</code>-Refs</td><td>Input Map</td></tr><tr><td><code class="inline-code">WandData.shuffle</code></td><td>Nie gelesen</td><td>—</td></tr><tr><td><code class="inline-code">assets/tilemap/cave/*</code></td><td>Keine aktive Cave-Scene</td><td>Editor-Suche</td></tr><tr><td><code class="inline-code">Ruins_Tileset_Day.tres</code></td><td>Wenn nur <code class="inline-code">main_tileset</code> genutzt</td><td>TileMap prüfen</td></tr></tbody></table></div>
+<h3 id="3-3-dependency-map">3.3 Dependency Map</h3>
+<h4 id="autoloads-project-godot">Autoloads (<code class="inline-code">project.godot</code>)</h4>
+<div class="table-wrap"><table><thead><tr><th>Autoload</th><th>Pfad</th><th>Rolle</th></tr></thead><tbody><tr><td>GameManager</td><td><code class="inline-code">project/scripts/autoload/game_manager.gd</code></td><td>Player, Fade, Level-Wechsel</td></tr><tr><td>BetterTerrain</td><td>Addon</td><td>Terrain-Painting</td></tr><tr><td>DebugManager</td><td><code class="inline-code">project/scripts/autoload/debug_manager.gd</code></td><td>Debug-Overlay, Spawns</td></tr></tbody></table></div>
+<h4 id="scene-script-kern">Scene → Script (Kern)</h4>
+<div class="table-wrap"><table><thead><tr><th>Scene</th><th>Root</th><th>Script</th></tr></thead><tbody><tr><td><code class="inline-code">player_02.tscn</code></td><td>CharacterBody2D</td><td><code class="inline-code">player.gd</code></td></tr><tr><td><code class="inline-code">game_hud.tscn</code></td><td>CanvasLayer</td><td><code class="inline-code">hud.gd</code></td></tr><tr><td><code class="inline-code">starter_wand.tscn</code></td><td>Node2D</td><td><code class="inline-code">wand.gd</code></td></tr><tr><td><code class="inline-code">spell_*.tscn</code></td><td>Area2D</td><td><code class="inline-code">spell.gd</code></td></tr><tr><td><code class="inline-code">enemy_humanoid.tscn</code></td><td>CharacterBody2D</td><td><code class="inline-code">enemy_humanoid.gd</code></td></tr><tr><td><code class="inline-code">enemy_monster.tscn</code></td><td>CharacterBody2D</td><td><code class="inline-code">enemy_monster.gd</code></td></tr><tr><td><code class="inline-code">spell_pickup.tscn</code></td><td>Area2D</td><td><code class="inline-code">spell_pickup.gd</code></td></tr><tr><td><code class="inline-code">start_room.tscn</code></td><td>Node2D</td><td><code class="inline-code">base_level.gd</code></td></tr><tr><td><code class="inline-code">dungeon_01.tscn</code></td><td>Node2D</td><td><code class="inline-code">base_level.gd</code></td></tr><tr><td><code class="inline-code">damage_number_*.tscn</code></td><td>Node2D</td><td><code class="inline-code">damage_number.gd</code></td></tr></tbody></table></div>
+<h4 id="preload-load">Preload / Load</h4>
+<div class="table-wrap"><table><thead><tr><th>Script</th><th>Lädt</th></tr></thead><tbody><tr><td><code class="inline-code">game_manager.gd</code></td><td><code class="inline-code">preload("res://project/scenes/player_tscn/player_02.tscn")</code></td></tr><tr><td><code class="inline-code">debug_manager.gd</code></td><td><code class="inline-code">load()</code> enemy, spell_pickup, starter_wand, magic_bolt</td></tr><tr><td><code class="inline-code">wand.gd</code></td><td><code class="inline-code">spell.projectile_scene.instantiate()</code> zur Laufzeit</td></tr></tbody></table></div>
+<h3 id="3-4-gamemanager-abhangigkeiten">3.4 GameManager-Abhängigkeiten</h3>
+<div class="table-wrap"><table><thead><tr><th>Consumer</th><th>Nutzung</th></tr></thead><tbody><tr><td><code class="inline-code">base_level.gd</code></td><td><code class="inline-code">set_fade_rect</code>, <code class="inline-code">place_player_in_current_scene</code></td></tr><tr><td><code class="inline-code">exit_to_dungeon.gd</code></td><td><code class="inline-code">change_level</code>, nur <code class="inline-code">body == GameManager.player</code></td></tr><tr><td><code class="inline-code">debug_manager.gd</code></td><td><code class="inline-code">reload_current_level</code>, Player-Zugriff</td></tr></tbody></table></div>
+<h3 id="3-5-starke-kopplung">3.5 Starke Kopplung</h3>
+<ul><li><strong>Exit</strong> erkennt nur <code class="inline-code">GameManager.player</code>, nicht group <code class="inline-code">"player"</code> (<strong>sicher</strong>)</li>
+<li><strong>Wand</strong> pusht HUD direkt (<code class="inline-code">update_mana</code>, <code class="inline-code">update_spell_selection</code>)</li>
+<li><strong>HUD</strong> duck-typed <code class="inline-code">.get()</code> auf Player-Komponenten</li>
+<li><strong>Enemy Hit-Stop</strong> global <code class="inline-code">Engine.time_scale</code></li>
+</ul>
+<h3 id="3-6-datei-gruppen">3.6 Datei-Gruppen</h3>
+<div class="table-wrap"><table><thead><tr><th>Gruppe</th><th>Dateien</th></tr></thead><tbody><tr><td><strong>1. Sicher behalten</strong></td><td><code class="inline-code">game_manager</code>, <code class="inline-code">debug_manager</code>, <code class="inline-code">player.gd</code> + Components, <code class="inline-code">enemy_base</code>, <code class="inline-code">wand/spell_data/spell</code>, <code class="inline-code">base_level</code>, <code class="inline-code">hurtbox</code>, <code class="inline-code">game_hud</code>, <code class="inline-code">main_tileset</code>, BetterTerrain</td></tr><tr><td><strong>2. Sicher löschbar</strong></td><td><code class="inline-code">limboai/</code> (wenn ungeplant), tote Input-Actions</td></tr><tr><td><strong>3. Manuell prüfen</strong></td><td>Cave-Assets, Ruins-Tileset, Parallax-Duplikat</td></tr><tr><td><strong>4. Später refactoren</strong></td><td><code class="inline-code">fast_noise_generator</code>, <code class="inline-code">hud.gd</code>, <code class="inline-code">enemy_humanoid/monster</code></td></tr><tr><td><strong>5. Kritisch — nur mit Tests</strong></td><td><code class="inline-code">game_manager</code>, <code class="inline-code">player_health</code>, <code class="inline-code">player_dash</code>, <code class="inline-code">enemy_base</code>, <code class="inline-code">wand.gd</code></td></tr></tbody></table></div>
+<hr class="section-rule" />
+<h2 id="4-szenenstruktur-analyse">4. SZENENSTRUKTUR-ANALYSE</h2>
+<h3 id="4-1-ist-szenenubersicht-20-dateien">4.1 Ist-Szenenübersicht (20 Dateien)</h3>
+<div class="table-wrap"><table><thead><tr><th>Pfad</th><th>Root</th><th>Script</th></tr></thead><tbody><tr><td><code class="inline-code">player_tscn/player_02.tscn</code></td><td>CharacterBody2D</td><td><code class="inline-code">player.gd</code></td></tr><tr><td><code class="inline-code">hud_tscn/game_hud.tscn</code></td><td>CanvasLayer</td><td><code class="inline-code">hud.gd</code></td></tr><tr><td><code class="inline-code">wand_tscn/starter_wand.tscn</code></td><td>Node2D</td><td><code class="inline-code">wand.gd</code></td></tr><tr><td><code class="inline-code">spell_tscn/spell_magic_bolt.tscn</code></td><td>Area2D</td><td><code class="inline-code">spell.gd</code></td></tr><tr><td><code class="inline-code">spell_tscn/spell_triple_shot.tscn</code></td><td>Area2D</td><td><code class="inline-code">spell.gd</code></td></tr><tr><td><code class="inline-code">spell_tscn/spell_sniper_needle.tscn</code></td><td>Area2D</td><td><code class="inline-code">spell.gd</code></td></tr><tr><td><code class="inline-code">enemies_tscn/enemy_humanoid.tscn</code></td><td>CharacterBody2D</td><td><code class="inline-code">enemy_humanoid.gd</code></td></tr><tr><td><code class="inline-code">enemies_tscn/enemy_monster.tscn</code></td><td>CharacterBody2D</td><td><code class="inline-code">enemy_monster.gd</code></td></tr><tr><td><code class="inline-code">pickups_tscn/spell_pickup.tscn</code></td><td>Area2D</td><td><code class="inline-code">spell_pickup.gd</code></td></tr><tr><td><code class="inline-code">popups_tscn/damage_number_*.tscn</code> (4×)</td><td>Node2D</td><td><code class="inline-code">damage_number.gd</code></td></tr><tr><td><code class="inline-code">levels_tscn/start_rooms/start_room.tscn</code></td><td>Node2D</td><td><code class="inline-code">base_level.gd</code></td></tr><tr><td><code class="inline-code">levels_tscn/dungeon_01/dungeon_01.tscn</code></td><td>Node2D</td><td><code class="inline-code">base_level.gd</code></td></tr><tr><td><code class="inline-code">levels_tscn/*/tile_map_layer.tscn</code></td><td>Node2D</td><td>dungeon: <code class="inline-code">fast_noise_generator.gd</code></td></tr><tr><td><code class="inline-code">levels_tscn/*/parallax_background.tscn</code></td><td>Node2D</td><td>Child: <code class="inline-code">fade_parallax.gd</code></td></tr><tr><td><code class="inline-code">tilemaps.tscn/solid_cave_layer.tscn</code></td><td>TileMapLayer</td><td>—</td></tr></tbody></table></div>
+<h3 id="4-2-erkanntes-level-muster-gut">4.2 Erkanntes Level-Muster (gut)</h3>
+<pre><code>StartRoom / Dungeon01 (Node2D + base_level.gd)
+├── World
+│   ├── Parallax → parallax_background.tscn
+│   ├── Tiles → tile_map_layer.tscn
+│   ├── Enemies (nur start_room)
+│   ├── PlayerSpawn (Marker2D) ✓
+│   └── ExitToDungeon (Area2D + exit_to_dungeon.gd)
+├── CanvasLayer / FadeRect
+└── CanvasLayer2 → game_hud.tscn (instanziert)</code></pre>
+<p><strong>Player nicht in Level eingebettet</strong> — korrekt für <code class="inline-code">GameManager</code>-Spawn (<strong>sicher</strong>).</p>
+<h3 id="4-3-abweichungen-vom-ziel-room-standard">4.3 Abweichungen vom Ziel-Room-Standard</h3>
+<div class="table-wrap"><table><thead><tr><th>Ziel-Standard</th><th>Ist</th><th>Priorität</th></tr></thead><tbody><tr><td><code class="inline-code">World/Interactables</code></td><td>fehlt</td><td><span class="badge sev-low">LOW</span></td></tr><tr><td><code class="inline-code">World/Rewards</code></td><td>fehlt</td><td><span class="badge sev-low">LOW</span></td></tr><tr><td><code class="inline-code">World/Exits</code></td><td>Exit direkt unter <code class="inline-code">World</code></td><td><span class="badge sev-low">LOW</span></td></tr><tr><td><code class="inline-code">ExitSpawn</code> Marker</td><td>nur Area, Generator hat <code class="inline-code">exit_spawn_marker</code></td><td><span class="badge sev-medium">MEDIUM</span></td></tr><tr><td>HUD global</td><td>HUD pro Level</td><td><span class="badge sev-medium">MEDIUM</span></td></tr><tr><td>Fullscreen <code class="inline-code">FadeRect</code></td><td><strong>dungeon defekt</strong></td><td><span class="badge sev-high">HIGH</span></td></tr></tbody></table></div>
+<h3 id="4-4-faderect-vergleich-sicher">4.4 FadeRect-Vergleich (<strong>sicher</strong>)</h3>
+<p><strong>start_room:</strong> <code class="inline-code">anchors_preset = 15</code>, full viewport, <code class="inline-code">modulate.a = 0</code>.</p>
+<p><strong>dungeon_01:</strong> nur <code class="inline-code">offset_right/bottom = 40</code>, <strong>keine Anchors</strong> — Fade deckt höchstens 40×40 px ab.</p>
+<h3 id="4-5-hitbox-hurtbox-physics">4.5 Hitbox / Hurtbox / Physics</h3>
+<p><strong>Physics Layers</strong> (<code class="inline-code">project.godot</code>):</p>
+<div class="table-wrap"><table><thead><tr><th>Layer</th><th>Name</th></tr></thead><tbody><tr><td>1</td><td>World</td></tr><tr><td>2</td><td>Player</td></tr><tr><td>3</td><td>Enemy</td></tr><tr><td>4</td><td>PlayerProjectile</td></tr><tr><td>5</td><td>EnemyProjectile</td></tr><tr><td>6</td><td>Loot</td></tr><tr><td>7</td><td>Hurtbox</td></tr><tr><td>8</td><td>DetectionArea</td></tr><tr><td>9</td><td>EnemyAttack</td></tr><tr><td>10</td><td>FadeParallax</td></tr><tr><td>11</td><td>ExitTo</td></tr></tbody></table></div>
+<p><strong>Player</strong> (<code class="inline-code">player_02.tscn</code>): <code class="inline-code">collision_layer = 2</code>, <code class="inline-code">collision_mask = 1585</code> (<strong>sicher</strong>).</p>
+<p><strong>Spell</strong> (<code class="inline-code">spell_magic_bolt.tscn</code>): <code class="inline-code">collision_layer = 8</code>, <code class="inline-code">collision_mask = 65</code> (World + Hurtbox) (<strong>sicher</strong>).</p>
+<p><strong>Exit:</strong> <code class="inline-code">collision_layer = 1024</code> (Layer 11), <code class="inline-code">collision_mask = 2</code> (Player).</p>
+<h3 id="4-6-harte-nodepaths">4.6 Harte NodePaths</h3>
+<div class="table-wrap"><table><thead><tr><th>Script</th><th>Pfad-Muster</th><th>Risiko</th></tr></thead><tbody><tr><td><code class="inline-code">hud.gd</code></td><td><code class="inline-code">$HUD/HealthManaPanel/...</code> (tief)</td><td>UI-Umbau bricht HUD</td></tr><tr><td><code class="inline-code">debug_manager.gd</code></td><td><code class="inline-code">Components/DashComponent</code>, <code class="inline-code">Visuals/WandPivot/Wand</code></td><td>mittel</td></tr><tr><td><code class="inline-code">base_level.gd</code></td><td><code class="inline-code">Player</code>, <code class="inline-code">PlayerCamera</code></td><td>niedrig</td></tr></tbody></table></div>
+<h3 id="4-7-prioritat-szenen-anderungen">4.7 Priorität Szenen-Änderungen</h3>
+<div class="table-wrap"><table><thead><tr><th>Prio</th><th>Änderung</th></tr></thead><tbody><tr><td><span class="badge sev-high">HIGH</span></td><td>Dungeon <code class="inline-code">FadeRect</code> fullscreen wie start_room</td></tr><tr><td><span class="badge sev-medium">MEDIUM</span></td><td>Optional globales HUD</td></tr><tr><td><span class="badge sev-medium">MEDIUM</span></td><td><code class="inline-code">World/Exits</code> Container</td></tr><tr><td><span class="badge sev-low">LOW</span></td><td><code class="inline-code">Interactables</code> / <code class="inline-code">Rewards</code></td></tr></tbody></table></div>
+<hr class="section-rule" />
+<h2 id="5-codestruktur-analyse">5. CODESTRUKTUR-ANALYSE</h2>
+<h3 id="5-1-codearchitektur-map">5.1 Codearchitektur-Map</h3>
+<pre><code>GameManager (Autoload)
+    └── player_02 (persistent, nicht Autoload-Node)
+            ├── MovementComponent
+            ├── DashComponent
+            ├── HealthComponent
+            ├── AimComponent → Wand
+            ├── CombatStateComponent
+            ├── AnimationController
+            ├── InventoryComponent
+            └── PlayerInventoryComponent (unwired)
+
+Level (BaseLevel)
+    ├── FadeRect → GameManager
+    ├── PlayerSpawn
+    ├── Exit → GameManager.change_level
+    └── game_hud (group &quot;hud&quot;)
+
+Wand → Spell (Area2D) → Hurtbox → EnemyBase
+EnemyHumanoid / EnemyMonster → EnemyBase</code></pre>
+<h3 id="5-2-systemverantwortlichkeiten">5.2 Systemverantwortlichkeiten</h3>
+<div class="table-wrap"><table><thead><tr><th>Script</th><th>~Zeilen</th><th>Verantwortung</th></tr></thead><tbody><tr><td><code class="inline-code">player.gd</code></td><td>245</td><td>Orchestrator, State (dead/dash/block/normal)</td></tr><tr><td><code class="inline-code">player_movement_component.gd</code></td><td>157</td><td>Move, Gravity, Coyote, Buffer, Knockback</td></tr><tr><td><code class="inline-code">player_dash_component.gd</code></td><td>295</td><td>Dash, Block, Guards, Charges, Recoil</td></tr><tr><td><code class="inline-code">player_health_component.gd</code></td><td>257</td><td>Damage, I-Frames, FX, Camera Shake</td></tr><tr><td><code class="inline-code">player_aim_component.gd</code></td><td>57</td><td>Wand-Pivot, Input-Gating</td></tr><tr><td><code class="inline-code">player_animation_controller.gd</code></td><td>80</td><td>Anim-FSM, Death → <code class="inline-code">queue_free</code></td></tr><tr><td><code class="inline-code">player_combat_state_component.gd</code></td><td>95</td><td>Combat-Flag, OOC-Regen</td></tr><tr><td><code class="inline-code">player_contact_push_component.gd</code></td><td>72</td><td>Enemy-Proximity-Push</td></tr><tr><td><code class="inline-code">player_inventory_component.gd</code></td><td>64</td><td>Swap Inventory ↔ Wand (unwired)</td></tr><tr><td><code class="inline-code">inventory_component.gd</code></td><td>45</td><td>Spell-Bag max 8</td></tr><tr><td><code class="inline-code">wand.gd</code></td><td>309</td><td>Cast-Cycle, Mana, HUD-Updates</td></tr><tr><td><code class="inline-code">spell.gd</code></td><td>154</td><td>Projectile, Explode, Hit-Data</td></tr><tr><td><code class="inline-code">enemy_base.gd</code></td><td>771</td><td>Shared AI/Combat/Loot/Audio</td></tr><tr><td><code class="inline-code">enemy_humanoid.gd</code></td><td>491</td><td>Ranged/Melee Humanoid</td></tr><tr><td><code class="inline-code">enemy_monster.gd</code></td><td>594</td><td>Sleep-Aggro, Jump-Attack</td></tr><tr><td><code class="inline-code">hud.gd</code></td><td>244</td><td>UI Poll, Inventory-Toggle</td></tr><tr><td><code class="inline-code">fast_noise_generator.gd</code></td><td>804</td><td>Procedural Cave (@tool)</td></tr><tr><td><code class="inline-code">base_level.gd</code></td><td>47</td><td>Fade, Spawn, Camera-Limits</td></tr><tr><td><code class="inline-code">game_manager.gd</code></td><td>136</td><td>Player-Lifecycle, Fade, Level-Change</td></tr><tr><td><code class="inline-code">debug_manager.gd</code></td><td>433</td><td>Debug-Overlay + Cheats</td></tr></tbody></table></div>
+<h3 id="5-3-gefahrliche-abhangigkeiten">5.3 Gefährliche Abhängigkeiten</h3>
+<ol><li><code class="inline-code">GameManager.player</code> überlebt <code class="inline-code">queue_free()</code> nach Tod</li>
+<li>HUD pollt statt <code class="inline-code">health_changed</code> Signal</li>
+<li><code class="inline-code">Engine.time_scale</code> global (Enemy Hit-Stop vs Debug Slow-Mo)</li>
+<li><code class="inline-code">exit_to_dungeon</code> nur <code class="inline-code">GameManager.player</code></li>
+<li><code class="inline-code">player_contact_push</code> mutiert <code class="inline-code">global_position.x</code> nach <code class="inline-code">move_and_slide</code></li>
+<li><code class="inline-code">wand.gd</code> spawnt Projektile in <code class="inline-code">current_scene</code> Root</li>
+</ol>
+<h3 id="5-4-kritische-code-funde">5.4 Kritische Code-Funde</h3>
+<div class="table-wrap"><table><thead><tr><th>Fund</th><th>Datei</th><th>Sicherheit</th></tr></thead><tbody><tr><td><code class="inline-code">is_in_block_dash_iframe()</code> → <code class="inline-code">false</code></td><td><code class="inline-code">player_dash_component.gd:175</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><code class="inline-code">_shake_block_guard_camera()</code> nie aufgerufen</td><td><code class="inline-code">player_health_component.gd</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><code class="inline-code">@onready player</code> unused</td><td><code class="inline-code">player_combat_state_component.gd</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><code class="inline-code">player_inventory</code> unused</td><td><code class="inline-code">player.gd</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td>Monster <code class="inline-code">pass</code> in Attack-Range</td><td><code class="inline-code">enemy_monster.gd:238</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><code class="inline-code">reload_current_level</code> ohne Fade</td><td><code class="inline-code">game_manager.gd</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td><code class="inline-code">in_combat</code> nie extern gelesen</td><td><code class="inline-code">player_combat_state_component.gd</code></td><td><span class="badge conf-sure">sicher</span></td></tr><tr><td>Doppelte <code class="inline-code">animation_finished</code></td><td>Scene + Code-Guard in <code class="inline-code">enemy_base</code></td><td>Vermutung abgefangen</td></tr></tbody></table></div>
+<h3 id="5-5-refactor-kandidaten-sichere-reihenfolge">5.5 Refactor-Kandidaten (sichere Reihenfolge)</h3>
+<ol><li>Death-Lifecycle (Respawn / GM-Reset)</li>
+<li>TimeScale-Stack oder lokaler Hit-Stop</li>
+<li>HUD → Signals</li>
+<li>Inventory UI → <code class="inline-code">PlayerInventoryComponent</code></li>
+<li><code class="inline-code">enemy_base.gd</code> aufteilen</li>
+<li><code class="inline-code">fast_noise_generator</code> modularisieren</li>
+</ol>
+<h3 id="5-6-magic-numbers-auswahl">5.6 Magic Numbers (Auswahl)</h3>
+<div class="table-wrap"><table><thead><tr><th>Wert</th><th>Kontext</th><th>Datei</th></tr></thead><tbody><tr><td>0.1</td><td>coyote_time, jump_buffer</td><td>movement</td></tr><tr><td>1.35 / 1.15 / 0.9</td><td>Accel-Multiplier</td><td>movement</td></tr><tr><td>420</td><td>dash_speed</td><td>dash</td></tr><tr><td>0.2</td><td>invincibility_time</td><td>health</td></tr><tr><td>0.015 / 0.03</td><td>hit_stop</td><td>enemy_base</td></tr></tbody></table></div>
+<p><strong>Empfehlung:</strong> Bereits viele <code class="inline-code">@export</code> — restliche Magic Numbers exportieren oder benennen.</p>
+<hr class="section-rule" />
+<h2 id="6-dead-code-und-cleanup">6. DEAD CODE UND CLEANUP</h2>
+<h3 id="6-1-gruppe-1-sicher-entfernbar">6.1 Gruppe 1 — Sicher entfernbar</h3>
+<div class="table-wrap"><table><thead><tr><th>Datei/Symbol</th><th>Warum tot</th><th>Risiko</th><th>Test</th></tr></thead><tbody><tr><td>Input <code class="inline-code">spell_1</code>, <code class="inline-code">spell_2</code>, <code class="inline-code">spell_3</code></td><td>Keine GD-Refs</td><td>niedrig</td><td>Projekt starten</td></tr><tr><td><code class="inline-code">addons/limboai/</code></td><td>Nicht aktiv, 0 project-Refs</td><td>niedrig</td><td>Editor öffnen</td></tr><tr><td>Git-gelöschte <code class="inline-code">archive/generators/*</code></td><td>Bereits entfernt</td><td>niedrig</td><td><code class="inline-code">git status</code></td></tr><tr><td><code class="inline-code">_shake_block_guard_camera</code> (optional)</td><td>Nie aufgerufen</td><td>niedrig</td><td>Block-Guard testen</td></tr></tbody></table></div>
+<h3 id="6-2-gruppe-2-wahrscheinlich-entfernbar-testen">6.2 Gruppe 2 — Wahrscheinlich entfernbar (testen)</h3>
+<div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Warum</th><th>Test</th></tr></thead><tbody><tr><td>Input <code class="inline-code">hover</code></td><td>Ungenutzt + kollidiert mit dash</td><td>Input Map</td></tr><tr><td><code class="inline-code">WandData.shuffle</code></td><td>Nie implementiert</td><td>—</td></tr><tr><td><code class="inline-code">assets/tilemap/cave/*</code></td><td>Keine aktive Scene</td><td>Editor-Suche</td></tr><tr><td>Duplikat-Parallax-Szene</td><td>Zwei fast identische Dateien</td><td>Beide Level laden</td></tr><tr><td><code class="inline-code">Ruins_Tileset_Day.tres</code></td><td>Wenn unbenutzt</td><td>TileMap prüfen</td></tr></tbody></table></div>
+<h3 id="6-3-gruppe-3-nicht-entfernen-spater-refactoren">6.3 Gruppe 3 — Nicht entfernen, später refactoren</h3>
+<div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Grund</th></tr></thead><tbody><tr><td><code class="inline-code">PlayerInventoryComponent</code></td><td>Geplante Build-UX</td></tr><tr><td><code class="inline-code">fast_noise_generator.gd</code></td><td>Aktiv auf dungeon tile_map_layer</td></tr><tr><td><code class="inline-code">print</code> in Inventory/Pickup</td><td>Debug → UI-Feedback</td></tr><tr><td><code class="inline-code">enemy_monster.gd</code> pass-Branch</td><td>Fehlende Logik, nicht toter Code</td></tr><tr><td><code class="inline-code">enemy_base.aggro_on_hit</code> empty</td><td>Children überschreiben</td></tr></tbody></table></div>
+<hr class="section-rule" />
+<h2 id="7-bug-suche-und-risikoanalyse">7. BUG-SUCHE UND RISIKOANALYSE</h2>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Grad</th><th>Bug</th><th>Reproduktion</th><th>Ursache</th><th>Datei</th><th>Auswirkung</th><th>Fix-Idee</th><th>Test</th></tr></thead><tbody><tr><td>1</td><td><span class="badge sev-blocker">BLOCKER</span></td><td>Kein Main Scene</td><td>F5/Export</td><td><code class="inline-code">run/main_scene</code> fehlt</td><td><code class="inline-code">project.godot</code></td><td>Spiel startet nicht zuverlässig</td><td><code class="inline-code">start_room.tscn</code> setzen</td><td>Editor Run</td></tr><tr><td>2</td><td><span class="badge sev-blocker">BLOCKER</span></td><td>Dash/Hover Konflikt</td><td>Shift drücken</td><td>Gleicher keycode</td><td><code class="inline-code">project.godot</code></td><td>Dash/Hover unklar</td><td>Hover umbinden/entfernen</td><td>Input</td></tr><tr><td>3</td><td><span class="badge sev-high">HIGH</span></td><td>GM.player nach Tod tot</td><td>Sterben → Exit/Debug</td><td><code class="inline-code">queue_free</code></td><td><code class="inline-code">player_animation_controller.gd</code></td><td>Crash/Warnings</td><td>Respawn oder GM reset</td><td>Tod → Restart</td></tr><tr><td>4</td><td><span class="badge sev-high">HIGH</span></td><td>Dungeon-Fade kaputt</td><td>Transition</td><td>FadeRect 40×40</td><td><code class="inline-code">dungeon_01.tscn</code></td><td>Kein sichtbarer Fade</td><td>Anchors wie start_room</td><td>Level-Wechsel</td></tr><tr><td>5</td><td><span class="badge sev-high">HIGH</span></td><td>Block I-Frames tot</td><td>Block + Treffer erwarten</td><td><code class="inline-code">return false</code></td><td><code class="inline-code">player_dash_component.gd</code></td><td>Nur Guard, keine I-Frames</td><td>Frame-Range</td><td>Combat</td></tr><tr><td>6</td><td><span class="badge sev-high">HIGH</span></td><td>Hit-Stop vs Slow-Mo</td><td>F-Slow-Mo + Hit</td><td><code class="inline-code">time_scale=0/1</code></td><td><code class="inline-code">enemy_base.gd</code></td><td>Slow-Mo bricht</td><td>Lokaler Hit-Stop</td><td>Debug+Combat</td></tr><tr><td>7</td><td><span class="badge sev-medium">MEDIUM</span></td><td>Projektil vs Wände</td><td>Schuss in Wand</td><td>Nur Area, mask 65</td><td><code class="inline-code">spell.gd</code></td><td>Through-wall</td><td>Static collision</td><td>Wand-Test</td></tr><tr><td>8</td><td><span class="badge sev-medium">MEDIUM</span></td><td>Contact Push</td><td>Enemy-Crowd</td><td><code class="inline-code">global_position +=</code></td><td><code class="inline-code">player_contact_push_component.gd</code></td><td>Sticky/Wall-Clip</td><td>Velocity-basiert</td><td>Nahkampf</td></tr><tr><td>9</td><td><span class="badge sev-medium">MEDIUM</span></td><td>HUD Poll</td><td>Profiler</td><td><code class="inline-code">_process</code> refresh</td><td><code class="inline-code">hud.gd</code></td><td>CPU (klein)</td><td>Signals</td><td>Profiler</td></tr><tr><td>10</td><td><span class="badge sev-medium">MEDIUM</span></td><td>Inventory unwired</td><td>Tab offen</td><td>Kein UI-Call</td><td><code class="inline-code">hud.gd</code></td><td>Build tot</td><td>Click/Drag Equip</td><td>Equip</td></tr><tr><td>11</td><td><span class="badge sev-medium">MEDIUM</span></td><td>Monster Nahkampf</td><td>Nah an Monster</td><td><code class="inline-code">pass</code></td><td><code class="inline-code">enemy_monster.gd:238</code></td><td>Kein Attack-Start</td><td><code class="inline-code">start_attack()</code></td><td>AI</td></tr><tr><td>12</td><td><span class="badge sev-low">LOW</span></td><td>Block ohne Cam-Shake</td><td>Guard success</td><td>Funktion unused</td><td><code class="inline-code">player_health_component.gd</code></td><td>Weniger Juice</td><td>Call shake</td><td>Block</td></tr><tr><td>13</td><td><span class="badge sev-low">LOW</span></td><td>Dungeon Exit Loop</td><td>Exit berühren</td><td>Self UID</td><td><code class="inline-code">dungeon_01.tscn</code></td><td>Test-Loop</td><td>Ziel setzen</td><td>Transition</td></tr><tr><td>14</td><td><span class="badge sev-low">LOW</span></td><td>Reload ohne Fade</td><td>F-Restart</td><td>Kein fade in reload</td><td><code class="inline-code">game_manager.gd</code></td><td>Harter Cut</td><td>Fade optional</td><td>Debug</td></tr><tr><td>15</td><td>Vermutung</td><td>Doppel animation_finished</td><td>—</td><td>Scene+Code</td><td>enemy scenes</td><td>Doppel finish_attack?</td><td>Eine Connection</td><td>Attack end</td></tr></tbody></table></div>
+<hr class="section-rule" />
+<h2 id="8-system-zusammenhange">8. SYSTEM-ZUSAMMENHÄNGE</h2>
+<h3 id="8-1-spielstart-bis-level-exit">8.1 Spielstart bis Level-Exit</h3>
+<ol><li><strong>Main Scene</strong> lädt Level mit <code class="inline-code">BaseLevel</code></li>
+<li><strong><code class="inline-code">BaseLevel._ready</code></strong> → <code class="inline-code">GameManager.set_fade_rect</code>, <code class="inline-code">place_player(PlayerSpawn)</code></li>
+<li><strong><code class="inline-code">GameManager._ready</code></strong> (deferred) → erneut <code class="inline-code">place_player</code> (redundant, harmlos)</li>
+<li><strong>HUD</strong> findet Player via group <code class="inline-code">"player"</code></li>
+<li><strong>Input</strong> → Movement / Dash / Block / Aim / Shoot</li>
+<li><strong>Wand</strong> <code class="inline-code">try_cast</code> → Projektil → <strong>Hurtbox</strong> → <code class="inline-code">take_hit</code> → Damage Number, Hit-Stop, ggf. Loot</li>
+<li><strong>Exit</strong> → <code class="inline-code">fade_out</code> → <code class="inline-code">change_scene</code> → Player re-parent → <code class="inline-code">place_player</code> → <code class="inline-code">fade_in</code></li>
+<li><strong>Tod</strong> → Death-Anim → <strong><code class="inline-code">queue_free</code></strong> — kein Respawn (<strong>sicher</strong>)</li>
+</ol>
+<h3 id="8-2-diagramm-system-dependencies">8.2 Diagramm — System Dependencies</h3>
+<div class="mermaid-wrap"><pre class="mermaid">flowchart TB
+    GM[GameManager] --&gt; Level[BaseLevel Scene]
+    Level --&gt; Player[Player Instance]
+    Level --&gt; HUD[game_hud]
+    Player --&gt; Wand[Wand]
+    Wand --&gt; Spell[Projectile]
+    Spell --&gt; Hurtbox
+    Hurtbox --&gt; Enemy[EnemyBase]
+    Enemy --&gt; Loot[SpellPickup]
+    Loot --&gt; Inv[InventoryComponent]
+    Inv --&gt; HUD
+    DM[DebugManager] --&gt; GM
+    DM --&gt; Player</pre></div>
+<h3 id="8-3-diagramm-scene-transition">8.3 Diagramm — Scene Transition</h3>
+<div class="mermaid-wrap"><pre class="mermaid">sequenceDiagram
+    participant P as Player
+    participant E as ExitToDungeon
+    participant GM as GameManager
+    participant Tree as SceneTree
+
+    P-&gt;&gt;E: body_entered
+    E-&gt;&gt;GM: change_level(path, spawn)
+    GM-&gt;&gt;GM: fade_out
+    GM-&gt;&gt;P: remove_child(player)
+    GM-&gt;&gt;Tree: change_scene_to_file
+    GM-&gt;&gt;GM: place_player_at_PlayerSpawn
+    GM-&gt;&gt;GM: fade_in</pre></div>
+<h3 id="8-4-diagramm-spell-hit-loot">8.4 Diagramm — Spell → Hit → Loot</h3>
+<div class="mermaid-wrap"><pre class="mermaid">sequenceDiagram
+    participant W as Wand
+    participant S as Spell Area
+    participant H as Hurtbox
+    participant En as EnemyBase
+    participant DN as DamageNumber
+    participant L as SpellPickup
+
+    W-&gt;&gt;S: instantiate + setup(hit_data)
+    S-&gt;&gt;H: area_entered
+    H-&gt;&gt;En: take_hit
+    En-&gt;&gt;DN: show_damage_number
+    En-&gt;&gt;En: do_hit_stop
+    S-&gt;&gt;S: on_hit_enemy / explode
+    En-&gt;&gt;L: drop_loot on death</pre></div>
+<h3 id="8-5-diagramm-enemy-ai">8.5 Diagramm — Enemy AI</h3>
+<div class="mermaid-wrap"><pre class="mermaid">stateDiagram-v2
+    [*] --&gt; IDLE
+    IDLE --&gt; RUN: player detected
+    RUN --&gt; ATTACK: in range
+    ATTACK --&gt; IDLE: animation_finished
+    RUN --&gt; IDLE: leash/search
+    any --&gt; HIT: damage hit state
+    HIT --&gt; IDLE
+    any --&gt; DEATH: health &lt;= 0
+    DEATH --&gt; [*]: queue_free</pre></div>
+<h3 id="8-6-diagramm-pickup-inventory-hud">8.6 Diagramm — Pickup → Inventory → HUD</h3>
+<div class="mermaid-wrap"><pre class="mermaid">sequenceDiagram
+    participant PU as SpellPickup
+    participant Inv as InventoryComponent
+    participant HUD as hud.gd
+
+    PU-&gt;&gt;Inv: add_spell (interact)
+    Note over HUD: _process polls inventory
+    HUD-&gt;&gt;Inv: get spell_inventory
+    Note over HUD: PlayerInventoryComponent never called</pre></div>
+<hr class="section-rule" />
+<h2 id="9-gamefeel-analyse">9. GAMEFEEL-ANALYSE</h2>
+<h3 id="9-1-bewertung-code-szenen">9.1 Bewertung (Code/Szenen)</h3>
+<div class="table-wrap"><table><thead><tr><th>Bereich</th><th>Rating</th><th>Evidenz</th></tr></thead><tbody><tr><td>Movement Responsiveness</td><td><strong>stark</strong></td><td>Accel 1200, variable Multiplier</td></tr><tr><td>Coyote / Buffer</td><td><strong>gut</strong></td><td>0.1s / 0.1s</td></tr><tr><td>Dash Feel</td><td><strong>stark</strong></td><td>Ease-out, anim-sync, 2 Charges</td></tr><tr><td>Block Dash</td><td><strong>gut</strong></td><td>Guard-Frames, Recoil, Cooldown 0.7s</td></tr><tr><td>I-Frames</td><td><strong>schwach</strong></td><td>Dash = ganzer Dash; Block-I-Frame stub</td></tr><tr><td>Hitstop</td><td><strong>asymmetrisch</strong></td><td>Enemy ja, Player nein</td></tr><tr><td>Screenshake</td><td><strong>gut</strong></td><td>Player + Enemy-Crit, Cooldown</td></tr><tr><td>Camera</td><td><strong>gut</strong></td><td>Look-ahead commit, fall offset, pixel snap</td></tr><tr><td>Damage Numbers</td><td><strong>gut</strong></td><td>Burst stacking, crit variants</td></tr><tr><td>Mana Feedback</td><td><strong>gut</strong></td><td>Blink + empty flash</td></tr><tr><td>HUD-Lesbarkeit</td><td><strong>ok</strong></td><td>Poll-basiert, 5 Spell-Slots vs 4 in WandData</td></tr><tr><td>Enemy Telegraphing</td><td><strong>mittel</strong></td><td>Humanoid windup; Monster Lücke</td></tr><tr><td>Pickup Feedback</td><td><strong>schwach</strong></td><td>Nur print bei Fehler</td></tr><tr><td>Death Feedback</td><td><strong>schwach</strong></td><td>Anim + free, kein Restart</td></tr></tbody></table></div>
+<h3 id="9-2-top-10-gamefeel-probleme">9.2 Top 10 Gamefeel-Probleme</h3>
+<ol><li>Kein Death/Restart-Loop (HIGH)</li>
+<li>Block I-Frames fehlen (HIGH)</li>
+<li>Dungeon-Fade kaputt (HIGH)</li>
+<li>Kein Player-Hitstop (MEDIUM)</li>
+<li>Block-Guard ohne Camera-Shake (MEDIUM)</li>
+<li>Inventar ohne Equip-Feedback (HIGH)</li>
+<li>HUD-Dash nur binär (kein Recovery-Fill) (MEDIUM)</li>
+<li>Contact Push „sticky“ (MEDIUM)</li>
+<li>Projektile durch Wände (MEDIUM)</li>
+<li>Monster Nahkampf-Lücke (MEDIUM)</li>
+</ol>
+<h3 id="9-3-top-10-quick-wins">9.3 Top 10 Quick Wins</h3>
+<ol><li>Main Scene + Dungeon FadeRect fixen</li>
+<li>Dash/Hover Input trennen</li>
+<li><code class="inline-code">_shake_block_guard_camera()</code> bei Block-Guard aufrufen</li>
+<li>HUD Dash-Fill mit <code class="inline-code">get_dash_charge_recovery_ratio()</code></li>
+<li><code class="inline-code">spell_1</code>–<code class="inline-code">spell_3</code> an Wand-Slots binden</li>
+<li>Empty-Mana-Sound ergänzen</li>
+<li>Kurzer lokaler Player-Hitstop</li>
+<li>Block I-Frames an Frame-Range</li>
+<li>Pickup „Inventar voll“ UI-Hint</li>
+<li><code class="inline-code">print</code> durch HUD-Toast ersetzen</li>
+</ol>
+<h3 id="9-4-tuning-parameter">9.4 Tuning-Parameter</h3>
+<div class="table-wrap"><table><thead><tr><th>Parameter</th><th>Ist</th><th>Empfohlener Bereich</th><th>Datei</th></tr></thead><tbody><tr><td>coyote_time</td><td>0.1</td><td>0.08–0.12</td><td>movement</td></tr><tr><td>jump_buffer_time</td><td>0.1</td><td>0.10–0.14</td><td>movement</td></tr><tr><td>dash_speed</td><td>420</td><td>380–460</td><td>dash</td></tr><tr><td>block_dash_cooldown</td><td>0.7</td><td>0.5–0.8</td><td>dash</td></tr><tr><td>invincibility_time</td><td>0.2</td><td>0.15–0.25</td><td>health</td></tr><tr><td>hit_stop_duration</td><td>0.015</td><td>0.01–0.02 (lokal!)</td><td>enemy_base</td></tr><tr><td>look_ahead_distance</td><td>60</td><td>48–72</td><td>camera</td></tr></tbody></table></div>
+<h3 id="9-5-empfohlene-debug-overlays">9.5 Empfohlene Debug-Overlays</h3>
+<div class="table-wrap"><table><thead><tr><th>Overlay</th><th>Status</th></tr></thead><tbody><tr><td>State-Overlay (HP, Dash, Mana)</td><td>✓ DebugManager</td></tr><tr><td>Hitbox/Hurtbox Gizmo</td><td>fehlt</td></tr><tr><td>AI State Label</td><td>fehlt</td></tr><tr><td>Physics Layer View</td><td>fehlt</td></tr><tr><td>Current Build Print</td><td>fehlt</td></tr></tbody></table></div>
+<hr class="section-rule" />
+<h2 id="10-gameplay-loop-analyse">10. GAMEPLAY-LOOP-ANALYSE</h2>
+<h3 id="10-1-ziel-core-loop-vs-ist">10.1 Ziel-Core-Loop vs. Ist</h3>
+<pre><code>Explore → Scout → Engage → Resolve → Reward → Rebuild → Descend/Branch
+→ Safe Room / Shop / Wandbench → Boss → Death or Continue</code></pre>
+<div class="table-wrap"><table><thead><tr><th>Phase</th><th>Status</th><th>Details</th></tr></thead><tbody><tr><td>Explore</td><td><strong>teilweise</strong></td><td>2 Level, kein Run-Graph</td></tr><tr><td>Scout</td><td><strong>fehlt</strong></td><td>Kein Fog/Room-Intel</td></tr><tr><td>Engage</td><td><strong>stark</strong></td><td>2 Enemy-Typen, Spells, Dash</td></tr><tr><td>Resolve</td><td><strong>teilweise</strong></td><td>Tod ohne Restart</td></tr><tr><td>Reward</td><td><strong>teilweise</strong></td><td>Pickup + Enemy-Loot</td></tr><tr><td>Rebuild</td><td><strong>schwach</strong></td><td>Inventory ohne Equip-UI</td></tr><tr><td>Descend/Branch</td><td><strong>minimal</strong></td><td>1 Exit, Dungeon-Loop</td></tr><tr><td>Safe Room/Shop/Wandbench</td><td><strong>fehlt</strong></td><td>—</td></tr><tr><td>Boss</td><td><strong>fehlt</strong></td><td>—</td></tr><tr><td>Death or Continue</td><td><strong>fehlt</strong></td><td>—</td></tr></tbody></table></div>
+<h3 id="10-2-wand-spell-als-identitat">10.2 Wand/Spell als Identität</h3>
+<p><strong>Technisch vorbereitet:</strong></p>
+<ul><li><code class="inline-code">WandData</code> + <code class="inline-code">SpellData</code> Resources</li>
+<li>Cast-Cycle, Recharge, Crit, Multi-Shot</li>
+<li>3 Spell-Typen + 3 Projectile-Scenes</li>
+</ul>
+<p><strong>Spielerisch unvollständig:</strong></p>
+<ul><li>Kein Wandbench, kein Swap-UI</li>
+<li><code class="inline-code">shuffle</code> ungenutzt</li>
+<li>Keine Spell-Synergien / Modifiers</li>
+</ul>
+<h3 id="10-3-vor-neuem-content-stabilisieren">10.3 Vor neuem Content stabilisieren</h3>
+<ol><li>Main Scene + Transitions + Fade</li>
+<li>Death/Restart + <code class="inline-code">GameManager</code>-Lifecycle</li>
+<li>Inventory ↔ Wand UI</li>
+<li>Minimales Run/Room-Datenmodell</li>
+</ol>
+<hr class="section-rule" />
+<h2 id="11-godot-4-6-1-prufung">11. GODOT-4.6.1-PRÜFUNG</h2>
+<div class="table-wrap"><table><thead><tr><th>Thema</th><th>Status</th><th>Modernisierung</th></tr></thead><tbody><tr><td><code class="inline-code">CharacterBody2D</code> + <code class="inline-code">move_and_slide</code></td><td>✓</td><td>—</td></tr><tr><td><code class="inline-code">TileMapLayer</code></td><td>✓</td><td>BetterTerrain kompatibel</td></tr><tr><td>Area2D <code class="inline-code">body_entered</code> / <code class="inline-code">area_entered</code></td><td>✓</td><td>Spell + Pickup + Exit</td></tr><tr><td>Autoload-Singletons</td><td>✓</td><td>GM, DM, BT</td></tr><tr><td>Tweens (<code class="inline-code">create_tween</code>)</td><td>✓</td><td>GameManager Fade</td></tr><tr><td><code class="inline-code">await create_timer</code></td><td>✓</td><td>Hit-Stop mit <code class="inline-code">ignore_time_scale=true</code></td></tr><tr><td>Signal-Syntax</td><td>✓</td><td>—</td></tr><tr><td><code class="inline-code">@export</code> Typisierung</td><td>teilweise</td><td>HUD, Wand typisieren</td></tr><tr><td><code class="inline-code">@tool</code> Generator</td><td>✓</td><td><code class="inline-code">fast_noise_generator</code></td></tr><tr><td>Veraltete Patterns</td><td>wenige</td><td>—</td></tr></tbody></table></div>
+<p><strong>Konkrete Modernisierungsvorschläge:</strong></p>
+<ol><li>Typed <code class="inline-code">@onready var hud: CanvasLayer</code> mit Interface/Methods</li>
+<li><code class="inline-code">health_changed</code> → HUD statt Poll</li>
+<li>Exit: <code class="inline-code">body.is_in_group("player")</code> + GM-Fallback</li>
+<li>Hit-Stop: <code class="inline-code">CanvasItem</code> process pause oder eigenes <code class="inline-code">TimeScaleManager</code></li>
+<li><code class="inline-code">class_name Player</code> für weniger <code class="inline-code">has_method</code>-Duck-Typing</li>
+</ol>
+<hr class="section-rule" />
+<h2 id="12-testplan-und-debug-tools">12. TESTPLAN UND DEBUG-TOOLS</h2>
+<h3 id="12-1-smoke-tests">12.1 Smoke Tests</h3>
+<ul class="checklist"><li class="unchecked">Projekt startet mit gesetzter Main Scene</li>
+<li class="unchecked">Player spawnt an <code class="inline-code">PlayerSpawn</code></li>
+<li class="unchecked">HUD zeigt HP / Mana / Dash</li>
+<li class="unchecked">60 Sekunden ohne Errors in Output</li>
+</ul>
+<h3 id="12-2-playthrough-tests">12.2 Playthrough Tests</h3>
+<ul class="checklist"><li class="unchecked">Start Room → Dungeon → Exit (Loop)</li>
+<li class="unchecked">Spell Pickup → Inventar voll → abgelehnt</li>
+<li class="unchecked">Wand: voller Cast-Cycle bis Recharge</li>
+<li class="unchecked">Beide Enemies töten → Loot drop</li>
+</ul>
+<h3 id="12-3-spezial-tests">12.3 Spezial-Tests</h3>
+<div class="table-wrap"><table><thead><tr><th>Bereich</th><th>Tests</th></tr></thead><tbody><tr><td>Scene Transition</td><td>Fade sichtbar, Position korrekt, kein Doppel-Player</td></tr><tr><td>Spawn</td><td><code class="inline-code">debug_teleport_spawn</code>, Warning ohne Marker</td></tr><tr><td>Combat</td><td>Crit, I-Frames, Guard, Death</td></tr><tr><td>Dash</td><td>Air dash, 2 Charges, Recovery-Timer</td></tr><tr><td>Block Dash</td><td>Guard window, Recoil, Cooldown</td></tr><tr><td>Wand</td><td>Empty mana, multi-spell, recharge</td></tr><tr><td>Projectile</td><td>Hurtbox, no self-hit, <strong>wall (expected fail)</strong></td></tr><tr><td>Inventory</td><td>Tab toggle, 8 slots, full</td></tr><tr><td>Enemy</td><td>Leash, interrupt, death loot</td></tr><tr><td>Death</td><td>Known: <code class="inline-code">queue_free</code>, GM ref stale</td></tr></tbody></table></div>
+<h3 id="12-4-performance-tests">12.4 Performance Tests</h3>
+<ul class="checklist"><li class="unchecked">Profiler: HUD <code class="inline-code">_process</code> Anteil</li>
+<li class="unchecked">Viele Enemies + Contact Push</li>
+<li class="unchecked">Generator <code class="inline-code">generate</code> in Editor (804 Z. Algorithmus)</li>
+</ul>
+<h3 id="12-5-debug-tools">12.5 Debug-Tools</h3>
+<div class="table-wrap"><table><thead><tr><th>Tool</th><th>Input (ca.)</th><th>Status</th></tr></thead><tbody><tr><td>Toggle Overlay</td><td>F10-Bereich</td><td>✓</td></tr><tr><td>God Mode</td><td>✓</td><td>✓</td></tr><tr><td>Refill Resources</td><td>✓</td><td>✓</td></tr><tr><td>Reset Dash</td><td>✓</td><td>✓</td></tr><tr><td>Restart Room</td><td>✓</td><td>✓ (ohne Fade)</td></tr><tr><td>Spawn Spell/Wand/Enemy</td><td>✓</td><td>✓</td></tr><tr><td>Slow Motion</td><td>✓</td><td>✓ (Hit-Stop-Konflikt)</td></tr><tr><td>Teleport Spawn</td><td>✓</td><td>✓</td></tr></tbody></table></div>
+<p><strong>Empfohlen (fehlt):</strong> Hitbox-Gizmo, AI-State, Print Build, Physics-Layers.</p>
+<hr class="section-rule" />
+<h2 id="13-priorisierte-todo-liste">13. PRIORISIERTE TODO-LISTE</h2>
+<h3 id="a-sofort-machen">A — Sofort machen</h3>
+<div class="table-wrap"><table><thead><tr><th>Titel</th><th>Kategorie</th><th>Dateien</th><th>Aufwand</th><th>Risiko</th><th>Nutzen</th><th>Test</th></tr></thead><tbody><tr><td>Main Scene setzen</td><td>Config</td><td><code class="inline-code">project.godot</code></td><td>S</td><td>niedrig</td><td>hoch</td><td>F5</td></tr><tr><td>Input Dash/Hover fix</td><td>Input</td><td><code class="inline-code">project.godot</code></td><td>S</td><td>niedrig</td><td>hoch</td><td>Shift</td></tr><tr><td>Dungeon FadeRect fix</td><td>Scene</td><td><code class="inline-code">dungeon_01.tscn</code></td><td>S</td><td>niedrig</td><td>hoch</td><td>Transition</td></tr></tbody></table></div>
+<h3 id="b-nach-erstem-cleanup">B — Nach erstem Cleanup</h3>
+<div class="table-wrap"><table><thead><tr><th>Titel</th><th>Dateien</th><th>Aufwand</th><th>Risiko</th><th>Nutzen</th></tr></thead><tbody><tr><td>Git-Delete committen</td><td>archive, cave</td><td>S</td><td>niedrig</td><td>mittel</td></tr><tr><td>limboai entfernen</td><td><code class="inline-code">addons/limboai</code></td><td>S</td><td>niedrig</td><td>mittel</td></tr><tr><td>Ungenutzte Inputs entfernen</td><td><code class="inline-code">project.godot</code></td><td>S</td><td>niedrig</td><td>niedrig</td></tr></tbody></table></div>
+<h3 id="c-vor-neuem-content">C — Vor neuem Content</h3>
+<div class="table-wrap"><table><thead><tr><th>Titel</th><th>Dateien</th><th>Aufwand</th><th>Risiko</th><th>Nutzen</th></tr></thead><tbody><tr><td>Death + Respawn</td><td><code class="inline-code">player_animation_controller</code>, <code class="inline-code">game_manager</code></td><td>M</td><td>hoch</td><td>hoch</td></tr><tr><td>Inventory UI wiring</td><td><code class="inline-code">hud.gd</code>, <code class="inline-code">player_inventory_component</code></td><td>M</td><td>mittel</td><td>hoch</td></tr><tr><td>Hit-Stop entkoppeln</td><td><code class="inline-code">enemy_base.gd</code></td><td>M</td><td>mittel</td><td>hoch</td></tr><tr><td>Block I-Frames</td><td><code class="inline-code">player_dash_component.gd</code></td><td>S</td><td>mittel</td><td>hoch</td></tr><tr><td>HUD Signals</td><td><code class="inline-code">hud.gd</code>, <code class="inline-code">player_health_component</code></td><td>M</td><td>niedrig</td><td>mittel</td></tr></tbody></table></div>
+<h3 id="d-vor-vertical-slice">D — Vor Vertical Slice</h3>
+<div class="table-wrap"><table><thead><tr><th>Titel</th><th>Aufwand</th><th>Nutzen</th></tr></thead><tbody><tr><td>Run/Room-Datenmodell</td><td>L</td><td>hoch</td></tr><tr><td>Procedural Room im Loop</td><td>L</td><td>hoch</td></tr><tr><td>Projectile-Tile-Kollision</td><td>M</td><td>hoch</td></tr><tr><td>Globales HUD</td><td>M</td><td>mittel</td></tr><tr><td>Monster Nahkampf fix</td><td>S</td><td>mittel</td></tr></tbody></table></div>
+<h3 id="e-spater">E — Später</h3>
+<ul><li>Generator modularisieren (XL)</li>
+<li>Wandbench / Shop / Boss</li>
+<li>Parallax + Asset-Pfad-Normalisierung</li>
+<li>LimboAI oder BT-System</li>
+</ul>
+<hr class="section-rule" />
+<h2 id="14-konkreter-cleanup-plan">14. KONKRETER CLEANUP-PLAN</h2>
+<h3 id="phase-1-nur-analyse">Phase 1 — Nur Analyse ✓</h3>
+<p>Ziel: Vollständiges Bild ohne Codeänderungen.</p>
+<p>Risiko: — | Rollback: —</p>
+<h3 id="phase-2-sichere-loschungen">Phase 2 — Sichere Löschungen</h3>
+<div class="table-wrap"><table><thead><tr><th><strong>Ziel</strong></th><th>Repo-Rauschen reduzieren</th></tr></thead><tbody><tr><td><strong>Dateien</strong></td><td><code class="inline-code">limboai/</code>, ungenutzte Inputs, committed Deletes</td></tr><tr><td><strong>Schritte</strong></td><td>Backup → löschen → Editor öffnen → Smoke Test</td></tr><tr><td><strong>Risiko</strong></td><td>niedrig</td></tr><tr><td><strong>Tests</strong></td><td>Projekt lädt, keine missing resources</td></tr><tr><td><strong>Rollback</strong></td><td><code class="inline-code">git revert</code></td></tr></tbody></table></div>
+<h3 id="phase-3-namenskonventionen-ordner">Phase 3 — Namenskonventionen / Ordner</h3>
+<div class="table-wrap"><table><thead><tr><th><strong>Ziel</strong></th><th>Klarere Struktur</th></tr></thead><tbody><tr><td><strong>Risiko</strong></td><td>mittel</td></tr><tr><td><strong>Tests</strong></td><td>Alle Scenes öffnen, Pfade aktualisiert</td></tr><tr><td><strong>Rollback</strong></td><td>Git branch</td></tr></tbody></table></div>
+<h3 id="phase-4-szenenstandardisierung">Phase 4 — Szenenstandardisierung</h3>
+<div class="table-wrap"><table><thead><tr><th><strong>Ziel</strong></th><th>FadeRect, World/Exits, optional global HUD</th></tr></thead><tbody><tr><td><strong>Dateien</strong></td><td><code class="inline-code">dungeon_01.tscn</code>, <code class="inline-code">start_room.tscn</code></td></tr><tr><td><strong>Risiko</strong></td><td>mittel</td></tr><tr><td><strong>Tests</strong></td><td>Transitions, Fade fullscreen</td></tr></tbody></table></div>
+<h3 id="phase-5-code-refactors-mit-tests">Phase 5 — Code-Refactors mit Tests</h3>
+<div class="table-wrap"><table><thead><tr><th><strong>Ziel</strong></th><th>Death, Hit-Stop, HUD, Inventory</th></tr></thead><tbody><tr><td><strong>Risiko</strong></td><td>hoch</td></tr><tr><td><strong>Tests</strong></td><td>Abschnitt 12 vollständig</td></tr><tr><td><strong>Rollback</strong></td><td>Branch pro Refactor</td></tr></tbody></table></div>
+<h3 id="phase-6-gamefeel-ux-polish">Phase 6 — Gamefeel / UX Polish</h3>
+<div class="table-wrap"><table><thead><tr><th><strong>Ziel</strong></th><th>Juice, Tuning, Audio</th></tr></thead><tbody><tr><td><strong>Risiko</strong></td><td>niedrig</td></tr><tr><td><strong>Tests</strong></td><td>Gamefeel-Checkliste Abschnitt 9</td></tr></tbody></table></div>
+<hr class="section-rule" />
+<h2 id="15-abschluss">15. ABSCHLUSS</h2>
+<h3 id="15-1-die-10-wichtigsten-probleme">15.1 Die 10 wichtigsten Probleme</h3>
+<ol><li>Keine <code class="inline-code">run/main_scene</code> in <code class="inline-code">project.godot</code></li>
+<li>Dash/Hover Input-Konflikt (Shift)</li>
+<li><code class="inline-code">GameManager.player</code> nach <code class="inline-code">queue_free</code> ungültig</li>
+<li>Dungeon <code class="inline-code">FadeRect</code> Layout defekt</li>
+<li><code class="inline-code">is_in_block_dash_iframe()</code> Stub</li>
+<li>Globaler <code class="inline-code">Engine.time_scale</code> Hit-Stop</li>
+<li>Inventar-Equip nicht an UI gebunden</li>
+<li>HUD pollt jeden Frame</li>
+<li>Kein Death/Restart/Run-Loop</li>
+<li>Projektile kollidieren nicht mit Tilemap</li>
+</ol>
+<h3 id="15-2-die-10-wichtigsten-chancen">15.2 Die 10 wichtigsten Chancen</h3>
+<ol><li>Starke Player-Component-Architektur</li>
+<li>Skalierbare <code class="inline-code">EnemyBase</code></li>
+<li>Noita-nahe Wand/Spell-Pipeline</li>
+<li><code class="inline-code">DebugManager</code> für schnelles Tuning</li>
+<li><code class="inline-code">BaseLevel</code> + <code class="inline-code">PlayerSpawn</code> Standard</li>
+<li>BetterTerrain + Procedural Generator</li>
+<li>Block-Dash als Combat-USP</li>
+<li>Damage-Number-System mit Crit-Burst</li>
+<li>Coyote Time + Jump Buffer</li>
+<li>Benannte Physics Layers</li>
+</ol>
+<h3 id="15-3-die-10-ersten-konkreten-aufgaben">15.3 Die 10 ersten konkreten Aufgaben</h3>
+<ol><li><code class="inline-code">run/main_scene</code> → <code class="inline-code">res://project/scenes/levels_tscn/start_rooms/start_room.tscn</code></li>
+<li><code class="inline-code">hover</code> von <code class="inline-code">dash</code> trennen oder entfernen</li>
+<li>Dungeon <code class="inline-code">FadeRect</code> fullscreen (wie start_room)</li>
+<li>Death: Respawn statt <code class="inline-code">queue_free</code> ODER GM-Reset</li>
+<li><code class="inline-code">is_in_block_dash_iframe()</code> implementieren</li>
+<li>Hit-Stop lokal statt global</li>
+<li><code class="inline-code">health_changed</code> → HUD connecten</li>
+<li>Inventory-UI → <code class="inline-code">PlayerInventoryComponent</code></li>
+<li>Monster <code class="inline-code">pass</code> → <code class="inline-code">start_attack()</code></li>
+<li>Git-Cleanup committen</li>
+</ol>
+<h3 id="15-4-dateien-prioritat">15.4 Dateien-Priorität</h3>
+<div class="table-wrap"><table><thead><tr><th>Zuerst anfassen</th><th>Nicht ohne Tests anfassen</th></tr></thead><tbody><tr><td><code class="inline-code">project.godot</code></td><td><code class="inline-code">game_manager.gd</code></td></tr><tr><td><code class="inline-code">dungeon_01.tscn</code></td><td><code class="inline-code">enemy_base.gd</code></td></tr><tr><td><code class="inline-code">player_dash_component.gd</code></td><td><code class="inline-code">player.gd</code></td></tr><tr><td><code class="inline-code">hud.gd</code></td><td><code class="inline-code">wand.gd</code></td></tr><tr><td><code class="inline-code">player_health_component.gd</code></td><td><code class="inline-code">fast_noise_generator.gd</code></td></tr></tbody></table></div>
+<h3 id="15-5-gamefeel-wert-vs-technisches-risiko">15.5 Gamefeel-Wert vs. technisches Risiko</h3>
+<div class="table-wrap"><table><thead><tr><th>Mehr Gamefeel-Wert</th><th>Höchstes technisches Risiko</th></tr></thead><tbody><tr><td>Movement + Dash + Camera</td><td><code class="inline-code">GameManager</code> + Death-Lifecycle</td></tr><tr><td>Block Guard + Recoil</td><td><code class="inline-code">Engine.time_scale</code></td></tr><tr><td>Enemy Hit-Stop + Crit FX</td><td>Scene Transitions + FadeRect</td></tr><tr><td>Mana Blink + Damage Numbers</td><td><code class="inline-code">fast_noise_generator</code> (Komplexität)</td></tr></tbody></table></div>
+<hr class="section-rule" />
+<h2 id="anhang-a-aktive-scripts-26">Anhang A — Aktive Scripts (26)</h2>
+<div class="table-wrap"><table><thead><tr><th>Pfad</th><th>class_name</th></tr></thead><tbody><tr><td><code class="inline-code">autoload/game_manager.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">autoload/debug_manager.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">player_gd/player.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">player_gd/player_movement_component.gd</code></td><td>PlayerMovementComponent</td></tr><tr><td><code class="inline-code">player_gd/player_dash_component.gd</code></td><td>PlayerDashComponent</td></tr><tr><td><code class="inline-code">player_gd/player_health_component.gd</code></td><td>PlayerHealthComponent</td></tr><tr><td><code class="inline-code">player_gd/player_aim_component.gd</code></td><td>PlayerAimComponent</td></tr><tr><td><code class="inline-code">player_gd/player_animation_controller.gd</code></td><td>PlayerAnimationController</td></tr><tr><td><code class="inline-code">player_gd/player_combat_state_component.gd</code></td><td>PlayerCombatStateComponent</td></tr><tr><td><code class="inline-code">player_gd/player_contact_push_component.gd</code></td><td>PlayerContactPushComponent</td></tr><tr><td><code class="inline-code">player_gd/player_inventory_component.gd</code></td><td>PlayerInventoryComponent</td></tr><tr><td><code class="inline-code">player_gd/inventory_component.gd</code></td><td>InventoryComponent</td></tr><tr><td><code class="inline-code">player_gd/camera_2d.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">enemies_gd/enemy_base.gd</code></td><td>EnemyBase</td></tr><tr><td><code class="inline-code">enemies_gd/enemy_humanoid.gd</code></td><td>EnemyHumanoid</td></tr><tr><td><code class="inline-code">enemies_gd/enemy_monster.gd</code></td><td>EnemyMonster</td></tr><tr><td><code class="inline-code">enemies_gd/hurtbox.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">wands_gd/wand.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">wands_gd/wand_data.gd</code></td><td>WandData</td></tr><tr><td><code class="inline-code">spell_gd/spell.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">spell_gd/spell_data.gd</code></td><td>SpellData</td></tr><tr><td><code class="inline-code">hud_gd/hud.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">pickups_gd/spell_pickup.gd</code></td><td>SpellPickup</td></tr><tr><td><code class="inline-code">popups_gd/damage_number.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">levels_gd/base_level.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">levels_gd/exit_to_dungeon.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">levels_gd/fade_parallax.gd</code></td><td>—</td></tr><tr><td><code class="inline-code">levels_gd/fast_noise_generator.gd</code></td><td>— (@tool)</td></tr></tbody></table></div>
+<h2 id="anhang-b-pdf-erzeugen">Anhang B — PDF erzeugen</h2>
+<pre><code class="language-powershell">cd docs
+node generate_analysis_pdf.js</code></pre>
+<p>Alternative: Markdown Preview → Drucken → Als PDF speichern (beste Umlaute/Tabellen).</p>
+<hr class="section-rule" />
+<p>*Ende der Technischen Projektanalyse — NoitaClone / Godot 4.6.1*</p></article>
+    </main>
+  </div>
+  <button class="print-btn" type="button" onclick="window.print()">Als PDF drucken</button>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: false, theme: "dark", themeVariables: { primaryColor: "#7c6cf0", primaryTextColor: "#e8eaef", lineColor: "#9aa3b8", secondaryColor: "#161a26", tertiaryColor: "#12151f" } });
+    await mermaid.run({ querySelector: ".mermaid" });
+  </script>
+</body>
+</html>
