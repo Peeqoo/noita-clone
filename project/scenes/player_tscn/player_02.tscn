@@ -653,6 +653,8 @@ animations = [{
 [node name="Player02" type="CharacterBody2D" unique_id=1587487172 groups=["player"]]
 collision_layer = 2
 collision_mask = 1585
+floor_snap_length = 8.0
+floor_max_angle = 0.9
 script = ExtResource("1_higxc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1219825577]

@@ -50,6 +50,22 @@ func _ready() -> void:
 	health = clamp(health, 0, max_health)
 	health_changed.emit(health, max_health)
 
+func reset_for_respawn() -> void:
+	is_dead = false
+	is_hurt = false
+	is_invincible = false
+	knockback_velocity = Vector2.ZERO
+	health = max_health
+	health_changed.emit(health, max_health)
+
+func stabilize_after_scene_change() -> void:
+	if is_dead:
+		return
+
+	is_hurt = false
+	is_invincible = false
+	knockback_velocity = Vector2.ZERO
+
 func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: bool = false) -> void:
 	if is_dead:
 		return
@@ -71,6 +87,7 @@ func take_damage(amount: int, source_position: Vector2 = Vector2.ZERO, is_crit: 
 
 	if player.has_method("is_in_block_dash_guard_window") and player.is_in_block_dash_guard_window():
 		_play_hit_sound()
+		_shake_block_guard_camera()
 
 		if dash_component != null:
 			dash_component.trigger_block_dash_success()
@@ -146,11 +163,16 @@ func start_invincibility() -> void:
 	var t: float = 0.0
 
 	while t < blink_time:
+		if is_dead or not is_instance_valid(player):
+			break
+
 		animated_sprite.visible = not animated_sprite.visible
 		await get_tree().create_timer(0.05).timeout
 		t += 0.05
 
-	animated_sprite.visible = true
+	if is_instance_valid(animated_sprite):
+		animated_sprite.visible = true
+
 	is_invincible = false
 
 func apply_knockback(source_position: Vector2 = Vector2.ZERO, is_crit: bool = false) -> void:
@@ -190,9 +212,8 @@ func play_death() -> void:
 	player.velocity = Vector2.ZERO
 	knockback_velocity = Vector2.ZERO
 
-	var aim_component := player.get_node_or_null("Components/AimComponent")
-	if aim_component != null and aim_component.has_method("update_wand_input"):
-		aim_component.update_wand_input(false)
+	if player.has_method("on_death_started"):
+		player.on_death_started()
 
 	animated_sprite.play("death")
 	died.emit()

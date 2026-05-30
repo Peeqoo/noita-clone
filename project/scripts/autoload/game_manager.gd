@@ -12,19 +12,29 @@ func _place_player_after_start() -> void:
 	place_player_in_current_scene(current_spawn_name)
 
 func ensure_player_exists() -> void:
-	if player == null:
-		player = player_scene.instantiate() as Node2D
-		player.name = "Player"
+	if player != null and is_instance_valid(player):
+		return
+
+	player = null
+	player = player_scene.instantiate() as Node2D
+	player.name = "Player"
 
 func get_player() -> Node2D:
 	ensure_player_exists()
 	return player
+
+func is_player_alive() -> bool:
+	return player != null and is_instance_valid(player)
 
 func set_fade_rect(node: ColorRect) -> void:
 	fade_rect = node
 
 func place_player_in_current_scene(spawn_name: String = "PlayerSpawn") -> void:
 	ensure_player_exists()
+
+	if not is_instance_valid(player):
+		push_warning("GameManager: player invalid in place_player_in_current_scene.")
+		return
 
 	var scene := get_tree().current_scene
 	if scene == null:
@@ -47,6 +57,23 @@ func place_player_in_current_scene(spawn_name: String = "PlayerSpawn") -> void:
 
 	player.global_position = spawn.global_position
 
+	_ensure_player_camera_current()
+
+func handle_player_death() -> void:
+	call_deferred("respawn_player_in_current_level")
+
+func respawn_player_in_current_level() -> void:
+	ensure_player_exists()
+
+	if not is_instance_valid(player):
+		push_warning("GameManager: cannot respawn, player invalid.")
+		return
+
+	place_player_in_current_scene(current_spawn_name)
+
+	if player.has_method("respawn_after_death"):
+		player.respawn_after_death()
+
 func _find_spawn(scene: Node, spawn_name: String) -> Marker2D:
 	var direct_spawn := scene.get_node_or_null(spawn_name) as Marker2D
 	if direct_spawn != null:
@@ -57,6 +84,14 @@ func _find_spawn(scene: Node, spawn_name: String) -> Marker2D:
 		return recursive_spawn
 
 	return null
+
+func _ensure_player_camera_current() -> void:
+	if not is_instance_valid(player):
+		return
+
+	var camera := player.get_node_or_null("PlayerCamera") as Camera2D
+	if camera != null:
+		camera.make_current()
 
 func fade_out(duration: float = 0.6) -> void:
 	if fade_rect == null:
@@ -93,7 +128,7 @@ func _change_level_deferred(scene_path: String) -> void:
 
 	await fade_out(0.6)
 
-	if player.get_parent():
+	if is_instance_valid(player) and player.get_parent():
 		player.get_parent().remove_child(player)
 
 	get_tree().change_scene_to_file(scene_path)
@@ -103,6 +138,7 @@ func _change_level_deferred(scene_path: String) -> void:
 	await get_tree().process_frame
 
 	place_player_in_current_scene(current_spawn_name)
+	_reset_player_state_after_scene_change()
 
 	await get_tree().process_frame
 	await fade_in(0.6)
@@ -123,7 +159,7 @@ func reload_current_level() -> void:
 func _reload_current_level_deferred(scene_path: String) -> void:
 	ensure_player_exists()
 
-	if player.get_parent():
+	if is_instance_valid(player) and player.get_parent():
 		player.get_parent().remove_child(player)
 
 	get_tree().change_scene_to_file(scene_path)
@@ -133,3 +169,23 @@ func _reload_current_level_deferred(scene_path: String) -> void:
 	await get_tree().process_frame
 
 	place_player_in_current_scene(current_spawn_name)
+	_reset_player_state_after_scene_change()
+
+func _is_player_dead() -> bool:
+	if not is_instance_valid(player):
+		return false
+
+	if player.has_method("is_dead"):
+		return player.is_dead()
+
+	return false
+
+func _reset_player_state_after_scene_change() -> void:
+	if not is_instance_valid(player):
+		return
+
+	if _is_player_dead():
+		if player.has_method("respawn_after_death"):
+			player.respawn_after_death()
+	elif player.has_method("stabilize_after_scene_change"):
+		player.stabilize_after_scene_change()

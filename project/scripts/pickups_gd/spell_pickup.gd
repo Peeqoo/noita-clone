@@ -68,6 +68,10 @@ func _process(_delta: float) -> void:
 		return
 
 	if Input.is_action_just_pressed("interact"):
+		var hud := get_tree().get_first_node_in_group("hud")
+		if hud != null and hud.has_method("is_inventory_open") and hud.is_inventory_open():
+			return
+
 		var inventory = player_in_range.get_node_or_null("Components/InventoryComponent")
 		if inventory == null:
 			print("Pickup fehlgeschlagen: InventoryComponent nicht gefunden.")

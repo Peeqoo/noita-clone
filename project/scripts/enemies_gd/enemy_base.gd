@@ -71,10 +71,11 @@ enum State {
 # =========================
 @export_group("Base Step Up")
 @export var use_step_up: bool = true
-@export var max_step_height: float = 10.0
-@export var step_height_increment: float = 2.0
+@export var max_step_height: float = 9.0
+@export var step_height_increment: float = 1.0
 @export var min_step_forward_check: float = 4.0
 @export var step_forward_padding: float = 2.0
+@export var step_visual_smoothing_speed: float = 100.0
 
 # =========================
 # Base Audio
@@ -122,6 +123,9 @@ var current_state: State = State.IDLE
 var is_in_hit_stop: bool = false
 var knockback_velocity_x: float = 0.0
 
+var _hit_stop_saved_process_mode: Node.ProcessMode = Node.PROCESS_MODE_INHERIT
+var _hit_stop_saved_sprite_speed: float = 1.0
+
 # Tracking / Aggro
 var spawn_position: Vector2
 var last_seen_position: Vector2
@@ -147,6 +151,8 @@ var _last_footstep_frame: int = -1
 var _footstep_cooldown: float = 0.0
 var _idle_sound_timer: float = 0.0
 
+var _base_sprite_position_y: float = 0.0
+
 # =========================
 # Lifecycle
 # =========================
@@ -154,11 +160,13 @@ func _ready() -> void:
 	_initialize_base_state()
 	_connect_base_signals()
 	_reset_idle_sound_timer()
+	_cache_sprite_base_position()
 	_update_animation()
 
 func _process(delta: float) -> void:
 	_update_run_footsteps(delta)
 	_update_idle_sounds(delta)
+	_update_step_visual_smoothing(delta)
 
 func _initialize_base_state() -> void:
 	health = max_health
@@ -176,6 +184,9 @@ func _connect_base_signals() -> void:
 func change_state(new_state: State) -> void:
 	if current_state == State.DEATH:
 		return
+
+	if new_state == State.DEATH or new_state == State.HIT:
+		_reset_step_visual_offset()
 
 	current_state = new_state
 	_update_animation()
@@ -424,47 +435,79 @@ func can_move_in_direction(dir: float) -> bool:
 	ledge_check.target_position = target
 
 	ledge_check.force_raycast_update()
-	return ledge_check.is_colliding()
+	if ledge_check.is_colliding():
+		return true
+
+	if use_step_up:
+		return ActorStepMover.can_step_over_obstacle(
+			self,
+			dir,
+			0.0,
+			max_step_height,
+			step_height_increment,
+			min_step_forward_check,
+			step_forward_padding
+		)
+
+	return false
 
 func try_step_up(delta: float) -> void:
 	if not use_step_up:
 		return
 
-	if not is_on_floor():
-		return
+	var step_height: float = ActorStepMover.try_step_up(
+		self,
+		delta,
+		signf(velocity.x),
+		max_step_height,
+		step_height_increment,
+		min_step_forward_check,
+		step_forward_padding
+	)
 
-	if velocity.y < 0.0:
-		return
-
-	if absf(velocity.x) < 0.01:
-		return
-
-	var dir: float = signf(velocity.x)
-	if dir == 0.0:
-		return
-
-	var forward_check: float = maxf(absf(velocity.x * delta) + step_forward_padding, min_step_forward_check)
-
-	if not test_move(global_transform, Vector2(dir * forward_check, 0.0)):
-		return
-
-	var step_height: float = step_height_increment
-	while step_height <= max_step_height:
-		var raised_transform: Transform2D = global_transform.translated(Vector2(0.0, -step_height))
-
-		if test_move(raised_transform, Vector2.ZERO):
-			step_height += step_height_increment
-			continue
-
-		if not test_move(raised_transform, Vector2(dir * forward_check, 0.0)):
-			global_position.y -= step_height
-			return
-
-		step_height += step_height_increment
+	if step_height > 0.0:
+		_apply_step_visual_offset(step_height)
 
 func move_and_slide_with_step(delta: float) -> void:
-	try_step_up(delta)
+	if current_state != State.DEATH and current_state != State.HIT:
+		try_step_up(delta)
 	move_and_slide()
+
+
+func _cache_sprite_base_position() -> void:
+	if sprite == null:
+		return
+	_base_sprite_position_y = sprite.position.y
+
+
+func _apply_step_visual_offset(step_height: float) -> void:
+	if sprite == null or step_height <= 0.0:
+		return
+	sprite.position.y += step_height
+
+
+func _update_step_visual_smoothing(delta: float) -> void:
+	if sprite == null:
+		return
+
+	if is_equal_approx(sprite.position.y, _base_sprite_position_y):
+		sprite.position.y = _base_sprite_position_y
+		return
+
+	sprite.position.y = move_toward(
+		sprite.position.y,
+		_base_sprite_position_y,
+		step_visual_smoothing_speed * delta
+	)
+
+	if absf(sprite.position.y - _base_sprite_position_y) < 0.05:
+		sprite.position.y = _base_sprite_position_y
+
+
+func _reset_step_visual_offset() -> void:
+	if sprite == null:
+		return
+	sprite.position.y = _base_sprite_position_y
 
 # =========================
 # Damage / Knockback / Death
@@ -538,17 +581,41 @@ func do_hit_stop(is_crit: bool = false) -> void:
 	if is_in_hit_stop:
 		return
 
+	if not is_inside_tree():
+		return
+
 	is_in_hit_stop = true
 
 	var duration: float = crit_hit_stop_duration if is_crit else hit_stop_duration
 
-	Engine.time_scale = 0.0
+	_hit_stop_saved_process_mode = process_mode
+	_hit_stop_saved_sprite_speed = sprite.speed_scale if sprite != null else 1.0
+
+	process_mode = Node.PROCESS_MODE_DISABLED
+	if sprite != null:
+		sprite.speed_scale = 0.0
+
 	await get_tree().create_timer(duration, true, false, true).timeout
-	Engine.time_scale = 1.0
+
+	_restore_after_hit_stop()
+
+func _restore_after_hit_stop() -> void:
+	if not is_instance_valid(self):
+		return
 
 	is_in_hit_stop = false
+	process_mode = _hit_stop_saved_process_mode
+
+	if sprite != null:
+		sprite.speed_scale = _hit_stop_saved_sprite_speed
+
+func _clear_hit_stop_if_active() -> void:
+	if not is_in_hit_stop:
+		return
+	_restore_after_hit_stop()
 
 func die() -> void:
+	_clear_hit_stop_if_active()
 	_play_death_sound()
 	change_state(State.DEATH)
 	drop_loot()

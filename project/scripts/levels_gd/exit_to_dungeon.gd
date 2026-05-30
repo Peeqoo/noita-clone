@@ -8,6 +8,9 @@ var is_transitioning := false
 func _on_body_entered(body: Node) -> void:
 	if is_transitioning:
 		return
+	if not GameManager.is_player_alive():
+		return
+
 	if body != GameManager.player:
 		return
 	if next_scene_path.is_empty():

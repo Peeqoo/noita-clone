@@ -21,6 +21,8 @@ class_name PlayerDashComponent
 @export var allow_air_block_dash: bool = false
 @export var use_block_dash_animation_duration: bool = true
 @export var block_dash_animation_name: StringName = &"block_dash"
+@export var block_dash_iframe_start_frame: int = 0
+@export var block_dash_iframe_end_frame: int = 3
 @export var block_dash_guard_start_frame: int = 1
 @export var block_dash_guard_end_frame: int = 6
 @export var block_dash_recoil_force: float = 220.0
@@ -69,6 +71,13 @@ func force_stop_all() -> void:
 	block_dash_success_triggered = false
 	block_dash_recoil_timer = 0.0
 	block_dash_recoil_velocity = Vector2.ZERO
+
+func reset_for_respawn() -> void:
+	force_stop_all()
+	current_dash_charges = max_dash_charges
+	dash_charge_recovery_timer = 0.0
+	block_dash_cooldown_timer = 0.0
+	can_air_block_dash = true
 
 func try_start_dash(raw_input_dir: float) -> bool:
 	if is_dashing or is_block_dashing:
@@ -173,7 +182,13 @@ func is_in_dash_guard_window() -> bool:
 	return _is_current_frame_between(dash_animation_name, dash_guard_start_frame, dash_guard_end_frame)
 
 func is_in_block_dash_iframe() -> bool:
-	return false
+	if not is_block_dashing:
+		return false
+	return _is_current_frame_between(
+		block_dash_animation_name,
+		block_dash_iframe_start_frame,
+		block_dash_iframe_end_frame
+	)
 
 func is_in_block_dash_guard_window() -> bool:
 	if not is_block_dashing:

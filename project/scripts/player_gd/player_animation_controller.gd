@@ -76,4 +76,5 @@ func on_animation_finished() -> void:
 		if health_component != null:
 			health_component.on_animation_finished("hit")
 	elif animated_sprite.animation == "death":
-		player.queue_free()
+		if GameManager != null and GameManager.has_method("handle_player_death"):
+			GameManager.handle_player_death()

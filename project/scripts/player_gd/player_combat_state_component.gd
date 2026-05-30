@@ -24,6 +24,11 @@ func try_leave_combat() -> void:
 	var my_token: int = combat_token
 	_leave_combat_after_delay.call_deferred(my_token)
 
+func reset_for_respawn() -> void:
+	in_combat = false
+	combat_token += 1
+	regen_running = false
+
 func _leave_combat_after_delay(token: int) -> void:
 	if not is_inside_tree():
 		return

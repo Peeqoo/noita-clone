@@ -1,5 +1,7 @@
 extends Node2D
 
+const WAND_SPELL_SLOT_COUNT: int = 5
+
 @export var wand_data: WandData
 
 @export_group("Mana Visual Feedback")
@@ -39,6 +41,7 @@ func _ready() -> void:
 	if wand_data == null:
 		return
 
+	ensure_spell_slot_count(WAND_SPELL_SLOT_COUNT)
 	current_mana = wand_data.mana_max
 	_update_hud_mana()
 	_update_hud_spell()
@@ -229,41 +232,104 @@ func _build_hit_data(spell: SpellData) -> Dictionary:
 		"source": actor_owner
 	}
 
+func get_wand_spell_slot_count() -> int:
+	return WAND_SPELL_SLOT_COUNT
+
+
+func ensure_spell_slot_count(count: int) -> void:
+	if wand_data == null:
+		return
+
+	while wand_data.spell_slots.size() < count:
+		wand_data.spell_slots.append(null)
+
+
+func get_spell_slots() -> Array[SpellData]:
+	if wand_data == null:
+		return []
+	ensure_spell_slot_count(WAND_SPELL_SLOT_COUNT)
+	return wand_data.spell_slots
+
+
 func get_spell_in_slot(slot: int) -> SpellData:
 	if wand_data == null:
 		return null
+	ensure_spell_slot_count(WAND_SPELL_SLOT_COUNT)
 	if slot < 0 or slot >= wand_data.spell_slots.size():
 		return null
 	return wand_data.spell_slots[slot]
 
+
 func set_spell_in_slot(slot: int, spell: SpellData) -> bool:
 	if wand_data == null:
 		return false
+	ensure_spell_slot_count(WAND_SPELL_SLOT_COUNT)
 	if slot < 0 or slot >= wand_data.spell_slots.size():
 		return false
 
 	wand_data.spell_slots[slot] = spell
-
-	if current_spell_index < 0 or current_spell_index >= wand_data.spell_slots.size():
-		current_spell_index = 0
-
-	_update_hud_spell()
+	notify_spell_slots_changed()
 	return true
+
 
 func remove_spell_from_slot(slot: int) -> SpellData:
 	if wand_data == null:
 		return null
+	ensure_spell_slot_count(WAND_SPELL_SLOT_COUNT)
 	if slot < 0 or slot >= wand_data.spell_slots.size():
 		return null
 
 	var spell: SpellData = wand_data.spell_slots[slot]
 	wand_data.spell_slots[slot] = null
+	notify_spell_slots_changed()
+	return spell
 
-	if current_spell_index >= wand_data.spell_slots.size():
+
+func swap_spell_slots(a: int, b: int) -> bool:
+	if wand_data == null:
+		return false
+	ensure_spell_slot_count(WAND_SPELL_SLOT_COUNT)
+	if a < 0 or a >= wand_data.spell_slots.size():
+		return false
+	if b < 0 or b >= wand_data.spell_slots.size():
+		return false
+	if a == b:
+		return false
+
+	var temp: SpellData = wand_data.spell_slots[a]
+	wand_data.spell_slots[a] = wand_data.spell_slots[b]
+	wand_data.spell_slots[b] = temp
+	notify_spell_slots_changed()
+	return true
+
+
+func notify_spell_slots_changed() -> void:
+	_clamp_spell_index()
+	_update_hud_spell()
+
+
+func _clamp_spell_index() -> void:
+	if wand_data == null or wand_data.spell_slots.is_empty():
+		current_spell_index = 0
+		return
+
+	if current_spell_index < 0 or current_spell_index >= wand_data.spell_slots.size():
 		current_spell_index = 0
 
-	_update_hud_spell()
-	return spell
+	if wand_data.spell_slots[current_spell_index] != null:
+		return
+
+	var tries: int = 0
+	while tries < wand_data.spell_slots.size():
+		if wand_data.spell_slots[current_spell_index] != null:
+			return
+		current_spell_index += 1
+		if current_spell_index >= wand_data.spell_slots.size():
+			current_spell_index = 0
+		tries += 1
+
+	current_spell_index = 0
+
 
 func reset_spell_cycle() -> void:
 	current_spell_index = 0

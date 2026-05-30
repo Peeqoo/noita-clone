@@ -67,8 +67,8 @@ func _ready() -> void:
 	use_gravity = true
 	use_ledge_check = true
 	use_step_up = true
-	max_step_height = 12.0
-	step_height_increment = 2.0
+	max_step_height = 9.0
+	step_height_increment = 1.0
 	min_step_forward_check = 5.0
 	step_forward_padding = 2.0
 
@@ -87,14 +87,14 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.HIT:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
-		move_and_slide_with_step(delta)
+		move_and_slide()
 		_update_run_animation_speed()
 		return
 
 	if current_state == State.ATTACK:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
-		move_and_slide_with_step(delta)
+		move_and_slide()
 		_update_run_animation_speed()
 		return
 

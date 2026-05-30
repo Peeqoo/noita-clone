@@ -54,7 +54,7 @@ class_name EnemyMonster
 @export var monster_use_gravity: bool = true
 @export var monster_use_ledge_check: bool = false
 @export var monster_use_step_up: bool = true
-@export var monster_max_step_height: float = 14.0
+@export var monster_max_step_height: float = 9.0
 @export var monster_step_height_increment: float = 1.0
 @export var monster_min_step_forward_check: float = 6.0
 @export var monster_step_forward_padding: float = 3.0
@@ -123,7 +123,7 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.HIT:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
-		move_and_slide_with_step(delta)
+		move_and_slide()
 		_update_run_animation_speed()
 		return
 
@@ -160,7 +160,7 @@ func _physics_process(delta: float) -> void:
 	if current_state == State.ATTACK:
 		velocity.x = get_separation_velocity_x()
 		velocity.x += get_knockback_velocity_x(delta)
-		move_and_slide_with_step(delta)
+		move_and_slide()
 		_update_run_animation_speed()
 		return
 
@@ -235,8 +235,14 @@ func _handle_player_state(delta: float) -> void:
 		start_attack_jump(dir)
 		return
 
-	if can_attack and abs_distance_x(distance, dx) <= attack_range and is_on_floor() and not is_attack_jumping:
-		pass
+	if can_attack and distance <= attack_range and is_on_floor() and not is_attack_jumping and not is_winding_up:
+		if distance <= attack_stop_distance:
+			velocity.x = 0.0
+		start_attack()
+		velocity.x += get_separation_velocity_x()
+		velocity.x += get_knockback_velocity_x(delta)
+		move_and_slide_with_step(delta)
+		return
 
 	if distance <= attack_stop_distance:
 		velocity.x = 0.0

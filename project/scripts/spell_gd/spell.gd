@@ -1,5 +1,7 @@
 extends Area2D
 
+const WORLD_COLLISION_MASK: int = 1
+
 @export var lifetime: float = 2.0
 
 var direction: Vector2 = Vector2.RIGHT
@@ -49,11 +51,56 @@ func _physics_process(delta: float) -> void:
 	if is_exploding:
 		return
 
-	global_position += direction * speed * delta
+	var motion: Vector2 = direction * speed * delta
+	_try_move_with_collision(motion)
 
 	lifetime -= delta
 	if lifetime <= 0.0:
 		queue_free()
+
+func _try_move_with_collision(motion: Vector2) -> void:
+	if motion.length_squared() <= 0.0:
+		return
+
+	if collision_shape == null or collision_shape.shape == null:
+		global_position += motion
+		return
+
+	var space_state: PhysicsDirectSpaceState2D = get_world_2d().direct_space_state
+	if space_state == null:
+		global_position += motion
+		return
+
+	var params := PhysicsShapeQueryParameters2D.new()
+	params.shape = collision_shape.shape
+	params.transform = collision_shape.global_transform
+	params.motion = motion
+	# Swept check: World/TileMap only. Hurtbox hits use Area2D mask 65 + area_entered.
+	params.collision_mask = WORLD_COLLISION_MASK
+	params.exclude = _get_physics_exclude_rids()
+
+	var cast_result: Array = space_state.cast_motion(params)
+	if cast_result.size() < 2:
+		global_position += motion
+		return
+
+	var safe_fraction: float = cast_result[0]
+	var unsafe_fraction: float = cast_result[1]
+
+	if unsafe_fraction < 1.0:
+		global_position += motion * safe_fraction
+		_explode()
+		return
+
+	global_position += motion
+
+func _get_physics_exclude_rids() -> Array[RID]:
+	var exclude: Array[RID] = [get_rid()]
+
+	if shooter is CollisionObject2D:
+		exclude.append(shooter.get_rid())
+
+	return exclude
 
 func get_hit_data() -> Dictionary:
 	return hit_data.duplicate(true)
@@ -72,6 +119,9 @@ func _on_body_entered(body: Node) -> void:
 		return
 
 	if body == shooter:
+		return
+
+	if body is CollisionObject2D and (body.collision_layer & 1) == 0:
 		return
 
 	_explode()
