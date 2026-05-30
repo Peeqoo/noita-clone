@@ -60,8 +60,12 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	var source_container: StringName = data["source_container"]
 	var source_index: int = int(data["source_index"])
 	if source_container == slot_container and source_index == slot_index:
+		if hud_ref.has_method("clear_drop_hover_target"):
+			hud_ref.clear_drop_hover_target()
 		return false
 
+	if hud_ref.has_method("set_drop_hover_target"):
+		hud_ref.set_drop_hover_target(slot_container, slot_index)
 	return true
 
 
@@ -89,6 +93,9 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 		slot_index
 	)
 
+	if hud_ref.has_method("clear_drop_hover_target"):
+		hud_ref.clear_drop_hover_target()
+
 	if success and hud_ref.has_method("refresh_after_slot_change"):
 		hud_ref.refresh_after_slot_change()
 
@@ -100,11 +107,21 @@ func _notification(what: int) -> void:
 	if hud_ref == null:
 		return
 
+	if hud_ref.has_method("clear_drop_hover_target"):
+		hud_ref.clear_drop_hover_target()
+
 	if hud_ref.has_method("end_spell_drag_visual"):
 		hud_ref.end_spell_drag_visual()
 
 	if hud_ref.has_method("refresh_after_slot_change"):
 		hud_ref.refresh_after_slot_change()
+
+
+func _mouse_exited() -> void:
+	if hud_ref == null:
+		return
+	if hud_ref.has_method("clear_drop_hover_if_match"):
+		hud_ref.clear_drop_hover_if_match(slot_container, slot_index)
 
 
 func _is_valid_drag_data(data: Variant) -> bool:

@@ -46,7 +46,8 @@ func apply_spell_slot_operation(
 			_set_spell_ref(to_container, to_index, to_spell)
 			return false
 
-	_notify_wand_slots_changed()
+	if _operation_touches_wand(from_container, to_container):
+		_notify_wand_slots_changed()
 	return true
 
 
@@ -80,7 +81,7 @@ func _set_spell_ref(container: StringName, index: int, spell: SpellData) -> bool
 	if container == CONTAINER_INVENTORY:
 		return inventory.set_spell_at(index, spell)
 	if container == CONTAINER_WAND:
-		return wand.set_spell_in_slot(index, spell)
+		return wand.set_spell_in_slot(index, spell, false)
 	return false
 
 
@@ -94,6 +95,10 @@ func _is_valid_slot(container: StringName, index: int) -> bool:
 			return index >= 0 and index < wand.get_wand_spell_slot_count()
 		return index >= 0 and index < 5
 	return false
+
+
+func _operation_touches_wand(from_container: StringName, to_container: StringName) -> bool:
+	return from_container == CONTAINER_WAND or to_container == CONTAINER_WAND
 
 
 func _notify_wand_slots_changed() -> void:

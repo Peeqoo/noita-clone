@@ -3,6 +3,11 @@ extends CanvasLayer
 const SPELL_SLOT_UI_SCRIPT: Script = preload("res://project/scripts/hud_gd/spell_slot_ui.gd")
 const WAND_SLOT_COUNT: int = 5
 
+const SLOT_MODULATE_EMPTY := Color(0.55, 0.55, 0.6, 1.0)
+const SLOT_MODULATE_FILLED := Color(1.0, 1.0, 1.0, 1.0)
+const SLOT_MODULATE_SELECTED_SCALE := 1.2
+const SLOT_MODULATE_DROP_SCALE := Color(1.05, 1.15, 1.0, 1.0)
+
 @onready var root_ui: Control = $HUD
 
 @onready var health_bar: Range = $HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/HealthBar
@@ -65,6 +70,12 @@ var drag_source_container: StringName = &""
 var drag_source_index: int = -1
 var is_spell_drag_active: bool = false
 
+var drop_hover_container: StringName = &""
+var drop_hover_index: int = -1
+
+var _health_component: PlayerHealthComponent = null
+var _inventory_full_flash_tween: Tween = null
+
 
 func _ready() -> void:
 	add_to_group("hud")
@@ -72,7 +83,12 @@ func _ready() -> void:
 	_clear_all_icons()
 	_setup_drag_slots()
 	_refresh_player_reference()
-	_refresh_all_ui()
+	_refresh_wand_ui()
+	_refresh_inventory_ui()
+	_apply_spell_selection_visual()
+	_apply_inventory_selection_visual()
+	_sync_mana_from_wand_once()
+	_refresh_dash_ui()
 
 
 func _process(_delta: float) -> void:
@@ -82,11 +98,14 @@ func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("toggle_inventory"):
 		toggle_inventory()
 
-	_refresh_all_ui()
+	_refresh_dash_ui()
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not inventory_open:
+		return
+
+	if is_spell_drag_active:
 		return
 
 	if not event is InputEventKey:
@@ -98,16 +117,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if key_event.keycode >= KEY_1 and key_event.keycode <= KEY_8:
 		selected_inventory_index = key_event.keycode - KEY_1
+		_apply_inventory_selection_visual()
 		get_viewport().set_input_as_handled()
 		return
 
 	if key_event.keycode == KEY_BRACKETLEFT:
 		selected_wand_slot_index = maxi(0, selected_wand_slot_index - 1)
+		_apply_spell_selection_visual()
 		get_viewport().set_input_as_handled()
 		return
 
 	if key_event.keycode == KEY_BRACKETRIGHT:
 		selected_wand_slot_index = mini(spell_slot_panels.size() - 1, selected_wand_slot_index + 1)
+		_apply_spell_selection_visual()
 		get_viewport().set_input_as_handled()
 		return
 
@@ -128,10 +150,11 @@ func toggle_inventory() -> void:
 
 	if not inventory_open:
 		end_spell_drag_visual()
-
-	if inventory_open:
+	else:
 		_clamp_inventory_selection()
 		_clamp_wand_slot_selection()
+
+	refresh_after_slot_change()
 
 
 func is_inventory_open() -> bool:
@@ -168,6 +191,7 @@ func end_spell_drag_visual() -> void:
 	is_spell_drag_active = false
 	drag_source_container = &""
 	drag_source_index = -1
+	clear_drop_hover_target()
 
 
 func is_drag_source_slot(container: StringName, index: int) -> bool:
@@ -175,6 +199,51 @@ func is_drag_source_slot(container: StringName, index: int) -> bool:
 		is_spell_drag_active
 		and drag_source_container == container
 		and drag_source_index == index
+	)
+
+
+func set_drop_hover_target(container: StringName, index: int) -> void:
+	if not is_spell_drag_active:
+		return
+	if drop_hover_container == container and drop_hover_index == index:
+		return
+	drop_hover_container = container
+	drop_hover_index = index
+	_apply_spell_selection_visual()
+	_apply_inventory_selection_visual()
+
+
+func clear_drop_hover_target() -> void:
+	if drop_hover_container == &"" and drop_hover_index < 0:
+		return
+	drop_hover_container = &""
+	drop_hover_index = -1
+	_apply_spell_selection_visual()
+	_apply_inventory_selection_visual()
+
+
+func clear_drop_hover_if_match(container: StringName, index: int) -> void:
+	if drop_hover_container == container and drop_hover_index == index:
+		clear_drop_hover_target()
+
+
+func show_inventory_full_feedback() -> void:
+	var flash_target: CanvasItem = inventory_panel if inventory_open else root_ui
+	if flash_target == null:
+		return
+
+	if _inventory_full_flash_tween != null and _inventory_full_flash_tween.is_valid():
+		_inventory_full_flash_tween.kill()
+
+	var original_modulate: Color = flash_target.modulate
+	flash_target.modulate = Color(1.35, 0.45, 0.45, 1.0)
+
+	_inventory_full_flash_tween = create_tween()
+	_inventory_full_flash_tween.tween_property(
+		flash_target,
+		"modulate",
+		original_modulate,
+		0.28
 	)
 
 
@@ -227,18 +296,20 @@ func _attach_slot_script(panel: Panel, container: StringName, index: int) -> voi
 
 
 func _try_equip_selected_spell() -> void:
+	if is_spell_drag_active:
+		return
+
 	var player_inventory: PlayerInventoryComponent = _get_player_inventory_component()
 	if player_inventory == null:
-		print("Equip fehlgeschlagen: PlayerInventoryComponent nicht gefunden.")
+		push_warning("HUD: PlayerInventoryComponent not found for equip.")
 		return
 
 	var inventory: InventoryComponent = _get_inventory_component()
 	if inventory == null:
-		print("Equip fehlgeschlagen: InventoryComponent nicht gefunden.")
+		push_warning("HUD: InventoryComponent not found for equip.")
 		return
 
 	if inventory.get_spell_at(selected_inventory_index) == null:
-		print("Kein Spell im Inventory-Slot ", selected_inventory_index + 1, ".")
 		return
 
 	if player_inventory.equip_inventory_spell_to_wand(
@@ -249,6 +320,9 @@ func _try_equip_selected_spell() -> void:
 
 
 func _try_unequip_wand_slot() -> void:
+	if is_spell_drag_active:
+		return
+
 	var player_inventory: PlayerInventoryComponent = _get_player_inventory_component()
 	if player_inventory == null:
 		return
@@ -277,6 +351,12 @@ func _get_inventory_component() -> InventoryComponent:
 	if player == null:
 		return null
 	return player.get_node_or_null("Components/InventoryComponent") as InventoryComponent
+
+
+func _get_player_health_component() -> PlayerHealthComponent:
+	if player == null:
+		return null
+	return player.get_node_or_null("Components/HealthComponent") as PlayerHealthComponent
 
 
 func _set_wand_input_enabled(enabled: bool) -> void:
@@ -308,31 +388,51 @@ func _clamp_wand_slot_selection() -> void:
 
 
 func _refresh_player_reference() -> void:
-	player = get_tree().get_first_node_in_group("player")
+	var new_player: Node = get_tree().get_first_node_in_group("player")
+	if new_player == player and is_instance_valid(player):
+		return
 
+	_disconnect_health_signal()
+	player = new_player
 
-func _refresh_all_ui() -> void:
-	_refresh_health_ui()
-	_refresh_wand_ui()
-	_refresh_inventory_ui()
+	if player != null:
+		_health_component = _get_player_health_component()
+		if _health_component != null:
+			if not _health_component.health_changed.is_connected(_on_health_changed):
+				_health_component.health_changed.connect(_on_health_changed)
+			_on_health_changed(_health_component.health, _health_component.max_health)
+
+	refresh_after_slot_change()
+	_sync_mana_from_wand_once()
 	_refresh_dash_ui()
-	_apply_spell_selection_visual()
-	_apply_inventory_selection_visual()
 
 
-func _refresh_health_ui() -> void:
+func _disconnect_health_signal() -> void:
+	if _health_component == null:
+		return
+	if _health_component.health_changed.is_connected(_on_health_changed):
+		_health_component.health_changed.disconnect(_on_health_changed)
+	_health_component = null
+
+
+func _on_health_changed(current: int, max_value: int) -> void:
+	set_health(current, max_value)
+
+
+func _sync_mana_from_wand_once() -> void:
 	if player == null:
 		return
 
-	var health_component: Node = player.get_node_or_null("Components/HealthComponent")
-	if health_component == null:
+	var wand: Node = player.get_node_or_null("Visuals/WandPivot/Wand")
+	if wand == null:
 		return
 
-	var current_health = health_component.get("health")
-	var max_health = health_component.get("max_health")
-
-	if current_health != null and max_health != null:
-		set_health(int(current_health), int(max_health))
+	var wand_data = wand.get("wand_data")
+	var current_mana = wand.get("current_mana")
+	if current_mana != null and wand_data != null:
+		var mana_max = wand_data.get("mana_max")
+		if mana_max != null:
+			update_mana(float(current_mana), float(mana_max))
 
 
 func _refresh_wand_ui() -> void:
@@ -379,11 +479,7 @@ func _refresh_wand_ui() -> void:
 		if current_spell_index_value != null:
 			selected_spell_index = int(current_spell_index_value)
 
-	var current_mana = wand.get("current_mana")
-	if current_mana != null and wand_data != null:
-		var mana_max = wand_data.get("mana_max")
-		if mana_max != null:
-			update_mana(float(current_mana), float(mana_max))
+	_apply_spell_selection_visual()
 
 
 func _refresh_inventory_ui() -> void:
@@ -414,6 +510,8 @@ func _refresh_inventory_ui() -> void:
 		else:
 			icon_rect.texture = null
 			icon_rect.visible = false
+
+	_apply_inventory_selection_visual()
 
 
 func _refresh_dash_ui() -> void:
@@ -448,6 +546,28 @@ func _refresh_dash_ui() -> void:
 			fill.visible = false
 
 
+func _slot_panel_modulate(has_spell: bool, is_selected: bool, is_drop_hover: bool) -> Color:
+	var base: Color = SLOT_MODULATE_FILLED if has_spell else SLOT_MODULATE_EMPTY
+
+	if is_selected:
+		base = Color(
+			base.r * SLOT_MODULATE_SELECTED_SCALE,
+			base.g * SLOT_MODULATE_SELECTED_SCALE,
+			base.b * SLOT_MODULATE_SELECTED_SCALE,
+			1.0
+		)
+
+	if is_drop_hover and is_spell_drag_active:
+		base = Color(
+			base.r * SLOT_MODULATE_DROP_SCALE.r,
+			base.g * SLOT_MODULATE_DROP_SCALE.g,
+			base.b * SLOT_MODULATE_DROP_SCALE.b,
+			1.0
+		)
+
+	return base
+
+
 func _apply_spell_selection_visual() -> void:
 	var highlight_index: int = selected_spell_index
 	if inventory_open:
@@ -458,10 +578,19 @@ func _apply_spell_selection_visual() -> void:
 		if panel == null:
 			continue
 
-		if i == highlight_index:
-			panel.modulate = Color(1.2, 1.2, 1.2, 1.0)
-		else:
-			panel.modulate = Color(1, 1, 1, 1)
+		var has_spell: bool = false
+		if player != null:
+			var wand: Node = player.get_node_or_null("Visuals/WandPivot/Wand")
+			if wand != null and wand.has_method("get_spell_in_slot"):
+				has_spell = wand.get_spell_in_slot(i) != null
+
+		var is_selected: bool = inventory_open and i == highlight_index
+		var is_drop_hover: bool = (
+			is_spell_drag_active
+			and drop_hover_container == &"wand"
+			and drop_hover_index == i
+		)
+		panel.modulate = _slot_panel_modulate(has_spell, is_selected, is_drop_hover)
 
 
 func _apply_inventory_selection_visual() -> void:
@@ -471,13 +600,21 @@ func _apply_inventory_selection_visual() -> void:
 			continue
 
 		if not inventory_open:
-			panel.modulate = Color(1, 1, 1, 1)
+			panel.modulate = SLOT_MODULATE_FILLED
 			continue
 
-		if i == selected_inventory_index:
-			panel.modulate = Color(1.2, 1.2, 1.2, 1.0)
-		else:
-			panel.modulate = Color(1, 1, 1, 1)
+		var has_spell: bool = false
+		var inventory: InventoryComponent = _get_inventory_component()
+		if inventory != null:
+			has_spell = inventory.get_spell_at(i) != null
+
+		var is_selected: bool = i == selected_inventory_index
+		var is_drop_hover: bool = (
+			is_spell_drag_active
+			and drop_hover_container == &"inventory"
+			and drop_hover_index == i
+		)
+		panel.modulate = _slot_panel_modulate(has_spell, is_selected, is_drop_hover)
 
 
 func _clear_all_icons() -> void:

@@ -74,18 +74,20 @@ func _process(_delta: float) -> void:
 
 		var inventory = player_in_range.get_node_or_null("Components/InventoryComponent")
 		if inventory == null:
-			print("Pickup fehlgeschlagen: InventoryComponent nicht gefunden.")
+			push_warning("SpellPickup: InventoryComponent not found.")
 			return
 
 		if not inventory.has_method("add_spell"):
-			print("Pickup fehlgeschlagen: add_spell() fehlt auf InventoryComponent.")
+			push_warning("SpellPickup: add_spell() missing on InventoryComponent.")
 			return
 
 		var added: bool = inventory.add_spell(spell_data)
 		if added:
+			if hud != null and hud.has_method("refresh_after_slot_change"):
+				hud.refresh_after_slot_change()
 			queue_free()
-		else:
-			print("Pickup nicht aufgenommen: Inventar ist voll.")
+		elif hud != null and hud.has_method("show_inventory_full_feedback"):
+			hud.show_inventory_full_feedback()
 
 func _on_body_entered(body: Node) -> void:
 	if body == null:

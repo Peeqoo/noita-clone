@@ -260,7 +260,7 @@ func get_spell_in_slot(slot: int) -> SpellData:
 	return wand_data.spell_slots[slot]
 
 
-func set_spell_in_slot(slot: int, spell: SpellData) -> bool:
+func set_spell_in_slot(slot: int, spell: SpellData, notify_hud: bool = true) -> bool:
 	if wand_data == null:
 		return false
 	ensure_spell_slot_count(WAND_SPELL_SLOT_COUNT)
@@ -268,7 +268,8 @@ func set_spell_in_slot(slot: int, spell: SpellData) -> bool:
 		return false
 
 	wand_data.spell_slots[slot] = spell
-	notify_spell_slots_changed()
+	if notify_hud:
+		notify_spell_slots_changed()
 	return true
 
 
