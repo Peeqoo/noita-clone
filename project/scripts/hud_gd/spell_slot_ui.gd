@@ -117,11 +117,18 @@ func _notification(what: int) -> void:
 		hud_ref.refresh_after_slot_change()
 
 
-func _mouse_exited() -> void:
+func handle_mouse_entered() -> void:
 	if hud_ref == null:
 		return
-	if hud_ref.has_method("clear_drop_hover_if_match"):
-		hud_ref.clear_drop_hover_if_match(slot_container, slot_index)
+	if hud_ref.has_method("hover_spell_slot"):
+		hud_ref.hover_spell_slot(slot_container, slot_index, get_global_mouse_position())
+
+
+func handle_mouse_exited() -> void:
+	if hud_ref == null:
+		return
+	if hud_ref.has_method("unhover_spell_slot"):
+		hud_ref.unhover_spell_slot(slot_container, slot_index)
 
 
 func _is_valid_drag_data(data: Variant) -> bool:

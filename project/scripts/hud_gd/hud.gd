@@ -8,6 +8,10 @@ const SLOT_MODULATE_FILLED := Color(1.0, 1.0, 1.0, 1.0)
 const SLOT_MODULATE_SELECTED_SCALE := 1.2
 const SLOT_MODULATE_DROP_SCALE := Color(1.05, 1.15, 1.0, 1.0)
 
+const HOVER_PANEL_GAP := 8.0
+const HOVER_PANEL_SCREEN_MARGIN := 8.0
+const HOVER_PANEL_BOTTOM_MARGIN := 16.0
+
 @onready var root_ui: Control = $HUD
 
 @onready var health_bar: Range = $HUD/HealthManaPanel/HealthManaMarginContainer/HealthManaBox/HealthBar
@@ -17,6 +21,10 @@ const SLOT_MODULATE_DROP_SCALE := Color(1.05, 1.15, 1.0, 1.0)
 	$HUD/HealthManaPanel/HealthManaMarginContainer/DashChargeBox/DashCharge1/Fill,
 	$HUD/HealthManaPanel/HealthManaMarginContainer/DashChargeBox/DashCharge2/Fill
 ]
+
+@onready var wand_slot_panel: Panel = $HUD/WandPanel/WandMargin/WandVBox/WandSlotBar/WandSlot
+@onready var wand_stats_hover_panel: WandStatsHoverPanel = $HUD/HoverPanels/WandStatsHoverPanel
+@onready var spell_stats_hover_panel: SpellStatsHoverPanel = $HUD/HoverPanels/SpellStatsHoverPanel
 
 @onready var wand_icon: TextureRect = $HUD/WandPanel/WandMargin/WandVBox/WandSlotBar/WandSlot/Center/Icon
 
@@ -36,6 +44,7 @@ const SLOT_MODULATE_DROP_SCALE := Color(1.05, 1.15, 1.0, 1.0)
 	$HUD/WandPanel/WandMargin/WandVBox/SpellSlotBar/SpellSlot5/Center/Icon
 ]
 
+@onready var wand_panel: Control = $HUD/WandPanel
 @onready var inventory_panel: Control = $HUD/InventoryPanel
 
 @onready var inventory_slot_panels: Array[Panel] = [
@@ -76,12 +85,17 @@ var drop_hover_index: int = -1
 var _health_component: PlayerHealthComponent = null
 var _inventory_full_flash_tween: Tween = null
 
+var _info_hover_container: StringName = &""
+var _info_hover_index: int = -1
+var _info_hover_wand_icon: bool = false
+
 
 func _ready() -> void:
 	add_to_group("hud")
 	inventory_panel.visible = false
 	_clear_all_icons()
 	_setup_drag_slots()
+	_setup_wand_icon_hover()
 	_refresh_player_reference()
 	_refresh_wand_ui()
 	_refresh_inventory_ui()
@@ -150,6 +164,7 @@ func toggle_inventory() -> void:
 
 	if not inventory_open:
 		end_spell_drag_visual()
+		hide_all_hover_panels()
 	else:
 		_clamp_inventory_selection()
 		_clamp_wand_slot_selection()
@@ -177,6 +192,7 @@ func refresh_after_slot_change() -> void:
 
 
 func begin_spell_drag_visual(container: StringName, index: int) -> void:
+	hide_all_hover_panels()
 	drag_source_container = container
 	drag_source_index = index
 	is_spell_drag_active = true
@@ -225,6 +241,163 @@ func clear_drop_hover_target() -> void:
 func clear_drop_hover_if_match(container: StringName, index: int) -> void:
 	if drop_hover_container == container and drop_hover_index == index:
 		clear_drop_hover_target()
+
+
+func hide_all_hover_panels() -> void:
+	_info_hover_container = &""
+	_info_hover_index = -1
+	_info_hover_wand_icon = false
+	_hide_hover_panels_visual()
+
+
+func _hide_hover_panels_visual() -> void:
+	if wand_stats_hover_panel != null:
+		wand_stats_hover_panel.hide_panel()
+	if spell_stats_hover_panel != null:
+		spell_stats_hover_panel.hide_panel()
+
+
+func hover_spell_slot(container: StringName, index: int, global_pos: Vector2) -> void:
+	if is_spell_drag_active:
+		hide_all_hover_panels()
+		return
+
+	if wand_stats_hover_panel == null or spell_stats_hover_panel == null:
+		hide_all_hover_panels()
+		return
+
+	if container == &"inventory" and not inventory_open:
+		return
+
+	_info_hover_container = container
+	_info_hover_index = index
+	_info_hover_wand_icon = false
+	_hide_hover_panels_visual()
+
+	var wand: Node = _get_player_wand()
+	if container == &"inventory":
+		var inventory: InventoryComponent = _get_inventory_component()
+		if inventory == null:
+			hide_all_hover_panels()
+			return
+		var spell: SpellData = inventory.get_spell_at(index)
+		if spell == null:
+			hide_all_hover_panels()
+			return
+		spell_stats_hover_panel.show_spell(spell, _get_inventory_hover_position(spell_stats_hover_panel))
+		return
+
+	if container == &"wand":
+		if wand == null:
+			hide_all_hover_panels()
+			return
+		var wand_spell: SpellData = (
+			wand.get_spell_in_slot(index) if wand.has_method("get_spell_in_slot") else null
+		)
+		if wand_spell == null:
+			wand_stats_hover_panel.show_empty_wand_slot(
+				wand,
+				_get_wand_hover_position(wand_stats_hover_panel)
+			)
+		else:
+			spell_stats_hover_panel.show_spell_with_wand(
+				wand_spell,
+				wand,
+				_get_wand_hover_position(spell_stats_hover_panel)
+			)
+
+
+func unhover_spell_slot(container: StringName, index: int) -> void:
+	if not _info_hover_wand_icon and _info_hover_container == container and _info_hover_index == index:
+		hide_all_hover_panels()
+	clear_drop_hover_if_match(container, index)
+
+
+func hover_wand_icon(global_pos: Vector2) -> void:
+	if is_spell_drag_active:
+		hide_all_hover_panels()
+		return
+
+	if wand_stats_hover_panel == null or spell_stats_hover_panel == null:
+		hide_all_hover_panels()
+		return
+
+	var wand: Node = _get_player_wand()
+	if wand == null:
+		hide_all_hover_panels()
+		return
+
+	_info_hover_container = &""
+	_info_hover_index = -1
+	_info_hover_wand_icon = true
+	_hide_hover_panels_visual()
+	wand_stats_hover_panel.show_wand(wand, _get_wand_hover_position(wand_stats_hover_panel))
+
+
+func unhover_wand_icon() -> void:
+	if _info_hover_wand_icon:
+		hide_all_hover_panels()
+
+
+func _get_viewport_rect() -> Rect2:
+	return get_viewport().get_visible_rect()
+
+
+func _get_hover_panel_layout_size(panel: Control) -> Vector2:
+	if panel == null:
+		return Vector2(75.0, 64.0)
+
+	var layout_size: Vector2 = panel.custom_minimum_size
+	if layout_size.x > 0.0 and layout_size.y > 0.0:
+		return layout_size
+
+	return Vector2(75.0, 64.0)
+
+
+func _clamp_panel_position(panel_pos: Vector2, panel_size: Vector2) -> Vector2:
+	var viewport_rect: Rect2 = _get_viewport_rect()
+	panel_pos.x = clampf(
+		panel_pos.x,
+		viewport_rect.position.x + HOVER_PANEL_SCREEN_MARGIN,
+		viewport_rect.position.x + viewport_rect.size.x - HOVER_PANEL_SCREEN_MARGIN - panel_size.x
+	)
+	panel_pos.y = clampf(
+		panel_pos.y,
+		viewport_rect.position.y + HOVER_PANEL_SCREEN_MARGIN,
+		viewport_rect.position.y + viewport_rect.size.y - HOVER_PANEL_BOTTOM_MARGIN - panel_size.y
+	)
+	return panel_pos
+
+
+func _get_position_right_of_anchor(anchor: Control, panel: Control) -> Vector2:
+	if anchor == null or not is_instance_valid(anchor):
+		return Vector2.ZERO
+
+	var anchor_rect: Rect2 = anchor.get_global_rect()
+	var panel_size: Vector2 = _get_hover_panel_layout_size(panel)
+	var pos: Vector2 = Vector2(
+		anchor_rect.position.x + anchor_rect.size.x + HOVER_PANEL_GAP,
+		anchor_rect.position.y
+	)
+	return _clamp_panel_position(pos, panel_size)
+
+
+func _get_inventory_hover_position(panel: Control) -> Vector2:
+	if inventory_panel == null or not is_instance_valid(inventory_panel):
+		return Vector2.ZERO
+
+	var inventory_rect: Rect2 = inventory_panel.get_global_rect()
+	var panel_size: Vector2 = _get_hover_panel_layout_size(panel)
+
+	var pos: Vector2 = Vector2(
+		inventory_rect.position.x - panel_size.x - HOVER_PANEL_GAP,
+		inventory_rect.position.y
+	)
+	return _clamp_panel_position(pos, panel_size)
+
+
+func _get_wand_hover_position(panel: Control) -> Vector2:
+	return _get_position_right_of_anchor(wand_panel, panel)
 
 
 func show_inventory_full_feedback() -> void:
@@ -276,6 +449,30 @@ func _setup_drag_slots() -> void:
 		_attach_slot_script(spell_slot_panels[i], &"wand", i)
 
 
+func _setup_wand_icon_hover() -> void:
+	if wand_slot_panel == null:
+		return
+	if not wand_slot_panel.mouse_entered.is_connected(_on_wand_slot_mouse_entered):
+		wand_slot_panel.mouse_entered.connect(_on_wand_slot_mouse_entered)
+	if not wand_slot_panel.mouse_exited.is_connected(_on_wand_slot_mouse_exited):
+		wand_slot_panel.mouse_exited.connect(_on_wand_slot_mouse_exited)
+	wand_slot_panel.mouse_filter = Control.MOUSE_FILTER_STOP
+
+
+func _on_wand_slot_mouse_entered() -> void:
+	hover_wand_icon(wand_slot_panel.get_global_mouse_position())
+
+
+func _on_wand_slot_mouse_exited() -> void:
+	unhover_wand_icon()
+
+
+func _get_player_wand() -> Node:
+	if player == null:
+		return null
+	return player.get_node_or_null("Visuals/WandPivot/Wand")
+
+
 func _attach_slot_script(panel: Panel, container: StringName, index: int) -> void:
 	if panel == null:
 		return
@@ -293,6 +490,11 @@ func _attach_slot_script(panel: Panel, container: StringName, index: int) -> voi
 	var icon: Node = panel.get_node_or_null("Center/Icon")
 	if icon is Control:
 		(icon as Control).mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	if not panel.mouse_entered.is_connected(panel.handle_mouse_entered):
+		panel.mouse_entered.connect(panel.handle_mouse_entered)
+	if not panel.mouse_exited.is_connected(panel.handle_mouse_exited):
+		panel.mouse_exited.connect(panel.handle_mouse_exited)
 
 
 func _try_equip_selected_spell() -> void:

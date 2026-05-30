@@ -2,6 +2,10 @@
 
 [ext_resource type="Texture2D" uid="uid://cpt5l0yjpdsco" path="res://assets/hud/Heart&ManaUi.png" id="1_cuuuh"]
 [ext_resource type="Script" uid="uid://b6p7641m7a5yi" path="res://project/scripts/hud_gd/hud.gd" id="1_jj1yb"]
+[ext_resource type="Script" uid="uid://dr6efu6y50wim" path="res://project/scripts/hud_gd/wand_stats_hover_panel.gd" id="2_wand_hover"]
+[ext_resource type="Script" uid="uid://txk4afm53sub" path="res://project/scripts/hud_gd/spell_stats_hover_panel.gd" id="3_spell_hover"]
+[ext_resource type="LabelSettings" uid="uid://dl6m87ol7kb2j" path="res://project/labels/PanelHoverSettings.tres" id="4_iiols"]
+[ext_resource type="LabelSettings" uid="uid://b2roha1kmpa0k" path="res://project/labels/PanelTitelHoverSettings.tres" id="5_m1j6r"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jj1yb"]
 bg_color = Color(1, 0, 0, 1)
@@ -475,3 +479,222 @@ custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
+
+[node name="HoverPanels" type="Control" parent="HUD" unique_id=1146729052]
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="WandStatsHoverPanel" type="Panel" parent="HUD/HoverPanels" unique_id=251867127]
+visible = false
+z_index = 100
+layout_mode = 0
+offset_right = 75.0
+offset_bottom = 74.0
+mouse_filter = 2
+script = ExtResource("2_wand_hover")
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD/HoverPanels/WandStatsHoverPanel" unique_id=1929364073]
+layout_mode = 0
+offset_right = 75.0
+offset_bottom = 74.0
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer" unique_id=1406616103]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="EmptySlotLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1027366273]
+visible = false
+layout_mode = 2
+text = "Empty Spell Slot"
+label_settings = ExtResource("4_iiols")
+
+[node name="HeaderHBox" type="HBoxContainer" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1773243269]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="WandNameLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer/HeaderHBox" unique_id=1128417751]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Wand"
+label_settings = ExtResource("5_m1j6r")
+
+[node name="ManaLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=244563416]
+layout_mode = 2
+text = "Mana: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="ManaRegenLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=529975915]
+layout_mode = 2
+text = "Regen: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="CastDelayLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=663163480]
+layout_mode = 2
+text = "Cast Delay: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="RechargeLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=2029944085]
+layout_mode = 2
+text = "Recharge: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="SlotsLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1260543683]
+layout_mode = 2
+text = "Slots: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="DamageMultLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1404795436]
+layout_mode = 2
+text = "Damage Mult: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="CritBonusLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=18117364]
+layout_mode = 2
+text = "Crit Bonus: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="CritMultBonusLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1731569448]
+layout_mode = 2
+text = "Crit Mult Bonus: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="ShuffleLabel" type="Label" parent="HUD/HoverPanels/WandStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=337600013]
+layout_mode = 2
+text = "Shuffle: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="SpellStatsHoverPanel" type="Panel" parent="HUD/HoverPanels" unique_id=503787979]
+visible = false
+z_index = 100
+layout_mode = 0
+offset_right = 75.0
+offset_bottom = 117.0
+mouse_filter = 2
+script = ExtResource("3_spell_hover")
+
+[node name="MarginContainer" type="MarginContainer" parent="HUD/HoverPanels/SpellStatsHoverPanel" unique_id=767598153]
+layout_mode = 0
+offset_right = 75.0
+offset_bottom = 117.0
+mouse_filter = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer" unique_id=644829926]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="HeaderHBox" type="HBoxContainer" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=301436052]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="SpellNameLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/HeaderHBox" unique_id=1398181205]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Spell"
+label_settings = ExtResource("5_m1j6r")
+
+[node name="DamageLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=125282134]
+layout_mode = 2
+text = "Damage: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="ManaCostLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1199488068]
+layout_mode = 2
+text = "Mana Cost: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="CastDelayAddLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=442318313]
+layout_mode = 2
+text = "Cast Delay: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="ProjectilesLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1265561879]
+layout_mode = 2
+text = "Projectiles: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="SpreadLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=375094298]
+layout_mode = 2
+text = "Spread: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="CritLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=685552735]
+layout_mode = 2
+text = "Crit: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="SpeedLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=895927949]
+layout_mode = 2
+text = "Speed: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="LifetimeLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1568913795]
+layout_mode = 2
+text = "Lifetime: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="WandSummarySeparator" type="HSeparator" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=195550788]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+
+[node name="WandSummaryBox" type="VBoxContainer" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer" unique_id=1596564005]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 1
+
+[node name="WandSummaryTitleLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=1011345080]
+layout_mode = 2
+text = "Current Wand"
+label_settings = ExtResource("5_m1j6r")
+
+[node name="WandSummaryNameLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=392653489]
+layout_mode = 2
+text = "—"
+label_settings = ExtResource("5_m1j6r")
+
+[node name="WandSummaryManaLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=922918527]
+layout_mode = 2
+text = "Mana: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="WandSummaryCastDelayLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=222536990]
+layout_mode = 2
+text = "Cast Delay: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="WandSummaryRechargeLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=1283524408]
+layout_mode = 2
+text = "Recharge: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="WandSummaryDamageMultLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=1273143543]
+layout_mode = 2
+text = "Damage Mult: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="EffectiveDamageLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=206339004]
+layout_mode = 2
+text = "Eff. Damage: —"
+label_settings = ExtResource("4_iiols")
+
+[node name="EffectiveCritLabel" type="Label" parent="HUD/HoverPanels/SpellStatsHoverPanel/MarginContainer/VBoxContainer/WandSummaryBox" unique_id=1880989736]
+layout_mode = 2
+text = "Eff. Crit: —"
+label_settings = ExtResource("4_iiols")
